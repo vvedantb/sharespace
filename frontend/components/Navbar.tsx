@@ -15,10 +15,20 @@ const navLinks = [
 export function Navbar() {
   const pathname = usePathname();
   const [isDark, setIsDark] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const isDarkMode = document.documentElement.classList.contains("dark");
-    setIsDark(isDarkMode);
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark") {
+      setIsDark(true);
+      document.documentElement.classList.add("dark");
+    } else if (stored === "light") {
+      setIsDark(false);
+      document.documentElement.classList.remove("dark");
+    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      setIsDark(true);
+      document.documentElement.classList.add("dark");
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -32,15 +42,14 @@ export function Navbar() {
       localStorage.setItem("theme", "light");
     }
   };
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-50 border-b border-gray-200 dark:border-neutral-800 bg-white/80 dark:bg-black/80 backdrop-blur-md">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
-            className="text-2xl font-bold text-red-800 dark:text-red-600"
+            className="text-2xl font-bold text-red-800 dark:text-red-500"
           >
             ShareSpace
           </Link>
@@ -53,7 +62,7 @@ export function Navbar() {
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? "bg-red-800 text-white dark:bg-red-700"
-                    : "text-foreground hover:bg-muted"
+                    : "text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800"
                 }`}
               >
                 {link.label}
@@ -64,7 +73,7 @@ export function Navbar() {
           <div className="flex items-center gap-3">
             <button
               onClick={toggleTheme}
-              className="rounded-lg p-2 transition-colors hover:bg-muted"
+              className="hidden md:block rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800 text-black dark:text-white"
               aria-label="Toggle theme"
             >
               {isDark ? (
@@ -78,7 +87,7 @@ export function Navbar() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
                   />
                 </svg>
               ) : (
@@ -92,7 +101,7 @@ export function Navbar() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
                   />
                 </svg>
               )}
@@ -100,7 +109,7 @@ export function Navbar() {
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-lg p-2 transition-colors hover:bg-muted md:hidden"
+              className="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800 md:hidden text-black dark:text-white"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
@@ -138,7 +147,7 @@ export function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="animate-slide-in border-t border-border bg-card md:hidden">
+        <div className="border-t border-gray-200 dark:border-neutral-800 bg-white dark:bg-black md:hidden">
           <div className="space-y-1 px-4 py-3">
             {navLinks.map((link) => (
               <Link
@@ -148,12 +157,54 @@ export function Navbar() {
                 className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? "bg-red-800 text-white dark:bg-red-700"
-                    : "text-foreground hover:bg-muted"
+                    : "text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800"
                 }`}
               >
                 {link.label}
               </Link>
             ))}
+          </div>
+          <div className="border-t border-gray-200 dark:border-neutral-800 px-4 py-3">
+            <button
+              onClick={toggleTheme}
+              className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+            >
+              {isDark ? (
+                <>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                    />
+                  </svg>
+                  Switch to Light Mode
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                    />
+                  </svg>
+                  Switch to Dark Mode
+                </>
+              )}
+            </button>
           </div>
         </div>
       )}

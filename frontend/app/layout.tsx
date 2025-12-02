@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
 
 const instrumentSans = Instrument_Sans({
   weight: ["400", "500", "600", "700"],
@@ -31,13 +30,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${instrumentSans.variable} font-instrumentSans`}
-    >
-      <body className={`${instrumentSerif.variable}`}>
-        <Navbar />
-        <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${instrumentSans.variable} ${instrumentSerif.variable} font-instrumentSans antialiased`}
+      >
+        {children}
       </body>
     </html>
   );
