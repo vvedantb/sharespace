@@ -9,8 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "eslint": "^9.38.0",
+    "eslint-config-next": "16.0.0",
+    "eslint-plugin-react-compiler": "19.1.0-rc.2",
     "next": "16.0.3",
     "react": "19.2.0",
+    "babel-plugin-react-compiler": "^1.0.0",
     "react-dom": "19.2.0"
   },
   "devDependencies": {
