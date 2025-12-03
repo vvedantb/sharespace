@@ -23,7 +23,7 @@ export function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-neutral-200 dark:bg-black">
-      <div className="mx-10 px-4">
+      <div className="md:mx-10 px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"

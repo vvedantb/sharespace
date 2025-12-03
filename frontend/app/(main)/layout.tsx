@@ -9,7 +9,7 @@ export default function MainLayout({
     <div className="min-h-screen bg-neutral-200 dark:bg-black">
       <Navbar />
       <main className="mx-auto min-h-[calc(100vh-5rem)] py-2">
-        <div className="px-4 mx-10 bg-white dark:bg-neutral-900 rounded-2xl">
+        <div className="md:px-4 mx-3 md:mx-10 bg-white dark:bg-neutral-900 rounded-2xl">
           {children}
         </div>
       </main>
