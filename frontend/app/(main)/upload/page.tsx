@@ -1,6 +1,6 @@
 export default function UploadPage() {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 bg-white dark:bg-black min-h-screen">
+    <div className="px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-black dark:text-white md:text-4xl">
           Upload Item

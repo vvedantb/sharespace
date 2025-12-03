@@ -22,8 +22,8 @@ export function Navbar() {
   const isDark = theme === "dark";
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 dark:border-neutral-800 bg-white/80 dark:bg-black/80 backdrop-blur-md">
-      <div className="mx-auto max-w-7xl px-4">
+    <nav className="sticky top-0 z-50 bg-neutral-200 dark:bg-black">
+      <div className="mx-10 px-4">
         <div className="flex h-16 items-center justify-between">
           <Link
             href="/"
@@ -40,7 +40,7 @@ export function Navbar() {
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? "bg-red-800 text-white dark:bg-red-700"
-                    : "text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800"
+                    : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
                 }`}
               >
                 {link.label}
@@ -89,7 +89,7 @@ export function Navbar() {
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-lg p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800 md:hidden text-black dark:text-white"
+              className="rounded-lg p-2 transition-colors hover:bg-neutral-300 dark:hover:bg-neutral-800 md:hidden text-black dark:text-white"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
@@ -127,7 +127,7 @@ export function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="border-t border-gray-200 dark:border-neutral-800 bg-white dark:bg-black md:hidden">
+        <div className="border-t border-neutral-300 dark:border-neutral-800 bg-neutral-200 dark:bg-black md:hidden">
           <div className="space-y-1 px-4 py-3">
             {navLinks.map((link) => (
               <Link
@@ -137,7 +137,7 @@ export function Navbar() {
                 className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? "bg-red-800 text-white dark:bg-red-700"
-                    : "text-black dark:text-white hover:bg-gray-100 dark:hover:bg-neutral-800"
+                    : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
                 }`}
               >
                 {link.label}
@@ -145,7 +145,7 @@ export function Navbar() {
             ))}
           </div>
           {mounted && (
-            <div className="border-t border-gray-200 dark:border-neutral-800 px-4 py-3">
+            <div className="border-t border-neutral-300 dark:border-neutral-800 px-4 py-3">
               <div className="flex items-center justify-between rounded-lg px-4 py-3">
                 <div className="flex items-center gap-2 text-sm font-medium text-black dark:text-white">
                   {isDark ? (
