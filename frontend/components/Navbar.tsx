@@ -127,74 +127,80 @@ export function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="absolute left-0 right-0 top-16 border-t border-neutral-300 dark:border-neutral-800 bg-neutral-200 dark:bg-black md:hidden shadow-lg">
-          <div className="space-y-1 px-4 py-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                  pathname === link.href
-                    ? "bg-red-800 text-white dark:bg-red-700"
-                    : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-          {mounted && (
-            <div className="border-t border-neutral-300 dark:border-neutral-800 px-4 py-3">
-              <div className="flex items-center justify-between rounded-lg px-4 py-3">
-                <div className="flex items-center gap-2 text-sm font-medium text-black dark:text-white">
-                  {isDark ? (
-                    <>
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                        />
-                      </svg>
-                      Dark Mode
-                    </>
-                  ) : (
-                    <>
-                      <svg
-                        className="h-5 w-5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                        />
-                      </svg>
-                      Light Mode
-                    </>
-                  )}
-                </div>
-                <Switch
-                  isSelected={isDark}
-                  onValueChange={toggleTheme}
-                  size="sm"
-                  color="danger"
-                  aria-label="Toggle dark mode"
-                />
-              </div>
+        <>
+          <div
+            className="fixed inset-0 top-16 bg-black/20 backdrop-blur-sm md:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div className="absolute left-0 right-0 top-16 border-t border-neutral-300 dark:border-neutral-800 bg-neutral-200 dark:bg-black md:hidden shadow-lg">
+            <div className="space-y-1 px-4 py-3">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                    pathname === link.href
+                      ? "bg-red-800 text-white dark:bg-red-700"
+                      : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
-          )}
-        </div>
+            {mounted && (
+              <div className="border-t border-neutral-300 dark:border-neutral-800 px-4 py-3">
+                <div className="flex items-center justify-between rounded-lg px-4 py-3">
+                  <div className="flex items-center gap-2 text-sm font-medium text-black dark:text-white">
+                    {isDark ? (
+                      <>
+                        <svg
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                          />
+                        </svg>
+                        Dark Mode
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="h-5 w-5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                          />
+                        </svg>
+                        Light Mode
+                      </>
+                    )}
+                  </div>
+                  <Switch
+                    isSelected={isDark}
+                    onValueChange={toggleTheme}
+                    size="sm"
+                    color="danger"
+                    aria-label="Toggle dark mode"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </>
       )}
     </nav>
   );
