@@ -127,7 +127,7 @@ export function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="border-t border-neutral-300 dark:border-neutral-800 bg-neutral-200 dark:bg-black md:hidden">
+        <div className="absolute left-0 right-0 top-16 border-t border-neutral-300 dark:border-neutral-800 bg-neutral-200 dark:bg-black md:hidden shadow-lg">
           <div className="space-y-1 px-4 py-3">
             {navLinks.map((link) => (
               <Link
