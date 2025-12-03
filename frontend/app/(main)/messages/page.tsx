@@ -1,3 +1,5 @@
+import { IconMessageCircle, IconSend } from "@tabler/icons-react";
+
 const dummyUsers = [
   {
     id: 1,
@@ -111,19 +113,10 @@ export default function MessagesPage() {
 
             <div className="flex flex-1 items-center justify-center p-8">
               <div className="text-center">
-                <svg
+                <IconMessageCircle
                   className="mx-auto h-16 w-16 text-gray-300 dark:text-neutral-700"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
-                </svg>
+                  stroke={1.5}
+                />
                 <p className="mt-4 text-gray-500 dark:text-gray-400">
                   Select a conversation to start chatting
                 </p>
@@ -138,19 +131,7 @@ export default function MessagesPage() {
                   className="flex-1 rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 px-4 py-2 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none dark:focus:border-red-600"
                 />
                 <button className="rounded-xl bg-red-800 px-4 py-2 text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                    />
-                  </svg>
+                  <IconSend className="h-5 w-5" stroke={2} />
                 </button>
               </div>
             </div>

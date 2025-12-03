@@ -1,3 +1,5 @@
+import { IconCloudUpload } from "@tabler/icons-react";
+
 export default function UploadPage() {
   return (
     <div className="px-4 py-8">
@@ -17,19 +19,10 @@ export default function UploadPage() {
           </label>
           <div className="flex aspect-video cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-gray-300 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 transition-colors hover:border-red-800 hover:bg-red-50 dark:hover:border-red-600 dark:hover:bg-red-900/20">
             <div className="text-center">
-              <svg
+              <IconCloudUpload
                 className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                />
-              </svg>
+                stroke={1.5}
+              />
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 Click to upload or drag and drop
               </p>
