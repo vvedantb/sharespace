@@ -1,10 +1,18 @@
 # ShareSpace
 
-ShareSpace is a student-only ecommerce platform designed for students to exchange items such as textbooks, clothing, electronics, furniture, and other goods with each other. The platform facilitates peer-to-peer transactions, messaging, and networking among students on campus.
+ShareSpace is a cloud-based, campus-focused student ecommerce and social platform that enables students to exchange second-hand items including textbooks, lecture notes, revision packs, and electronics within their campus community. The platform combines transactional commerce with a social mentorship layer, where senior students, course representatives, teaching assistants, and alumni can create profiles, answer academic queries, endorse sellers, and share recommended resources.
 
 ## Overview
 
-ShareSpace provides a secure, student-verified marketplace where university students can buy, sell, and exchange items. The platform emphasizes safety, convenience, and community building by connecting students within the same university ecosystem.
+ShareSpace addresses the unique needs of campus communities by providing a localized, student-centric marketplace optimized for academic calendars, course categorization, and institutional identity verification. Unlike traditional global ecommerce platforms, ShareSpace is designed specifically for the campus context, addressing tight student budgets, short item lifecycles driven by graduation turnover, and safety concerns when arranging local pickups.
+
+The platform extends beyond simple buying and selling by integrating a mentorship system that combines transactional commerce with academic assistance and social endorsement. This approach increases purchase confidence through peer recommendations while providing valuable learning support, demonstrating practical implementation of distributed systems, fault tolerance, and scalable cloud architectures.
+
+## Problem & Motivation
+
+Traditional global ecommerce platforms inadequately serve the unique campus context. Students face tight budgets, short item lifecycles driven by graduation turnover, coupled with safety and verification concerns when arranging meetings with strangers for local pickup. Campus communities experience supply-demand gaps where seniors have resources incoming students need, yet global platforms do not optimize for this local exchange.
+
+Existing solutions lack academic-calendar awareness, course categorization, and institutional identity verification. Students also need help finding trustworthy sellers and reliable academic resources. ShareSpace addresses these challenges by creating a university marketplace with identity-tied access controls and an integrated social mentorship aspect, reducing student costs through affordable second-hand resources, increasing transaction trust through social ratings, and promoting environmentally sustainable reuse within campus boundaries.
 
 ## Features
 
@@ -19,13 +27,17 @@ ShareSpace provides a secure, student-verified marketplace where university stud
 
 ### Planned Features
 
-- Student verification system
-- Proximity-based search and discovery
-- Payment integration
-- Rating and review system
-- Authentication and authorization
-- Item search and filtering enhancements
-- Image upload and management
+- **Mentor Profiles**: Senior students, TAs, and alumni can create mentor profiles with expertise areas
+- **Q&A System**: Students can ask academic and student-life questions, mentors provide answers
+- **Mentor Endorsements**: Social endorsement system where mentors can endorse sellers and recommend items
+- **Mentor Recommendations**: Display mentor picks and recommendations on item listings
+- **University Email Verification**: AWS Cognito integration for university email-based registration and verification
+- **Course-Aware Categorization**: Items categorized by course codes and academic subjects
+- **Academic Calendar Integration**: Awareness of semester cycles and graduation turnover
+- **Contactless Pickup Arrangements**: Safe, local pickup coordination within campus
+- **Rating and Review System**: Transaction-based reviews and ratings
+- **Analytics Dashboard**: Real-time metrics on listings, transactions, and platform usage
+- **Event Logging**: Comprehensive tracking of user interactions for research and optimization
 
 ## Tech Stack
 
@@ -41,7 +53,7 @@ ShareSpace provides a secure, student-verified marketplace where university stud
 - **Package Manager**: pnpm
 - **Bundler**: Turbopack (for development and build)
 
-### Backend
+### Backend (Current - Spring Boot)
 
 - **Framework**: Spring Boot 3.4.0
 - **Language**: Java 21
@@ -55,12 +67,35 @@ ShareSpace provides a secure, student-verified marketplace where university stud
 - **Message Queue**: Apache Kafka
 - **Validation**: Jakarta Validation
 
+### Backend (Planned - AWS Serverless)
+
+- **Compute**: AWS Lambda serverless functions for scalable, cost-effective compute
+- **API Gateway**: AWS API Gateway for RESTful endpoints with throttling and authentication
+- **Authentication**: AWS Cognito for user authentication, university email verification, and token management
+- **Data Storage**: AWS DynamoDB for NoSQL database with automatic scaling
+- **File Storage**: AWS S3 for item images and static assets with CloudFront CDN
+- **Analytics**: Amazon QuickSight for real-time dashboards and metrics
+- **Monitoring**: AWS CloudWatch for system health, performance, and custom metrics
+- **Security**: AWS IAM for least-privilege access control and RBAC
+
 ### Architecture
 
-The application follows a microservices architecture:
+The application follows a microservices architecture, transitioning from Spring Boot to AWS serverless:
 
-- **Student Service**: Manages student user data and profiles
-- **Future Services**: Item service, messaging service, authentication service (planned)
+**Current Architecture (Development)**:
+
+- **Student Service**: Manages student user data and profiles (Spring Boot)
+- **Future Services**: Item service, messaging service, mentor service, authentication service
+
+**Planned Architecture (Production)**:
+
+- **Serverless Microservices**: Lambda functions for each service domain
+- **Event-Driven Communication**: Kafka for asynchronous messaging between services
+- **Distributed Storage**: DynamoDB tables with Global Secondary Indexes for flexible querying
+- **Elastic Scaling**: Auto-scaling Lambda functions and DynamoDB capacity
+- **Fault Tolerance**: AWS managed services with built-in redundancy and failover
+
+This architecture demonstrates practical implementation of cloud computing concepts including Infrastructure-as-a-Service (IaaS), Platform-as-a-Service (PaaS), elasticity through auto-scaling, distributed cloud storage systems, and serverless computing.
 
 ## Project Structure
 
@@ -221,26 +256,113 @@ Key configuration properties:
 
 ## Database Schema
 
-### Student Entity
+### Current Schema (PostgreSQL/H2)
 
-The current database schema includes:
+**Student Entity**:
 
 - **id**: UUID (Primary Key)
 - **firstName**: String (Required)
 - **lastName**: String (Required)
-- **email**: String (Required, Unique)
+- **email**: String (Required, Unique, University Email)
 - **address**: String (Required)
 - **dateOfBirth**: Date (Required)
 - **registeredDate**: Date (Required)
 
 ### Planned Schema
 
-Future entities will include:
+**Student Entity Extensions**:
 
-- **Item**: For marketplace listings
-- **Message**: For chat functionality
-- **Transaction**: For purchase history
-- **Review**: For ratings and feedback
+- **university**: String (Required)
+- **studentId**: String (University Student ID)
+- **course/major**: String
+- **yearOfStudy**: Integer
+- **bio**: String
+- **verificationStatus**: Enum (PENDING, VERIFIED, REJECTED)
+- **mentorStatus**: Boolean
+- **rating**: Double
+
+**Item Entity**:
+
+- **id**: UUID (Primary Key)
+- **title**: String (Required)
+- **description**: String
+- **category**: Enum (TEXTBOOK, NOTES, ELECTRONICS, FURNITURE, CLOTHING, OTHER)
+- **condition**: Enum (NEW, LIKE_NEW, GOOD, FAIR, POOR)
+- **price**: BigDecimal (Required)
+- **sellerId**: UUID (Foreign Key to Student)
+- **images**: List<String> (S3 URLs)
+- **status**: Enum (ACTIVE, SOLD, REMOVED)
+- **courseCode**: String (Optional, for course-specific items)
+- **university**: String (Required)
+- **createdAt**: LocalDateTime
+- **views**: Integer
+- **saves**: Integer
+
+**Message Entity**:
+
+- **id**: UUID (Primary Key)
+- **conversationId**: UUID
+- **senderId**: UUID (Foreign Key to Student)
+- **receiverId**: UUID (Foreign Key to Student)
+- **content**: String (Required)
+- **itemId**: UUID (Optional, Foreign Key to Item)
+- **sentAt**: LocalDateTime
+- **readAt**: LocalDateTime (Nullable)
+
+**Transaction Entity**:
+
+- **id**: UUID (Primary Key)
+- **itemId**: UUID (Foreign Key to Item)
+- **buyerId**: UUID (Foreign Key to Student)
+- **sellerId**: UUID (Foreign Key to Student)
+- **price**: BigDecimal
+- **status**: Enum (PENDING, CONFIRMED, COMPLETED, CANCELLED)
+- **pickupLocation**: String
+- **pickupTime**: LocalDateTime
+
+**MentorProfile Entity**:
+
+- **id**: UUID (Primary Key)
+- **studentId**: UUID (Foreign Key to Student, Unique)
+- **bio**: String
+- **expertise**: List<String> (Courses/Subjects)
+- **endorsements**: Integer
+- **rating**: Double
+- **totalAnswers**: Integer
+- **helpfulAnswers**: Integer
+- **verified**: Boolean
+
+**Question Entity**:
+
+- **id**: UUID (Primary Key)
+- **title**: String (Required)
+- **content**: String (Required)
+- **askerId**: UUID (Foreign Key to Student)
+- **category**: Enum (ACADEMIC, STUDENT_LIFE, COURSE_ADVICE, TEXTBOOK_RECOMMENDATION)
+- **courseCode**: String (Optional)
+- **status**: Enum (OPEN, ANSWERED, CLOSED)
+
+**Answer Entity**:
+
+- **id**: UUID (Primary Key)
+- **questionId**: UUID (Foreign Key to Question)
+- **mentorId**: UUID (Foreign Key to Student)
+- **content**: String (Required)
+- **helpfulCount**: Integer
+- **isEndorsed**: Boolean
+
+**Review Entity**:
+
+- **id**: UUID (Primary Key)
+- **transactionId**: UUID (Foreign Key to Transaction)
+- **reviewerId**: UUID (Foreign Key to Student)
+- **revieweeId**: UUID (Foreign Key to Student)
+- **rating**: Integer (1-5)
+- **comment**: String (Optional)
+
+### Planned DynamoDB Schema (AWS Migration)
+
+The migration to AWS will involve converting relational schema to DynamoDB tables with appropriate partition keys, sort keys, and Global Secondary Indexes for efficient querying patterns.
 
 ## API Endpoints
 
@@ -334,36 +456,91 @@ The backend can be deployed to:
 
 This project is private and proprietary.
 
+## Beneficiaries
+
+**Undergraduate and Postgraduate Students**: Gain cheaper access to second-hand textbooks, lecture notes, and essential equipment. Benefit from faster discovery of course-relevant materials through mentor recommendations and easier peer-to-peer exchange with reduced friction and enhanced safety.
+
+**Senior Students and Alumni**: Gain a marketplace to sell campus items, earn supplementary income, and build reputation as helpful mentors. Mentor status serves as valuable social capital, volunteering experience, and CV enhancement through demonstrable community leadership.
+
+**University Services and Sustainability Offices**: Benefit from reduced campus waste and an observable reuse channel supporting institutional sustainability goals. The platform provides quantifiable metrics on circular economy impacts within the campus ecosystem.
+
+**Course Teams and Teaching Assistants**: Gain a formal mentor channel that reduces repeated questions during lectures and tutorials, helping route students to useful resources and experienced peer mentors rather than overburdening staff.
+
+## Cloud Computing Learning Outcomes
+
+This project demonstrates practical implementation of cloud computing concepts aligned with academic learning outcomes:
+
+- **Infrastructure-as-a-Service (IaaS)**: Utilization of AWS compute, storage, and networking resources
+- **Platform-as-a-Service (PaaS)**: Leveraging AWS managed services (Lambda, DynamoDB, Cognito)
+- **Serverless Computing**: Event-driven Lambda functions without server management
+- **Elasticity**: Auto-scaling capabilities of Lambda and DynamoDB
+- **Distributed Cloud Storage**: S3 for object storage, DynamoDB for NoSQL database
+- **Fault Tolerance**: AWS managed services with built-in redundancy
+- **Resource Management**: Cost optimization through serverless architecture and pay-per-use model
+
 ## Roadmap
 
-### Short Term
+### Phase 1: MVP Implementation (Current)
 
 - Complete student service API endpoints
-- Implement authentication and authorization
+- Implement basic authentication with AWS Cognito
 - Connect frontend to backend APIs
-- Add image upload functionality
+- Add image upload functionality with S3
 - Implement item listing and management
-
-### Medium Term
-
 - Build messaging service
 - Implement real-time chat
-- Add payment processing
-- Create item service
-- Implement search and filtering
+
+### Phase 2: Mentor Features
+
+- Create mentor profile system
+- Implement Q&A functionality
+- Build endorsement mechanism
+- Add mentor recommendations to item listings
+- Create mentor leaderboard
+
+### Phase 3: AWS Migration
+
+- Migrate Spring Boot services to AWS Lambda
+- Set up API Gateway
+- Migrate PostgreSQL to DynamoDB
+- Configure S3 and CloudFront
+- Set up CloudWatch monitoring
+- Implement QuickSight dashboards
+
+### Phase 4: Advanced Features
+
+- Implement comprehensive search and filtering
+- Add transaction and review system
+- Build notification service
+- Implement event logging and analytics
+- Add A/B testing framework
+
+### Phase 5: Research & Evaluation
+
+- Conduct user studies
+- Gather qualitative insights through surveys and interviews
+- Measure trust perceptions and user experience quality
+- Analyze platform usage metrics
+- Evaluate mentor endorsement effectiveness
 
 ### Long Term
 
-- Student verification system
-- Proximity-based features
-- Mobile app development
-- Advanced analytics and recommendations
 - Multi-university support
+- Mobile app development
+- Advanced recommendation algorithms
+- Integration with university systems
+- Payment processing integration
 
 ## Support
 
 For issues, questions, or contributions, please contact the development team.
 
+## Research Context
+
+This project is designed, implemented, and evaluated as part of a research study on campus-focused student ecommerce platforms. The architecture and core design principles follow a localized, student-centric approach while extending the concept with enhanced cloud-native features including serverless computing, real-time analytics, and scalable data management using AWS infrastructure.
+
+The platform incorporates comprehensive event logging capturing listing views, user messages, item saves, purchase transactions, and completion confirmations. A/B testing evaluates reputation display variations and social proof mechanisms, measuring outcomes including message volume and user-reported trust scores.
+
 ## Acknowledgments
 
-Built with Next.js, Spring Boot, and modern web technologies.
+Built with Next.js, Spring Boot, AWS serverless technologies, and modern cloud computing practices. This project demonstrates practical implementation of distributed systems, fault tolerance, and scalable cloud architectures.

@@ -9,9 +9,9 @@ import { IconSun, IconMoon, IconX, IconMenu2 } from "@tabler/icons-react";
 
 const navLinks = [
   { href: "/marketplace", label: "Marketplace" },
-  { href: "/upload", label: "Upload Item" },
+  { href: "/questions", label: "Q&A" },
+  { href: "/mentors", label: "Mentors" },
   { href: "/messages", label: "Messages" },
-  { href: "/students-nearby", label: "Students Nearby" },
   { href: "/profile", label: "Profile" },
 ];
 

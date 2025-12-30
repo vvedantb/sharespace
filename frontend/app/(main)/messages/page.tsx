@@ -1,140 +1,173 @@
-import { IconMessageCircle, IconSend } from "@tabler/icons-react";
+"use client";
 
-const dummyUsers = [
-  {
-    id: 1,
-    name: "Alex Johnson",
-    lastMessage: "Is the textbook still available?",
-    time: "2m",
-    unread: true,
-  },
-  {
-    id: 2,
-    name: "Sam Williams",
-    lastMessage: "Thanks! I'll pick it up tomorrow",
-    time: "1h",
-    unread: false,
-  },
-  {
-    id: 3,
-    name: "Jordan Lee",
-    lastMessage: "Can you do £15 for the lamp?",
-    time: "3h",
-    unread: false,
-  },
-  {
-    id: 4,
-    name: "Taylor Brown",
-    lastMessage: "Perfect, see you then!",
-    time: "1d",
-    unread: false,
-  },
-  {
-    id: 5,
-    name: "Morgan Davis",
-    lastMessage: "Is the condition really like new?",
-    time: "2d",
-    unread: false,
-  },
-];
+import { useState } from "react";
+import { IconMessageCircle, IconSend, IconPhoto } from "@tabler/icons-react";
+import { conversations, messages, currentUser } from "@/lib/mock-data";
+import { Avatar } from "@/components/Avatar";
+import { SearchInput } from "@/components/SearchInput";
 
 export default function MessagesPage() {
+  const [search, setSearch] = useState("");
+  const [selectedConversation, setSelectedConversation] = useState(conversations[0]?.id || "");
+  const [newMessage, setNewMessage] = useState("");
+
+  const filteredConversations = conversations.filter((conv) =>
+    conv.participantName.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const currentMessages = messages[selectedConversation] || [];
+  const selectedConv = conversations.find((c) => c.id === selectedConversation);
+
+  const handleSend = () => {
+    if (!newMessage.trim()) return;
+    setNewMessage("");
+  };
+
   return (
-    <div className="px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-black dark:text-white md:text-4xl">
+    <div className="flex h-[calc(100vh-8rem)] flex-col">
+      <div className="mb-4 px-4 pt-4">
+        <h1 className="text-2xl font-bold text-black dark:text-white md:text-3xl">
           Messages
         </h1>
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
+        <p className="mt-1 text-gray-500 dark:text-gray-400">
           Chat with other students about items
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black">
-        <div className="flex flex-col md:flex-row md:h-[600px]">
-          <div className="border-b border-gray-200 dark:border-neutral-800 md:w-80 md:border-b-0 md:border-r">
-            <div className="p-4">
-              <input
-                type="text"
+      <div className="flex-1 overflow-hidden rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black mx-4 mb-4">
+        <div className="flex h-full">
+          <div className="w-80 shrink-0 border-r border-gray-200 dark:border-neutral-800 flex flex-col">
+            <div className="p-3 border-b border-gray-200 dark:border-neutral-800">
+              <SearchInput
+                value={search}
+                onChange={setSearch}
                 placeholder="Search conversations..."
-                className="w-full rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 px-4 py-2 text-sm text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none dark:focus:border-red-600"
               />
             </div>
-            <div className="max-h-64 overflow-y-auto md:max-h-none md:h-[calc(600px-72px)]">
-              {dummyUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className={`flex cursor-pointer items-center gap-3 border-b border-gray-200 dark:border-neutral-800 px-4 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900 ${
-                    user.id === 1 ? "bg-gray-50 dark:bg-neutral-900" : ""
-                  }`}
-                >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-                    <span className="text-lg font-semibold text-red-800 dark:text-red-400">
-                      {user.name.charAt(0)}
-                    </span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="font-medium text-black dark:text-white truncate">
-                        {user.name}
-                      </p>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
-                        {user.time}
-                      </span>
-                    </div>
-                    <p className="truncate text-sm text-gray-500 dark:text-gray-400">
-                      {user.lastMessage}
-                    </p>
-                  </div>
-                  {user.unread && (
-                    <div className="h-2 w-2 shrink-0 rounded-full bg-red-800 dark:bg-red-500" />
-                  )}
+            <div className="flex-1 overflow-y-auto">
+              {filteredConversations.length === 0 ? (
+                <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                  No conversations found
                 </div>
-              ))}
+              ) : (
+                filteredConversations.map((conv) => (
+                  <button
+                    key={conv.id}
+                    onClick={() => setSelectedConversation(conv.id)}
+                    className={`flex w-full items-center gap-3 border-b border-gray-100 dark:border-neutral-800 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900 ${
+                      selectedConversation === conv.id ? "bg-gray-50 dark:bg-neutral-900" : ""
+                    }`}
+                  >
+                    <Avatar name={conv.participantName} size="md" showOnline={conv.unread} />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium text-black dark:text-white truncate">
+                          {conv.participantName}
+                        </p>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">
+                          {conv.lastMessageTime}
+                        </span>
+                      </div>
+                      <p className="truncate text-sm text-gray-500 dark:text-gray-400">
+                        {conv.lastMessage}
+                      </p>
+                      {conv.itemTitle && (
+                        <p className="truncate text-xs text-gray-400 dark:text-gray-500">
+                          Re: {conv.itemTitle}
+                        </p>
+                      )}
+                    </div>
+                    {conv.unread && (
+                      <div className="h-2.5 w-2.5 shrink-0 rounded-full bg-red-800 dark:bg-red-500" />
+                    )}
+                  </button>
+                ))
+              )}
             </div>
           </div>
 
           <div className="flex flex-1 flex-col">
-            <div className="flex items-center gap-3 border-b border-gray-200 dark:border-neutral-800 px-4 py-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
-                <span className="font-semibold text-red-800 dark:text-red-400">
-                  A
-                </span>
-              </div>
-              <div>
-                <p className="font-medium text-black dark:text-white">
-                  Alex Johnson
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">
-                  Online
-                </p>
-              </div>
-            </div>
+            {selectedConv ? (
+              <>
+                <div className="flex items-center gap-3 border-b border-gray-200 dark:border-neutral-800 px-4 py-3">
+                  <Avatar name={selectedConv.participantName} size="md" showOnline />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-black dark:text-white">
+                      {selectedConv.participantName}
+                    </p>
+                    <p className="text-xs text-green-600 dark:text-green-500">Online</p>
+                  </div>
+                  {selectedConv.itemTitle && (
+                    <div className="flex items-center gap-2 rounded-lg bg-gray-100 dark:bg-neutral-800 px-3 py-1.5">
+                      <IconPhoto className="h-4 w-4 text-gray-400" stroke={1.5} />
+                      <span className="text-sm text-gray-600 dark:text-gray-400 truncate max-w-[150px]">
+                        {selectedConv.itemTitle}
+                      </span>
+                    </div>
+                  )}
+                </div>
 
-            <div className="flex flex-1 items-center justify-center p-8">
-              <div className="text-center">
-                <IconMessageCircle
-                  className="mx-auto h-16 w-16 text-gray-300 dark:text-neutral-700"
-                  stroke={1.5}
-                />
-                <p className="mt-4 text-gray-500 dark:text-gray-400">
-                  Select a conversation to start chatting
-                </p>
-              </div>
-            </div>
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {currentMessages.map((msg) => {
+                    const isOwn = msg.senderId === currentUser.id;
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
+                      >
+                        <div
+                          className={`max-w-[70%] rounded-2xl px-4 py-2 ${
+                            isOwn
+                              ? "bg-red-800 text-white dark:bg-red-700"
+                              : "bg-gray-100 dark:bg-neutral-800 text-black dark:text-white"
+                          }`}
+                        >
+                          <p>{msg.content}</p>
+                          <p
+                            className={`mt-1 text-xs ${
+                              isOwn ? "text-red-200" : "text-gray-400 dark:text-gray-500"
+                            }`}
+                          >
+                            {msg.sentAt}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
 
-            <div className="border-t border-gray-200 dark:border-neutral-800 p-4">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Type a message..."
-                  className="flex-1 rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 px-4 py-2 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none dark:focus:border-red-600"
-                />
-                <button className="rounded-xl bg-red-800 px-4 py-2 text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800">
-                  <IconSend className="h-5 w-5" stroke={2} />
-                </button>
+                <div className="border-t border-gray-200 dark:border-neutral-800 p-4">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                      placeholder="Type a message..."
+                      className="flex-1 rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none dark:focus:border-red-600"
+                    />
+                    <button
+                      onClick={handleSend}
+                      className="rounded-xl bg-red-800 px-4 py-2.5 text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800"
+                    >
+                      <IconSend className="h-5 w-5" stroke={2} />
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-1 items-center justify-center">
+                <div className="text-center">
+                  <IconMessageCircle
+                    className="mx-auto h-16 w-16 text-gray-300 dark:text-neutral-700"
+                    stroke={1.5}
+                  />
+                  <p className="mt-4 text-gray-500 dark:text-gray-400">
+                    Select a conversation to start chatting
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
