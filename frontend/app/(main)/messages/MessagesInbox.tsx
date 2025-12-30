@@ -8,7 +8,7 @@ import { Avatar } from "@/components/Avatar";
 import { SearchInput } from "@/components/SearchInput";
 import { messagesSearchParams } from "./searchParams";
 
-export function MessagesClient() {
+export function MessagesInbox() {
   const [{ q, conversation }, setParams] = useQueryStates(messagesSearchParams);
 
   const filteredConversations = useMemo(() => {

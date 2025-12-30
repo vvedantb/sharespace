@@ -7,7 +7,7 @@ import { MentorCard } from "@/components/MentorCard";
 import { SearchInput } from "@/components/SearchInput";
 import { mentorsSearchParams } from "./searchParams";
 
-export function MentorsClient() {
+export function MentorDirectory() {
   const [{ q }, setParams] = useQueryStates(mentorsSearchParams);
 
   const filteredMentors = useMemo(() => {

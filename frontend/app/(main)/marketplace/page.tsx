@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { MarketplaceClient } from "./client";
+import { MarketplaceBrowser } from "./MarketplaceBrowser";
 
 export default function MarketplacePage() {
   return (
     <Suspense>
-      <MarketplaceClient />
+      <MarketplaceBrowser />
     </Suspense>
   );
 }

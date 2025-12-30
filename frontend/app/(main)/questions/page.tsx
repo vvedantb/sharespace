@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { QuestionsClient } from "./client";
+import { QuestionsFeed } from "./QuestionsFeed";
 
 export default function QuestionsPage() {
   return (
     <Suspense>
-      <QuestionsClient />
+      <QuestionsFeed />
     </Suspense>
   );
 }

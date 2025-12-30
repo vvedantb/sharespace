@@ -7,7 +7,7 @@ import { SearchInput } from "@/components/SearchInput";
 import { items, categories } from "@/lib/mock-data";
 import { marketplaceSearchParams } from "./searchParams";
 
-export function MarketplaceClient() {
+export function MarketplaceBrowser() {
   const [{ q, category }, setParams] = useQueryStates(marketplaceSearchParams);
 
   const filteredItems = useMemo(() => {

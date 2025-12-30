@@ -9,7 +9,7 @@ import { QuestionCard } from "@/components/QuestionCard";
 import { SearchInput } from "@/components/SearchInput";
 import { questionsSearchParams } from "./searchParams";
 
-export function QuestionsClient() {
+export function QuestionsFeed() {
   const [{ q }, setParams] = useQueryStates(questionsSearchParams);
 
   const filteredQuestions = useMemo(() => {

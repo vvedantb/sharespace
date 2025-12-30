@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { MentorsClient } from "./client";
+import { MentorDirectory } from "./MentorDirectory";
 
 export default function MentorsPage() {
   return (
     <Suspense>
-      <MentorsClient />
+      <MentorDirectory />
     </Suspense>
   );
 }

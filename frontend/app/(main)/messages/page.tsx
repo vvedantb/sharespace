@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { MessagesClient } from "./client";
+import { MessagesInbox } from "./MessagesInbox";
 
 export default function MessagesPage() {
   return (
     <Suspense>
-      <MessagesClient />
+      <MessagesInbox />
     </Suspense>
   );
 }
