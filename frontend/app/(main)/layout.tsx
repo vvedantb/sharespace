@@ -6,10 +6,10 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-neutral-200 dark:bg-black">
+    <div className="h-screen bg-neutral-200 dark:bg-black flex flex-col">
       <Navbar />
-      <main className="mx-auto min-h-[calc(100vh-5rem)] py-2">
-        <div className="md:px-4 mx-3 md:mx-10 bg-white dark:bg-neutral-900 rounded-2xl">
+      <main className="flex-1 mx-auto py-2 w-full overflow-hidden">
+        <div className="md:px-4 mx-3 md:mx-10 bg-white dark:bg-neutral-900 rounded-2xl h-full overflow-y-auto">
           {children}
         </div>
       </main>
