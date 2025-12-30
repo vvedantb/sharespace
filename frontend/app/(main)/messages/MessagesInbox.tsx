@@ -23,17 +23,7 @@ export function MessagesInbox() {
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col">
-      <div className="mb-4 px-4 pt-4">
-        <h1 className="text-2xl font-bold text-black dark:text-white md:text-3xl">
-          Messages
-        </h1>
-        <p className="mt-1 text-gray-500 dark:text-gray-400">
-          Chat with other students about items
-        </p>
-      </div>
-
-      <div className="flex-1 overflow-hidden rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black mx-4 mb-4">
+    <div className="flex-1 overflow-hidden rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black mx-4 mb-4">
         <div className="flex h-full">
           <div className="w-80 shrink-0 border-r border-gray-200 dark:border-neutral-800 flex flex-col">
             <div className="p-3 border-b border-gray-200 dark:border-neutral-800">
@@ -163,7 +153,6 @@ export function MessagesInbox() {
             )}
           </div>
         </div>
-      </div>
     </div>
   );
 }

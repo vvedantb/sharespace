@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 import {
   IconMessage,
@@ -11,35 +8,33 @@ import {
 import { notifications } from "@/lib/mock-data";
 import { Notification } from "@/lib/types";
 
+function getIcon(type: Notification["type"]) {
+  switch (type) {
+    case "message":
+      return <IconMessage className="h-5 w-5" stroke={1.5} />;
+    case "sale":
+      return <IconShoppingBag className="h-5 w-5" stroke={1.5} />;
+    case "review":
+      return <IconStar className="h-5 w-5" stroke={1.5} />;
+    default:
+      return <IconBell className="h-5 w-5" stroke={1.5} />;
+  }
+}
+
 export default function NotificationsPage() {
-  const [notificationList] = useState(notifications);
-
-  const getIcon = (type: Notification["type"]) => {
-    switch (type) {
-      case "message":
-        return <IconMessage className="h-5 w-5" stroke={1.5} />;
-      case "sale":
-        return <IconShoppingBag className="h-5 w-5" stroke={1.5} />;
-      case "review":
-        return <IconStar className="h-5 w-5" stroke={1.5} />;
-      default:
-        return <IconBell className="h-5 w-5" stroke={1.5} />;
-    }
-  };
-
   return (
     <div className="px-4 py-6">
       <h1 className="text-2xl font-bold text-black dark:text-white">
         Notifications
       </h1>
 
-      {notificationList.length === 0 ? (
+      {notifications.length === 0 ? (
         <div className="py-16 text-center text-gray-500 dark:text-gray-400">
           No notifications
         </div>
       ) : (
         <div className="mt-6 space-y-2">
-          {notificationList.map((notification) => (
+          {notifications.map((notification) => (
             <Link
               key={notification.id}
               href={notification.link || "#"}
