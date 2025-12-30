@@ -1,22 +1,24 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
+import { useQueryStates } from "nuqs";
 import { mentors } from "@/lib/mock-data";
 import { MentorCard } from "@/components/MentorCard";
 import { SearchInput } from "@/components/SearchInput";
+import { mentorsSearchParams } from "./searchParams";
 
 export default function MentorsPage() {
-  const [search, setSearch] = useState("");
+  const [{ q }, setParams] = useQueryStates(mentorsSearchParams);
 
   const filteredMentors = useMemo(() => {
-    if (!search) return mentors;
-    const searchLower = search.toLowerCase();
+    if (!q) return mentors;
+    const searchLower = q.toLowerCase();
     return mentors.filter(
       (m) =>
         m.name.toLowerCase().includes(searchLower) ||
         m.expertise.some((e) => e.toLowerCase().includes(searchLower))
     );
-  }, [search]);
+  }, [q]);
 
   return (
     <div className="px-4 py-6">
@@ -29,8 +31,8 @@ export default function MentorsPage() {
 
       <div className="mt-4">
         <SearchInput
-          value={search}
-          onChange={setSearch}
+          value={q}
+          onChange={(value) => setParams({ q: value || null })}
           placeholder="Search by name or expertise..."
         />
       </div>

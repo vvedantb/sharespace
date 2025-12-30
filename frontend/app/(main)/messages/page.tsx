@@ -1,27 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo } from "react";
+import { useQueryStates } from "nuqs";
 import { IconMessageCircle, IconSend, IconPhoto } from "@tabler/icons-react";
 import { conversations, messages, currentUser } from "@/lib/mock-data";
 import { Avatar } from "@/components/Avatar";
 import { SearchInput } from "@/components/SearchInput";
+import { messagesSearchParams } from "./searchParams";
 
 export default function MessagesPage() {
-  const [search, setSearch] = useState("");
-  const [selectedConversation, setSelectedConversation] = useState(conversations[0]?.id || "");
-  const [newMessage, setNewMessage] = useState("");
+  const [{ q, conversation }, setParams] = useQueryStates(messagesSearchParams);
 
-  const filteredConversations = conversations.filter((conv) =>
-    conv.participantName.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredConversations = useMemo(() => {
+    if (!q) return conversations;
+    return conversations.filter((conv) =>
+      conv.participantName.toLowerCase().includes(q.toLowerCase())
+    );
+  }, [q]);
 
+  const selectedConversation = conversation || conversations[0]?.id || "";
   const currentMessages = messages[selectedConversation] || [];
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
-
-  const handleSend = () => {
-    if (!newMessage.trim()) return;
-    setNewMessage("");
-  };
 
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col">
@@ -39,8 +38,8 @@ export default function MessagesPage() {
           <div className="w-80 shrink-0 border-r border-gray-200 dark:border-neutral-800 flex flex-col">
             <div className="p-3 border-b border-gray-200 dark:border-neutral-800">
               <SearchInput
-                value={search}
-                onChange={setSearch}
+                value={q}
+                onChange={(value) => setParams({ q: value || null })}
                 placeholder="Search conversations..."
               />
             </div>
@@ -53,7 +52,7 @@ export default function MessagesPage() {
                 filteredConversations.map((conv) => (
                   <button
                     key={conv.id}
-                    onClick={() => setSelectedConversation(conv.id)}
+                    onClick={() => setParams({ conversation: conv.id })}
                     className={`flex w-full items-center gap-3 border-b border-gray-100 dark:border-neutral-800 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900 ${
                       selectedConversation === conv.id ? "bg-gray-50 dark:bg-neutral-900" : ""
                     }`}
@@ -140,16 +139,10 @@ export default function MessagesPage() {
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && handleSend()}
                       placeholder="Type a message..."
                       className="flex-1 rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none dark:focus:border-red-600"
                     />
-                    <button
-                      onClick={handleSend}
-                      className="rounded-xl bg-red-800 px-4 py-2.5 text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800"
-                    >
+                    <button className="rounded-xl bg-red-800 px-4 py-2.5 text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800">
                       <IconSend className="h-5 w-5" stroke={2} />
                     </button>
                   </div>

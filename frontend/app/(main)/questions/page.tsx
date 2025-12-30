@@ -1,24 +1,26 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
+import { useQueryStates } from "nuqs";
 import { IconPlus } from "@tabler/icons-react";
 import { questions } from "@/lib/mock-data";
 import { QuestionCard } from "@/components/QuestionCard";
 import { SearchInput } from "@/components/SearchInput";
+import { questionsSearchParams } from "./searchParams";
 
 export default function QuestionsPage() {
-  const [search, setSearch] = useState("");
+  const [{ q }, setParams] = useQueryStates(questionsSearchParams);
 
   const filteredQuestions = useMemo(() => {
-    if (!search) return questions;
-    const searchLower = search.toLowerCase();
+    if (!q) return questions;
+    const searchLower = q.toLowerCase();
     return questions.filter(
-      (q) =>
-        q.title.toLowerCase().includes(searchLower) ||
-        q.content.toLowerCase().includes(searchLower)
+      (question) =>
+        question.title.toLowerCase().includes(searchLower) ||
+        question.content.toLowerCase().includes(searchLower)
     );
-  }, [search]);
+  }, [q]);
 
   return (
     <div className="px-4 py-6">
@@ -37,8 +39,8 @@ export default function QuestionsPage() {
 
       <div className="mt-4">
         <SearchInput
-          value={search}
-          onChange={setSearch}
+          value={q}
+          onChange={(value) => setParams({ q: value || null })}
           placeholder="Search questions..."
         />
       </div>

@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
+import { useQueryStates } from "nuqs";
 import { ItemCard } from "@/components/ItemCard";
 import { SearchInput } from "@/components/SearchInput";
 import { items, categories } from "@/lib/mock-data";
+import { marketplaceSearchParams } from "./searchParams";
 
 export default function MarketplacePage() {
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
+  const [{ q, category }, setParams] = useQueryStates(marketplaceSearchParams);
 
   const filteredItems = useMemo(() => {
     let result = items.filter((item) => item.status === "active");
 
-    if (search) {
-      const searchLower = search.toLowerCase();
+    if (q) {
+      const searchLower = q.toLowerCase();
       result = result.filter(
         (item) =>
           item.title.toLowerCase().includes(searchLower) ||
@@ -26,7 +27,7 @@ export default function MarketplacePage() {
     }
 
     return result;
-  }, [search, category]);
+  }, [q, category]);
 
   return (
     <div className="px-4 py-6">
@@ -36,8 +37,8 @@ export default function MarketplacePage() {
 
       <div className="mt-4">
         <SearchInput
-          value={search}
-          onChange={setSearch}
+          value={q}
+          onChange={(value) => setParams({ q: value || null })}
           placeholder="Search items..."
         />
       </div>
@@ -46,7 +47,7 @@ export default function MarketplacePage() {
         {categories.map((cat) => (
           <button
             key={cat.value}
-            onClick={() => setCategory(cat.value)}
+            onClick={() => setParams({ category: cat.value === "all" ? null : cat.value })}
             className={`shrink-0 rounded-full px-4 py-1.5 text-sm transition-colors ${
               category === cat.value
                 ? "bg-red-800 text-white dark:bg-red-700"
