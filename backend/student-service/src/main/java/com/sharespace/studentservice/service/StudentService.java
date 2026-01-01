@@ -1,5 +1,6 @@
 package com.sharespace.studentservice.service;
 
+import com.sharespace.studentservice.dto.StudentRequestDTO;
 import com.sharespace.studentservice.mapper.StudentMapper;
 import com.sharespace.studentservice.model.Student;
 import com.sharespace.studentservice.repository.StudentRepository;
@@ -19,8 +20,10 @@ public class StudentService {
     public List<StudentResponseDTO> getStudents (){
         List<Student> students = studentRepository.findAll();
 
-        List<StudentResponseDTO> studentResponseDTOs = students.stream().map(student -> StudentMapper.toDTO(student)).toList();
+        return students.stream().map(student -> StudentMapper.toDTO(student)).toList();
+    }
 
-        return studentResponseDTOs;
+    public StudentResponseDTO createStudent(StudentRequestDTO studentRequestDTO) {
+        Student newStudent = studentRepository.save()
     }
 }
