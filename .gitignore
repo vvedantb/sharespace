@@ -1,1 +1,24 @@
 ai-guidance/
+
+# Environment files (contain secrets)
+.env
+.env.local
+.env.*.local
+
+# Java
+*.class
+target/
+*.jar
+*.war
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
