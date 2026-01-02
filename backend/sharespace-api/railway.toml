@@ -1,9 +1,0 @@
-[build]
-builder = "nixpacks"
-
-[deploy]
-startCommand = "java -jar -Dserver.port=$PORT target/sharespace-api-1.0.0.jar"
-healthcheckPath = "/swagger-ui.html"
-healthcheckTimeout = 100
-restartPolicyType = "on_failure"
-restartPolicyMaxRetries = 3
