@@ -1,45 +1,27 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
-const LOCAL_USER_KEY = "sharespace-local-user";
+// Hook for managing user authentication
+export const useLocalUser = () => {
+  const [user, setUser] = useState<string | null>(null);
 
-export function useLocalUser() {
-  const [user, setUser] = useState<any>(null);
-
-  // Load user on mount
   useEffect(() => {
-    const stored = localStorage.getItem(LOCAL_USER_KEY);
-    if (stored) {
-      setUser(JSON.parse(stored));
+    const storedUser = localStorage.getItem("loggedInUser");
+    if (storedUser) {
+      setUser(storedUser);
     }
   }, []);
 
-  const login = () => {
-    const mockUser = {
-      id: "local-user",
-      name: "Local Dev User",
-      email: "dev@localhost",
-    };
-
-    localStorage.setItem(LOCAL_USER_KEY, JSON.stringify(mockUser));
-    setUser(mockUser);
+  const login = (email: string) => {
+    setUser(email);
+    localStorage.setItem("loggedInUser", email); // Persist state in localStorage
   };
 
   const logout = () => {
-    localStorage.removeItem(LOCAL_USER_KEY);
     setUser(null);
+    localStorage.removeItem("loggedInUser");
   };
 
-  const deleteAccount = () => {
-    localStorage.removeItem(LOCAL_USER_KEY);
-    setUser(null);
-    alert("Account deleted (local only)");
-  };
+  const isLoggedIn = !!user;
 
-  return {
-    user,
-    isLoggedIn: !!user,
-    login,
-    logout,
-    deleteAccount,
-  };
-}
+  return { user, isLoggedIn, login, logout };
+};
