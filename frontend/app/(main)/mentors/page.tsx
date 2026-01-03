@@ -1,8 +1,26 @@
-import { serverApi } from "@/lib/api-server";
+import { prisma } from "@/lib/prisma";
 import { MentorDirectory } from "./MentorDirectory";
 
 export default async function MentorsPage() {
-  const mentors = await serverApi.mentors.list();
+  const mentors = await prisma.mentorProfile.findMany({
+    include: { user: true },
+    orderBy: { endorsements: "desc" },
+  });
+
+  const formattedMentors = mentors.map((m) => ({
+    id: m.id,
+    userId: m.userId,
+    name: `${m.user.firstName} ${m.user.lastName}`,
+    university: m.user.university,
+    course: m.user.course,
+    bio: m.bio,
+    expertise: m.expertise,
+    rating: 0,
+    endorsements: m.endorsements,
+    totalAnswers: m.totalAnswers,
+    helpfulAnswers: m.helpfulAnswers,
+    isVerified: m.isVerified,
+  }));
 
   return (
     <div className="px-4 py-6">
@@ -12,7 +30,7 @@ export default async function MentorsPage() {
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Get help from experienced students
       </p>
-      <MentorDirectory initialMentors={mentors} />
+      <MentorDirectory initialMentors={formattedMentors} />
     </div>
   );
 }

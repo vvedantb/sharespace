@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useQueryStates } from "nuqs";
-import { api } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { Mentor } from "@/lib/types";
 import { MentorCard } from "@/components/MentorCard";
 import { SearchInput } from "@/components/SearchInput";
@@ -14,27 +13,19 @@ interface MentorDirectoryProps {
 
 export function MentorDirectory({ initialMentors }: MentorDirectoryProps) {
   const [{ q }, setParams] = useQueryStates(mentorsSearchParams);
-  const [mentors, setMentors] = useState(initialMentors);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!q) {
-      setMentors(initialMentors);
-      return;
-    }
-    const fetchMentors = async () => {
-      setLoading(true);
-      try {
-        const data = await api.mentors.list(q || undefined);
-        setMentors(data);
-      } catch (error) {
-        console.error("Failed to fetch mentors:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMentors();
-  }, [q, initialMentors]);
+  const { data: mentors = initialMentors, isLoading: loading } = useQuery({
+    queryKey: ["mentors", { q }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (q) params.set("search", q);
+      const res = await fetch(`/api/mentors?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch mentors");
+      return res.json() as Promise<Mentor[]>;
+    },
+    enabled: !!q,
+    placeholderData: initialMentors,
+  });
 
   return (
     <>

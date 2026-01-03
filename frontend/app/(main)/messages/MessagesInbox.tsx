@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQueryStates } from "nuqs";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { IconMessageCircle, IconSend, IconPhoto } from "@tabler/icons-react";
-import { api } from "@/lib/api";
 import { Conversation, Message } from "@/lib/types";
 import { Avatar } from "@/components/Avatar";
 import { SearchInput } from "@/components/SearchInput";
@@ -18,25 +18,33 @@ interface MessagesInboxProps {
 export function MessagesInbox({ initialConversations }: MessagesInboxProps) {
   const [{ q, conversation }, setParams] = useQueryStates(messagesSearchParams);
   const [conversations] = useState(initialConversations);
-  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
   const selectedConversation = conversation || conversations[0]?.id || "";
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
 
-  useEffect(() => {
-    if (!selectedConversation) return;
-    const fetchMessages = async () => {
-      try {
-        const data = await api.conversations.getMessages(selectedConversation);
-        setMessages(data);
-        api.conversations.markAllRead(selectedConversation).catch(() => {});
-      } catch (error) {
-        console.error("Failed to fetch messages:", error);
-      }
-    };
-    fetchMessages();
-  }, [selectedConversation]);
+  const { data: messages = [] } = useQuery({
+    queryKey: ["messages", selectedConversation],
+    queryFn: async () => {
+      const res = await fetch(`/api/conversations/${selectedConversation}/messages`);
+      if (!res.ok) throw new Error("Failed to fetch messages");
+      fetch(`/api/conversations/${selectedConversation}/read`, { method: "PUT" }).catch(() => {});
+      return res.json() as Promise<Message[]>;
+    },
+    enabled: !!selectedConversation,
+  });
+
+  const sendMessageMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const res = await fetch(`/api/conversations/${selectedConversation}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      if (!res.ok) throw new Error("Failed to send message");
+      return res.json() as Promise<Message>;
+    },
+  });
 
   const filteredConversations = q
     ? conversations.filter((conv) =>
@@ -44,15 +52,11 @@ export function MessagesInbox({ initialConversations }: MessagesInboxProps) {
       )
     : conversations;
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedConversation) return;
-    try {
-      const msg = await api.conversations.sendMessage(selectedConversation, newMessage);
-      setMessages((prev) => [...prev, msg]);
-      setNewMessage("");
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    }
+    sendMessageMutation.mutate(newMessage, {
+      onSuccess: () => setNewMessage(""),
+    });
   };
 
   return (

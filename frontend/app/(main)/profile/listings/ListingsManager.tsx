@@ -9,7 +9,7 @@ import {
   IconEye,
   IconHeart,
 } from "@tabler/icons-react";
-import { api } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
 import { Item } from "@/lib/types";
 import { Tabs } from "@/components/Tabs";
 import { Badge } from "@/components/Badge";
@@ -24,8 +24,8 @@ export function ListingsManager({ initialListings }: ListingsManagerProps) {
   const [listings, setListings] = useState(initialListings);
   const [activeTab, setActiveTab] = useState("active");
 
-  const activeListings = listings.filter((item) => item.status === "active");
-  const soldListings = listings.filter((item) => item.status === "sold");
+  const activeListings = listings.filter((item) => item.status === "ACTIVE");
+  const soldListings = listings.filter((item) => item.status === "SOLD");
 
   const tabs = [
     { id: "active", label: "Active", count: activeListings.length },
@@ -35,14 +35,17 @@ export function ListingsManager({ initialListings }: ListingsManagerProps) {
   const displayedListings =
     activeTab === "active" ? activeListings : soldListings;
 
-  const handleDelete = async (id: string) => {
-    try {
-      await api.items.delete(id);
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/items/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete item");
+    },
+    onSuccess: (_, id) => {
       setListings(listings.filter((item) => item.id !== id));
-    } catch (error) {
-      console.error("Failed to delete item:", error);
-    }
-  };
+    },
+  });
+
+  const handleDelete = (id: string) => deleteMutation.mutate(id);
 
   return (
     <div className="px-4 py-8">

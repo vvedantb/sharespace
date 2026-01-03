@@ -3,7 +3,8 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IconCloudUpload, IconX, IconPhoto } from "@tabler/icons-react";
-import { api, categories, conditions } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
+import { categories, conditions } from "@/lib/constants";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -16,7 +17,31 @@ export default function UploadPage() {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [courseCode, setCourseCode] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const uploadImagesMutation = useMutation({
+    mutationFn: async (files: File[]) => {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("files", file));
+      const res = await fetch("/api/images/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error("Failed to upload images");
+      return res.json() as Promise<string[]>;
+    },
+  });
+
+  const createItemMutation = useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const res = await fetch("/api/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create item");
+      return res.json();
+    },
+    onSuccess: () => router.push("/marketplace"),
+  });
+
+  const isSubmitting = uploadImagesMutation.isPending || createItemMutation.isPending;
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -42,29 +67,21 @@ export default function UploadPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
 
-    try {
-      let imageUrls: string[] = [];
-      if (imageFiles.length > 0) {
-        imageUrls = await api.images.upload(imageFiles);
-      }
-
-      await api.items.create({
-        title,
-        description,
-        price: parseFloat(price),
-        category: category as "textbooks" | "electronics" | "furniture" | "clothing" | "notes" | "other",
-        condition: condition as "new" | "like-new" | "good" | "fair" | "poor",
-        images: imageUrls,
-        courseCode: courseCode || undefined,
-      });
-
-      router.push("/marketplace");
-    } catch (error) {
-      console.error("Failed to create item:", error);
-      setIsSubmitting(false);
+    let imageUrls: string[] = [];
+    if (imageFiles.length > 0) {
+      imageUrls = await uploadImagesMutation.mutateAsync(imageFiles);
     }
+
+    createItemMutation.mutate({
+      title,
+      description,
+      price: parseFloat(price),
+      category,
+      condition,
+      images: imageUrls,
+      courseCode: courseCode || undefined,
+    });
   };
 
   const isFormValid = title && category && condition && price && description;

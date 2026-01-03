@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useQueryStates } from "nuqs";
+import { useQuery } from "@tanstack/react-query";
 import { ItemCard } from "@/components/ItemCard";
 import { SearchInput } from "@/components/SearchInput";
-import { api, categories } from "@/lib/api";
+import { categories } from "@/lib/constants";
 import { Item } from "@/lib/types";
 import { marketplaceSearchParams } from "./searchParams";
 
@@ -16,30 +16,20 @@ interface MarketplaceBrowserProps {
 
 export function MarketplaceBrowser({ initialItems }: MarketplaceBrowserProps) {
   const [{ q, category }, setParams] = useQueryStates(marketplaceSearchParams);
-  const [items, setItems] = useState(initialItems);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!q && !category) {
-      setItems(initialItems);
-      return;
-    }
-    const fetchItems = async () => {
-      setLoading(true);
-      try {
-        const data = await api.items.list({
-          category: category !== "all" ? category : undefined,
-          search: q || undefined,
-        });
-        setItems(data);
-      } catch (error) {
-        console.error("Failed to fetch items:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchItems();
-  }, [q, category, initialItems]);
+  const { data: items = initialItems, isLoading: loading } = useQuery({
+    queryKey: ["items", { q, category }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (q) params.set("search", q);
+      if (category && category !== "all") params.set("category", category);
+      const res = await fetch(`/api/items?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch items");
+      return res.json() as Promise<Item[]>;
+    },
+    enabled: !!(q || category),
+    placeholderData: initialItems,
+  });
 
   return (
     <>

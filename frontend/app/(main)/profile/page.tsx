@@ -1,18 +1,29 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import {
   IconUser,
   IconSettings,
   IconPhoto,
   IconChevronRight,
 } from "@tabler/icons-react";
-import { serverApi } from "@/lib/api-server";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import Image from "next/image";
 
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
-
 export default async function ProfilePage() {
-  const user = await serverApi.users.get(CURRENT_USER_ID);
-  const listings = await serverApi.users.getListings(CURRENT_USER_ID);
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const listings = await prisma.item.findMany({
+    where: { sellerId: user.id },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const itemsListed = listings.length;
+  const itemsSold = listings.filter((i) => i.status === "SOLD").length;
 
   return (
     <div className="px-4 py-6">
@@ -40,7 +51,7 @@ export default async function ProfilePage() {
             {user.firstName} {user.lastName}
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {user.course} · Year {user.yearOfStudy}
+            {user.course || "No course"} · Year {user.yearOfStudy || "-"}
           </p>
         </div>
       </div>
@@ -48,19 +59,19 @@ export default async function ProfilePage() {
       <div className="mt-6 grid grid-cols-3 gap-4">
         <div className="rounded-xl bg-gray-50 dark:bg-neutral-900 p-4 text-center">
           <p className="text-xl font-bold text-black dark:text-white">
-            {user.itemsListed}
+            {itemsListed}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Listed</p>
         </div>
         <div className="rounded-xl bg-gray-50 dark:bg-neutral-900 p-4 text-center">
           <p className="text-xl font-bold text-black dark:text-white">
-            {user.itemsSold}
+            {itemsSold}
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Sold</p>
         </div>
         <div className="rounded-xl bg-gray-50 dark:bg-neutral-900 p-4 text-center">
           <p className="text-xl font-bold text-black dark:text-white">
-            {user.rating ? user.rating.toFixed(1) : "-"}
+            -
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Rating</p>
         </div>
@@ -133,7 +144,7 @@ export default async function ProfilePage() {
                     {item.title}
                   </p>
                   <p className="text-sm font-bold text-red-800 dark:text-red-500">
-                    £{item.price.toFixed(2)}
+                    £{Number(item.price).toFixed(2)}
                   </p>
                 </div>
               </div>

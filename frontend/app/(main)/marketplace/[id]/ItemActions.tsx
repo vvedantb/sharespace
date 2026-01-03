@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { IconHeart, IconMessageCircle } from "@tabler/icons-react";
-import { api } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
 
 interface ItemActionsProps {
   itemId: string;
@@ -13,18 +13,17 @@ interface ItemActionsProps {
 export function ItemActions({ itemId, sellerId }: ItemActionsProps) {
   const [isSaved, setIsSaved] = useState(false);
 
-  const handleSave = async () => {
-    try {
-      if (isSaved) {
-        await api.items.unsave(itemId);
-      } else {
-        await api.items.save(itemId);
-      }
-      setIsSaved(!isSaved);
-    } catch (error) {
-      console.error("Failed to save item:", error);
-    }
-  };
+  const saveMutation = useMutation({
+    mutationFn: async (saved: boolean) => {
+      const res = await fetch(`/api/items/${itemId}/${saved ? "unsave" : "save"}`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error("Failed to save item");
+    },
+    onSuccess: () => setIsSaved(!isSaved),
+  });
+
+  const handleSave = () => saveMutation.mutate(isSaved);
 
   return (
     <div className="mt-6 flex gap-3">

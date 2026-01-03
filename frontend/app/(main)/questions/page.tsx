@@ -1,10 +1,27 @@
 import Link from "next/link";
 import { IconPlus } from "@tabler/icons-react";
-import { serverApi } from "@/lib/api-server";
+import { prisma } from "@/lib/prisma";
 import { QuestionsFeed } from "./QuestionsFeed";
 
 export default async function QuestionsPage() {
-  const questions = await serverApi.questions.list();
+  const questions = await prisma.question.findMany({
+    include: { asker: true, _count: { select: { answers: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const formattedQuestions = questions.map((q) => ({
+    id: q.id,
+    askerId: q.askerId,
+    askerName: `${q.asker.firstName} ${q.asker.lastName}`,
+    title: q.title,
+    content: q.content,
+    category: q.category,
+    courseCode: q.courseCode,
+    status: q.status,
+    answerCount: q._count.answers,
+    createdAt: q.createdAt.toISOString(),
+  }));
+
   return (
     <div className="px-4 py-6">
       <div className="flex items-center justify-between">
@@ -17,7 +34,7 @@ export default async function QuestionsPage() {
           Ask
         </Link>
       </div>
-      <QuestionsFeed initialQuestions={questions} />
+      <QuestionsFeed initialQuestions={formattedQuestions} />
     </div>
   );
 }

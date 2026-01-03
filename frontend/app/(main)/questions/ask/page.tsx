@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { api } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
+import { questionCategories } from "@/lib/constants";
 
 export default function AskQuestionPage() {
   const router = useRouter();
@@ -11,30 +12,40 @@ export default function AskQuestionPage() {
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
   const [courseCode, setCourseCode] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const categories = [
-    { value: "academic", label: "Academic", description: "Course content, assignments, exams" },
-    { value: "student-life", label: "Student Life", description: "Campus life, accommodation, social" },
-    { value: "course-advice", label: "Course Advice", description: "Module selection, career paths" },
-    { value: "textbook-recommendation", label: "Textbook Recommendation", description: "Books and resources" },
-  ];
+  const categories = questionCategories.map((c) => ({
+    value: c.value,
+    label: c.label,
+    description:
+      c.value === "ACADEMIC" ? "Course content, assignments, exams" :
+      c.value === "STUDENT_LIFE" ? "Campus life, accommodation, social" :
+      c.value === "COURSE_ADVICE" ? "Module selection, career paths" :
+      "Books and resources",
+  }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await api.questions.create({
-        title,
-        content,
-        category,
-        courseCode: courseCode || undefined,
+  const createQuestionMutation = useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const res = await fetch("/api/questions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
-      router.push("/questions");
-    } catch (error) {
-      console.error("Failed to create question:", error);
-      setIsSubmitting(false);
-    }
+      if (!res.ok) throw new Error("Failed to create question");
+      return res.json();
+    },
+    onSuccess: () => router.push("/questions"),
+  });
+
+  const isSubmitting = createQuestionMutation.isPending;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createQuestionMutation.mutate({
+      title,
+      content,
+      category,
+      courseCode: courseCode || undefined,
+    });
   };
 
   const isFormValid = title && content && category;

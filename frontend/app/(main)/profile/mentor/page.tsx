@@ -3,14 +3,28 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconArrowLeft, IconSchool, IconPlus, IconX } from "@tabler/icons-react";
-import { api } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
 
 export default function MentorApplicationPage() {
   const router = useRouter();
   const [bio, setBio] = useState("");
   const [expertise, setExpertise] = useState<string[]>([]);
   const [newExpertise, setNewExpertise] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const createMentorMutation = useMutation({
+    mutationFn: async (data: { bio: string; expertise: string[] }) => {
+      const res = await fetch("/api/mentors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("Failed to create mentor profile");
+      return res.json();
+    },
+    onSuccess: () => router.push("/profile"),
+  });
+
+  const isSubmitting = createMentorMutation.isPending;
 
   const addExpertise = () => {
     if (newExpertise.trim() && expertise.length < 6) {
@@ -23,16 +37,9 @@ export default function MentorApplicationPage() {
     setExpertise(expertise.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await api.mentors.create({ bio, expertise });
-      router.push("/profile");
-    } catch (error) {
-      console.error("Failed to create mentor profile:", error);
-      setIsSubmitting(false);
-    }
+    createMentorMutation.mutate({ bio, expertise });
   };
 
   const isFormValid = bio.length >= 50 && expertise.length >= 2;

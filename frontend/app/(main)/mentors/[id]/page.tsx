@@ -1,16 +1,18 @@
 import Link from "next/link";
-import { IconArrowLeft, IconMessageCircle } from "@tabler/icons-react";
-import { serverApi } from "@/lib/api-server";
+import { IconMessageCircle } from "@tabler/icons-react";
+import { prisma } from "@/lib/prisma";
 import { Avatar } from "@/components/Avatar";
 import { BackButton } from "@/components/BackButton";
 
 export default async function MentorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  let mentor;
-  try {
-    mentor = await serverApi.mentors.get(id);
-  } catch {
+  const mentor = await prisma.mentorProfile.findUnique({
+    where: { id },
+    include: { user: true },
+  });
+
+  if (!mentor) {
     return (
       <div className="px-4 py-8 text-center">
         <h1 className="text-xl font-bold text-black dark:text-white">
@@ -23,24 +25,26 @@ export default async function MentorDetailPage({ params }: { params: Promise<{ i
     );
   }
 
+  const name = `${mentor.user.firstName} ${mentor.user.lastName}`;
+
   return (
     <div className="px-4 py-6">
       <BackButton />
 
       <div className="flex items-center gap-4">
-        <Avatar name={mentor.name} size="xl" />
+        <Avatar name={name} size="xl" />
         <div>
           <h1 className="text-xl font-bold text-black dark:text-white">
-            {mentor.name}
+            {name}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400">{mentor.course}</p>
-          <p className="text-sm text-gray-400 dark:text-gray-500">{mentor.university}</p>
+          <p className="text-gray-500 dark:text-gray-400">{mentor.user.course}</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">{mentor.user.university}</p>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-4">
         <div className="text-center">
-          <p className="text-xl font-bold text-black dark:text-white">{mentor.rating}★</p>
+          <p className="text-xl font-bold text-black dark:text-white">-</p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Rating</p>
         </div>
         <div className="text-center">

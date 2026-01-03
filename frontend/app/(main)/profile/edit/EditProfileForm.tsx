@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconUser, IconArrowLeft } from "@tabler/icons-react";
-import { api } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
 import { User } from "@/lib/types";
 import { BackButton } from "@/components/BackButton";
 
@@ -15,29 +15,36 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
   const router = useRouter();
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
-  const [username, setUsername] = useState(user.username);
-  const [bio, setBio] = useState(user.bio);
-  const [course, setCourse] = useState(user.course);
-  const [yearOfStudy, setYearOfStudy] = useState(user.yearOfStudy.toString());
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [username, setUsername] = useState(user.username ?? "");
+  const [bio, setBio] = useState(user.bio ?? "");
+  const [course, setCourse] = useState(user.course ?? "");
+  const [yearOfStudy, setYearOfStudy] = useState((user.yearOfStudy ?? 1).toString());
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await api.users.update(user.id, {
-        firstName,
-        lastName,
-        username,
-        bio,
-        course,
-        yearOfStudy: parseInt(yearOfStudy),
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const res = await fetch(`/api/users/${user.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
-      router.push("/profile");
-    } catch (error) {
-      console.error("Failed to update profile:", error);
-      setIsSubmitting(false);
-    }
+      if (!res.ok) throw new Error("Failed to update profile");
+      return res.json();
+    },
+    onSuccess: () => router.push("/profile"),
+  });
+
+  const isSubmitting = updateProfileMutation.isPending;
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateProfileMutation.mutate({
+      firstName,
+      lastName,
+      username,
+      bio,
+      course,
+      yearOfStudy: parseInt(yearOfStudy),
+    });
   };
 
   return (

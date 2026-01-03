@@ -1,25 +1,27 @@
 import Link from "next/link";
 import { IconPhoto } from "@tabler/icons-react";
-import { serverApi } from "@/lib/api-server";
+import { prisma } from "@/lib/prisma";
 import { Avatar } from "@/components/Avatar";
 import { BackButton } from "@/components/BackButton";
 import { ItemActions } from "./ItemActions";
 
 const conditionLabels: Record<string, string> = {
-  new: "New",
-  "like-new": "Like New",
-  good: "Good",
-  fair: "Fair",
-  poor: "Poor",
+  NEW: "New",
+  LIKE_NEW: "Like New",
+  GOOD: "Good",
+  FAIR: "Fair",
+  POOR: "Poor",
 };
 
 export default async function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  let item;
-  try {
-    item = await serverApi.items.get(id);
-  } catch {
+  const item = await prisma.item.findUnique({
+    where: { id },
+    include: { seller: true },
+  });
+
+  if (!item) {
     return (
       <div className="px-4 py-8 text-center">
         <h1 className="text-xl font-bold text-black dark:text-white">
@@ -34,6 +36,8 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
       </div>
     );
   }
+
+  const sellerName = `${item.seller.firstName} ${item.seller.lastName}`;
 
   return (
     <div className="px-4 py-6">
@@ -53,7 +57,7 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
             {item.title}
           </h1>
           <p className="mt-2 text-3xl font-bold text-red-800 dark:text-red-500">
-            £{item.price.toFixed(2)}
+            £{Number(item.price).toFixed(2)}
           </p>
 
           <div className="mt-4 flex gap-2 text-sm text-gray-500 dark:text-gray-400">
@@ -67,13 +71,13 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
           </p>
 
           <div className="mt-8 flex items-center gap-3 border-t border-gray-100 dark:border-neutral-800 pt-6">
-            <Avatar name={item.sellerName} size="md" />
+            <Avatar name={sellerName} size="md" />
             <div className="flex-1">
               <p className="font-medium text-black dark:text-white">
-                {item.sellerName}
+                {sellerName}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {item.sellerRating ? `${item.sellerRating.toFixed(1)}★ rating` : "No rating yet"}
+                No rating yet
               </p>
             </div>
           </div>

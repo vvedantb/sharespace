@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useQueryStates } from "nuqs";
-import { api } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { Question } from "@/lib/types";
 import { QuestionCard } from "@/components/QuestionCard";
 import { SearchInput } from "@/components/SearchInput";
@@ -14,27 +13,19 @@ interface QuestionsFeedProps {
 
 export function QuestionsFeed({ initialQuestions }: QuestionsFeedProps) {
   const [{ q }, setParams] = useQueryStates(questionsSearchParams);
-  const [questions, setQuestions] = useState(initialQuestions);
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!q) {
-      setQuestions(initialQuestions);
-      return;
-    }
-    const fetchQuestions = async () => {
-      setLoading(true);
-      try {
-        const data = await api.questions.list({ search: q || undefined });
-        setQuestions(data);
-      } catch (error) {
-        console.error("Failed to fetch questions:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchQuestions();
-  }, [q, initialQuestions]);
+  const { data: questions = initialQuestions, isLoading: loading } = useQuery({
+    queryKey: ["questions", { q }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (q) params.set("search", q);
+      const res = await fetch(`/api/questions?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch questions");
+      return res.json() as Promise<Question[]>;
+    },
+    enabled: !!q,
+    placeholderData: initialQuestions,
+  });
 
   return (
     <>

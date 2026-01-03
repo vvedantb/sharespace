@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { IconSend } from "@tabler/icons-react";
-import { api } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
 import { Answer } from "@/lib/types";
 import { Avatar } from "@/components/Avatar";
 
@@ -13,20 +13,28 @@ interface AnswerFormProps {
 
 export function AnswerForm({ questionId, onAnswerPosted }: AnswerFormProps) {
   const [newAnswer, setNewAnswer] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {
-    if (!newAnswer.trim()) return;
-    setIsSubmitting(true);
-    try {
-      const answer = await api.questions.createAnswer(questionId, newAnswer);
+  const createAnswerMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const res = await fetch(`/api/questions/${questionId}/answers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      });
+      if (!res.ok) throw new Error("Failed to post answer");
+      return res.json() as Promise<Answer>;
+    },
+    onSuccess: (answer) => {
       onAnswerPosted(answer);
       setNewAnswer("");
-    } catch (error) {
-      console.error("Failed to post answer:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    },
+  });
+
+  const isSubmitting = createAnswerMutation.isPending;
+
+  const handleSubmit = () => {
+    if (!newAnswer.trim()) return;
+    createAnswerMutation.mutate(newAnswer);
   };
 
   return (

@@ -1,5 +1,5 @@
 import { CognitoJwtVerifier } from "aws-jwt-verify";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import { prisma } from "./prisma";
 
 const verifier = CognitoJwtVerifier.create({
@@ -11,10 +11,16 @@ const verifier = CognitoJwtVerifier.create({
 export async function getCurrentUser() {
   try {
     const headersList = await headers();
-    const auth = headersList.get("authorization");
-    if (!auth?.startsWith("Bearer ")) return null;
+    const cookieStore = await cookies();
 
-    const token = auth.slice(7);
+    let token = headersList.get("authorization")?.slice(7);
+
+    if (!token) {
+      token = cookieStore.get("accessToken")?.value;
+    }
+
+    if (!token) return null;
+
     const payload = await verifier.verify(token);
 
     return prisma.user.findUnique({

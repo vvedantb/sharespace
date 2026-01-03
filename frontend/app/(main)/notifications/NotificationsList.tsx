@@ -3,16 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { IconMessage, IconShoppingBag, IconStar, IconBell } from "@tabler/icons-react";
-import { api } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
 import { Notification } from "@/lib/types";
 
 function getIcon(type: Notification["type"]) {
   switch (type) {
-    case "message":
+    case "MESSAGE":
       return <IconMessage className="h-5 w-5" stroke={1.5} />;
-    case "sale":
+    case "SALE":
       return <IconShoppingBag className="h-5 w-5" stroke={1.5} />;
-    case "review":
+    case "REVIEW":
       return <IconStar className="h-5 w-5" stroke={1.5} />;
     default:
       return <IconBell className="h-5 w-5" stroke={1.5} />;
@@ -26,16 +26,19 @@ interface NotificationsListProps {
 export function NotificationsList({ initialNotifications }: NotificationsListProps) {
   const [notifications, setNotifications] = useState(initialNotifications);
 
-  const handleMarkRead = async (id: string) => {
-    try {
-      await api.notifications.markRead(id);
+  const markReadMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/notifications/${id}/read`, { method: "PUT" });
+      if (!res.ok) throw new Error("Failed to mark notification as read");
+    },
+    onSuccess: (_, id) => {
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
       );
-    } catch (error) {
-      console.error("Failed to mark notification as read:", error);
-    }
-  };
+    },
+  });
+
+  const handleMarkRead = (id: string) => markReadMutation.mutate(id);
 
   if (notifications.length === 0) {
     return (
