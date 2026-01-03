@@ -9,7 +9,8 @@
       "Bash(pnpm approve-builds:*)",
       "Bash(pnpm exec prisma generate:*)",
       "Bash(pnpm exec tsc:*)",
-      "Bash(pnpm exec prisma:*)"
+      "Bash(pnpm exec prisma:*)",
+      "Bash(dir:*)"
     ]
   }
 }
