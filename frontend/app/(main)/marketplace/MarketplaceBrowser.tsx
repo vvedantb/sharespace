@@ -2,13 +2,14 @@
 
 import { useQueryStates } from "nuqs";
 import { useQuery } from "@tanstack/react-query";
-import { Input, Chip, Spinner } from "@heroui/react";
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { Input, Chip, Spinner, Button, useDisclosure } from "@heroui/react";
+import { IconSearch, IconX, IconPlus } from "@tabler/icons-react";
 import { ItemCard } from "@/components/ItemCard";
 import { categories } from "@/lib/constants";
 import { Item } from "@/lib/types";
 import { marketplaceSearchParams } from "./searchParams";
 import { getItems } from "@/lib/actions/items";
+import { CreateItemModal } from "./CreateItemModal";
 
 const allCategories = [{ value: "all", label: "All" }, ...categories];
 
@@ -18,6 +19,7 @@ interface MarketplaceBrowserProps {
 
 export function MarketplaceBrowser({ initialItems }: MarketplaceBrowserProps) {
   const [{ q, category }, setParams] = useQueryStates(marketplaceSearchParams);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const { data: items = initialItems, isLoading: loading } = useQuery({
     queryKey: ["items", { q, category }],
@@ -31,7 +33,7 @@ export function MarketplaceBrowser({ initialItems }: MarketplaceBrowserProps) {
 
   return (
     <>
-      <div className="mt-4">
+      <div className="mt-4 flex gap-3">
         <Input
           value={q}
           onValueChange={(value) => setParams({ q: value || null })}
@@ -48,7 +50,17 @@ export function MarketplaceBrowser({ initialItems }: MarketplaceBrowserProps) {
           radius="lg"
           classNames={{ inputWrapper: "bg-default-50" }}
         />
+        <Button
+          color="danger"
+          radius="lg"
+          startContent={<IconPlus className="h-5 w-5" stroke={2} />}
+          onPress={onOpen}
+          className="shrink-0"
+        >
+          List Item
+        </Button>
       </div>
+      <CreateItemModal isOpen={isOpen} onOpenChange={onOpenChange} />
 
       <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
         {allCategories.map((cat) => (

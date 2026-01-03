@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQueryStates } from "nuqs";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Avatar, Button, Input, Card, CardBody, Autocomplete, AutocompleteItem } from "@heroui/react";
@@ -21,6 +21,7 @@ interface MessagesInboxProps {
 }
 
 export function MessagesInbox({ initialConversations, currentUserId, initialUserId }: MessagesInboxProps) {
+  const queryClient = useQueryClient();
   const [{ q, conversation }, setParams] = useQueryStates(messagesSearchParams);
   const [conversations, setConversations] = useState(initialConversations);
   const [newMessage, setNewMessage] = useState("");
@@ -42,6 +43,28 @@ export function MessagesInbox({ initialConversations, currentUserId, initialUser
 
   const sendMessageMutation = useMutation({
     mutationFn: (content: string) => sendMessage(selectedConversation, content),
+    onMutate: async (content) => {
+      await queryClient.cancelQueries({ queryKey: ["messages", selectedConversation] });
+      const previous = queryClient.getQueryData<Message[]>(["messages", selectedConversation]);
+      const optimisticMessage: Message = {
+        id: `temp-${Date.now()}`,
+        conversationId: selectedConversation,
+        senderId: currentUserId,
+        content,
+        sentAt: new Date().toISOString(),
+        isRead: false,
+      };
+      queryClient.setQueryData<Message[]>(["messages", selectedConversation], (old) => [...(old || []), optimisticMessage]);
+      return { previous };
+    },
+    onError: (_err, _content, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["messages", selectedConversation], context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages", selectedConversation] });
+    },
   });
 
   const { data: userSearchResults = [] } = useQuery({
@@ -182,12 +205,11 @@ export function MessagesInbox({ initialConversations, currentUserId, initialUser
             {selectedConv ? (
               <>
                 <div className="flex items-center gap-3 border-b border-default-200 px-4 py-3">
-                  <Avatar name={selectedConv.participantName} size="md" color="danger" showFallback isBordered classNames={{ base: "ring-success" }} />
+                  <Avatar name={selectedConv.participantName} size="md" color="danger" showFallback />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-foreground">
                       {selectedConv.participantName}
                     </p>
-                    <p className="text-xs text-success">Online</p>
                   </div>
                   {selectedConv.itemTitle && (
                     <div className="flex items-center gap-2 rounded-lg bg-default-100 px-3 py-1.5">
@@ -199,13 +221,13 @@ export function MessagesInbox({ initialConversations, currentUserId, initialUser
                   )}
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   {messages.map((msg) => {
                     const isOwn = msg.senderId === currentUserId;
                     return (
                       <div
                         key={msg.id}
-                        className={`flex ${isOwn ? "justify-end" : "justify-start"}`}
+                        className={`flex flex-col ${isOwn ? "items-end" : "items-start"}`}
                       >
                         <div
                           className={`max-w-[70%] rounded-2xl px-4 py-2 ${
@@ -215,14 +237,10 @@ export function MessagesInbox({ initialConversations, currentUserId, initialUser
                           }`}
                         >
                           <p>{msg.content}</p>
-                          <p
-                            className={`mt-1 text-xs ${
-                              isOwn ? "text-danger-200" : "text-default-400"
-                            }`}
-                          >
-                            {dayjs(msg.sentAt).fromNow()}
-                          </p>
                         </div>
+                        <p className="mt-1 text-xs text-default-400">
+                          {dayjs(msg.sentAt).fromNow()}
+                        </p>
                       </div>
                     );
                   })}
