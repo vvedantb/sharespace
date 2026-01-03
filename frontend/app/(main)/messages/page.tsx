@@ -4,8 +4,10 @@ import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { MessagesInbox } from "./MessagesInbox";
+import { loadMessagesSearchParams } from "./searchParams";
 
-export default async function MessagesPage() {
+export default async function MessagesPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+  const { user: initialUserId } = await loadMessagesSearchParams(searchParams);
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
@@ -59,7 +61,7 @@ export default async function MessagesPage() {
           <div className="py-16 text-center text-gray-500">Loading...</div>
         }
       >
-        <MessagesInbox initialConversations={formattedConversations} currentUserId={user.id} />
+        <MessagesInbox initialConversations={formattedConversations} currentUserId={user.id} initialUserId={initialUserId || undefined} />
       </Suspense>
     </div>
   );

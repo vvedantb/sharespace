@@ -12,7 +12,8 @@
       "Bash(pnpm exec prisma:*)",
       "Bash(dir:*)",
       "Bash(cat:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "WebSearch"
     ]
   }
 }

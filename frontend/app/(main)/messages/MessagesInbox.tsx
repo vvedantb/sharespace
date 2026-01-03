@@ -1,27 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryStates } from "nuqs";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Avatar, Button, Input, Card, CardBody } from "@heroui/react";
-import { IconMessageCircle, IconSend, IconPhoto, IconSearch, IconX } from "@tabler/icons-react";
+import { Avatar, Button, Input, Card, CardBody, Autocomplete, AutocompleteItem } from "@heroui/react";
+import { IconMessageCircle, IconSend, IconPhoto, IconSearch, IconX, IconUserPlus } from "@tabler/icons-react";
 import { Conversation, Message } from "@/lib/types";
 import { messagesSearchParams } from "./searchParams";
-import { getMessages, sendMessage, markConversationRead } from "@/lib/actions/messages";
+import { getMessages, sendMessage, markConversationRead, getOrCreateConversation } from "@/lib/actions/messages";
+import { searchUsers } from "@/lib/actions/users";
 
 dayjs.extend(relativeTime);
 
 interface MessagesInboxProps {
   initialConversations: Conversation[];
   currentUserId: string;
+  initialUserId?: string;
 }
 
-export function MessagesInbox({ initialConversations, currentUserId }: MessagesInboxProps) {
+export function MessagesInbox({ initialConversations, currentUserId, initialUserId }: MessagesInboxProps) {
   const [{ q, conversation }, setParams] = useQueryStates(messagesSearchParams);
-  const [conversations] = useState(initialConversations);
+  const [conversations, setConversations] = useState(initialConversations);
   const [newMessage, setNewMessage] = useState("");
+  const [showUserSearch, setShowUserSearch] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
 
   const selectedConversation = conversation || conversations[0]?.id || "";
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
@@ -39,6 +43,28 @@ export function MessagesInbox({ initialConversations, currentUserId }: MessagesI
   const sendMessageMutation = useMutation({
     mutationFn: (content: string) => sendMessage(selectedConversation, content),
   });
+
+  const { data: userSearchResults = [] } = useQuery({
+    queryKey: ["userSearch", userSearchQuery],
+    queryFn: () => searchUsers(userSearchQuery),
+    enabled: userSearchQuery.length >= 2,
+  });
+
+  const handleSelectUser = async (userId: string) => {
+    const conv = await getOrCreateConversation(userId);
+    if (!conversations.find((c) => c.id === conv.id)) {
+      setConversations([conv, ...conversations]);
+    }
+    setParams({ conversation: conv.id, user: null });
+    setShowUserSearch(false);
+    setUserSearchQuery("");
+  };
+
+  useEffect(() => {
+    if (initialUserId) {
+      handleSelectUser(initialUserId);
+    }
+  }, []);
 
   const filteredConversations = q
     ? conversations.filter((conv) =>
@@ -58,23 +84,57 @@ export function MessagesInbox({ initialConversations, currentUserId }: MessagesI
       <CardBody className="p-0">
         <div className="flex h-full">
           <div className="w-80 shrink-0 border-r border-default-200 flex flex-col">
-            <div className="p-3 border-b border-default-200">
-              <Input
-                value={q}
-                onValueChange={(value) => setParams({ q: value || null })}
-                placeholder="Search conversations..."
-                startContent={<IconSearch className="h-5 w-5 text-default-400" stroke={2} />}
-                endContent={
-                  q ? (
-                    <button onClick={() => setParams({ q: null })} className="text-default-400 hover:text-default-600">
-                      <IconX className="h-4 w-4" stroke={2} />
-                    </button>
-                  ) : null
-                }
-                variant="bordered"
-                radius="lg"
-                classNames={{ inputWrapper: "bg-default-50" }}
-              />
+            <div className="p-3 border-b border-default-200 space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  value={q}
+                  onValueChange={(value) => setParams({ q: value || null })}
+                  placeholder="Search conversations..."
+                  startContent={<IconSearch className="h-5 w-5 text-default-400" stroke={2} />}
+                  endContent={
+                    q ? (
+                      <button onClick={() => setParams({ q: null })} className="text-default-400 hover:text-default-600">
+                        <IconX className="h-4 w-4" stroke={2} />
+                      </button>
+                    ) : null
+                  }
+                  variant="bordered"
+                  radius="lg"
+                  classNames={{ inputWrapper: "bg-default-50" }}
+                />
+                <Button
+                  isIconOnly
+                  variant={showUserSearch ? "solid" : "bordered"}
+                  color={showUserSearch ? "danger" : "default"}
+                  radius="lg"
+                  onPress={() => setShowUserSearch(!showUserSearch)}
+                >
+                  <IconUserPlus className="h-5 w-5" stroke={2} />
+                </Button>
+              </div>
+              {showUserSearch && (
+                <Autocomplete
+                  placeholder="Search users..."
+                  inputValue={userSearchQuery}
+                  onInputChange={setUserSearchQuery}
+                  onSelectionChange={(key) => key && handleSelectUser(key.toString())}
+                  variant="bordered"
+                  radius="lg"
+                  classNames={{ base: "w-full" }}
+                >
+                  {userSearchResults.map((user) => (
+                    <AutocompleteItem key={user.id} textValue={`${user.firstName} ${user.lastName}`}>
+                      <div className="flex items-center gap-2">
+                        <Avatar name={`${user.firstName} ${user.lastName}`} size="sm" color="danger" showFallback />
+                        <div>
+                          <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
+                          {user.university && <p className="text-xs text-default-400">{user.university}</p>}
+                        </div>
+                      </div>
+                    </AutocompleteItem>
+                  ))}
+                </Autocomplete>
+              )}
             </div>
             <div className="flex-1 overflow-y-auto">
               {filteredConversations.length === 0 ? (
