@@ -3,11 +3,15 @@
 import { useState } from "react";
 import { useQueryStates } from "nuqs";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { Avatar, Button, Input, Card, CardBody } from "@heroui/react";
 import { IconMessageCircle, IconSend, IconPhoto, IconSearch, IconX } from "@tabler/icons-react";
 import { Conversation, Message } from "@/lib/types";
 import { messagesSearchParams } from "./searchParams";
 import { getMessages, sendMessage, markConversationRead } from "@/lib/actions/messages";
+
+dayjs.extend(relativeTime);
 
 interface MessagesInboxProps {
   initialConversations: Conversation[];
@@ -93,7 +97,7 @@ export function MessagesInbox({ initialConversations, currentUserId }: MessagesI
                           {conv.participantName}
                         </p>
                         <span className="text-xs text-default-400 shrink-0">
-                          {conv.lastMessageTime}
+                          {dayjs(conv.lastMessageTime).fromNow()}
                         </span>
                       </div>
                       <p className="truncate text-sm text-default-500">
@@ -156,7 +160,7 @@ export function MessagesInbox({ initialConversations, currentUserId }: MessagesI
                               isOwn ? "text-danger-200" : "text-default-400"
                             }`}
                           >
-                            {msg.sentAt}
+                            {dayjs(msg.sentAt).fromNow()}
                           </p>
                         </div>
                       </div>

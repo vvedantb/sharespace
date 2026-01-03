@@ -1,5 +1,6 @@
 "use server";
 
+import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { Question, Answer } from "@/lib/types";
@@ -28,7 +29,7 @@ export async function getQuestions(params?: { search?: string }): Promise<Questi
     courseCode: q.courseCode,
     status: q.status,
     answerCount: q._count.answers,
-    createdAt: q.createdAt.toISOString(),
+    createdAt: dayjs(q.createdAt).toISOString(),
   }));
 }
 
@@ -80,6 +81,6 @@ export async function createAnswer(questionId: string, content: string): Promise
     content: answer.content,
     helpfulCount: answer.helpfulCount,
     isEndorsed: answer.isEndorsed,
-    createdAt: answer.createdAt.toISOString(),
+    createdAt: dayjs(answer.createdAt).toISOString(),
   };
 }

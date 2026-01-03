@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { MessagesInbox } from "./MessagesInbox";
@@ -34,7 +35,7 @@ export default async function MessagesPage() {
       participantId: otherParticipant.id,
       participantName: `${otherParticipant.firstName} ${otherParticipant.lastName}`,
       lastMessage: lastMessage?.content || null,
-      lastMessageTime: (lastMessage?.sentAt || c.createdAt).toISOString(),
+      lastMessageTime: dayjs(lastMessage?.sentAt || c.createdAt).toISOString(),
       unread: lastMessage
         ? !lastMessage.isRead && lastMessage.senderId !== user.id
         : false,

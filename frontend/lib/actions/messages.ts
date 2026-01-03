@@ -1,5 +1,6 @@
 "use server";
 
+import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { Message } from "@/lib/types";
@@ -15,12 +16,15 @@ export async function getMessages(conversationId: string): Promise<Message[]> {
     conversationId: m.conversationId,
     senderId: m.senderId,
     content: m.content,
-    sentAt: m.sentAt.toISOString(),
+    sentAt: dayjs(m.sentAt).toISOString(),
     isRead: m.isRead,
   }));
 }
 
-export async function sendMessage(conversationId: string, content: string): Promise<Message> {
+export async function sendMessage(
+  conversationId: string,
+  content: string
+): Promise<Message> {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
@@ -37,7 +41,7 @@ export async function sendMessage(conversationId: string, content: string): Prom
     conversationId: message.conversationId,
     senderId: message.senderId,
     content: message.content,
-    sentAt: message.sentAt.toISOString(),
+    sentAt: dayjs(message.sentAt).toISOString(),
     isRead: message.isRead,
   };
 }

@@ -1,7 +1,11 @@
 import Link from "next/link";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { Card, CardBody } from "@heroui/react";
 import { IconMessageCircle } from "@tabler/icons-react";
 import { Question } from "@/lib/types";
+
+dayjs.extend(relativeTime);
 
 interface QuestionCardProps {
   question: Question;
@@ -19,7 +23,7 @@ export function QuestionCard({ question }: QuestionCardProps) {
             {question.content}
           </p>
           <div className="mt-3 flex items-center justify-between text-sm text-gray-500 dark:text-gray-500">
-            <span>{question.askerName} · {question.createdAt}</span>
+            <span>{question.askerName} · {dayjs(question.createdAt).fromNow()}</span>
             <span className="flex items-center gap-1">
               <IconMessageCircle className="h-4 w-4" stroke={1.5} />
               {question.answerCount}

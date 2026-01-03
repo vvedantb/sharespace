@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { ListingsManager } from "./ListingsManager";
@@ -28,7 +29,7 @@ export default async function ProfileListingsPage() {
     university: item.university,
     views: item.views,
     saves: item.saves,
-    createdAt: item.createdAt.toISOString(),
+    createdAt: dayjs(item.createdAt).toISOString(),
   }));
 
   return <ListingsManager initialListings={formattedListings} />;

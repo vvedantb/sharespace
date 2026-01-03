@@ -3,17 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { Avatar, Button, Card, CardBody } from "@heroui/react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Question, Answer } from "@/lib/types";
 import { AnswerForm } from "./AnswerForm";
+
+dayjs.extend(relativeTime);
 
 interface QuestionDetailProps {
   question: Question;
   initialAnswers: Answer[];
 }
 
-export function QuestionDetail({ question, initialAnswers }: QuestionDetailProps) {
+export function QuestionDetail({
+  question,
+  initialAnswers,
+}: QuestionDetailProps) {
   const router = useRouter();
   const [answers, setAnswers] = useState(initialAnswers);
 
@@ -37,7 +44,7 @@ export function QuestionDetail({ question, initialAnswers }: QuestionDetailProps
           {question.title}
         </h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {question.askerName} · {question.createdAt}
+          {question.askerName} · {dayjs(question.createdAt).fromNow()}
         </p>
         <p className="mt-4 text-gray-600 dark:text-gray-300">
           {question.content}
@@ -58,7 +65,12 @@ export function QuestionDetail({ question, initialAnswers }: QuestionDetailProps
                 <Card key={answer.id} className="border border-default-200">
                   <CardBody className="p-4">
                     <div className="flex items-center gap-2">
-                      <Avatar name={answer.mentorName} size="sm" color="danger" showFallback />
+                      <Avatar
+                        name={answer.mentorName}
+                        size="sm"
+                        color="danger"
+                        showFallback
+                      />
                       <Link
                         href={`/mentors/${answer.mentorId}`}
                         className="text-sm font-medium text-black dark:text-white hover:text-danger"
@@ -66,7 +78,7 @@ export function QuestionDetail({ question, initialAnswers }: QuestionDetailProps
                         {answer.mentorName}
                       </Link>
                       <span className="text-xs text-gray-400 dark:text-gray-500">
-                        · {answer.createdAt}
+                        · {dayjs(answer.createdAt).fromNow()}
                       </span>
                     </div>
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
@@ -83,7 +95,10 @@ export function QuestionDetail({ question, initialAnswers }: QuestionDetailProps
         </div>
 
         <div className="mt-6 border-t border-gray-100 dark:border-neutral-800 pt-6">
-          <AnswerForm questionId={question.id} onAnswerPosted={handleAnswerPosted} />
+          <AnswerForm
+            questionId={question.id}
+            onAnswerPosted={handleAnswerPosted}
+          />
         </div>
       </div>
     </div>

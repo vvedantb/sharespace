@@ -1,5 +1,6 @@
 "use server";
 
+import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { Item } from "@/lib/types";
@@ -52,7 +53,7 @@ export async function getItems(params?: {
       views: item.views,
       saves: item.saves,
       isMentorRecommended: item.isMentorRecommended,
-      createdAt: item.createdAt.toISOString(),
+      createdAt: dayjs(item.createdAt).toISOString(),
     };
   });
 }

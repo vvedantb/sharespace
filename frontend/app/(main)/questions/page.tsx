@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { IconPlus } from "@tabler/icons-react";
+import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { QuestionsFeed } from "./QuestionsFeed";
 
@@ -20,7 +21,7 @@ export default async function QuestionsPage() {
     courseCode: q.courseCode,
     status: q.status,
     answerCount: q._count.answers,
-    createdAt: q.createdAt.toISOString(),
+    createdAt: dayjs(q.createdAt).toISOString(),
   }));
 
   return (
@@ -35,7 +36,11 @@ export default async function QuestionsPage() {
           Ask
         </Link>
       </div>
-      <Suspense fallback={<div className="py-16 text-center text-gray-500">Loading...</div>}>
+      <Suspense
+        fallback={
+          <div className="py-16 text-center text-gray-500">Loading...</div>
+        }
+      >
         <QuestionsFeed initialQuestions={formattedQuestions} />
       </Suspense>
     </div>

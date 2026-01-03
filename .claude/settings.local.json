@@ -11,7 +11,8 @@
       "Bash(pnpm exec tsc:*)",
       "Bash(pnpm exec prisma:*)",
       "Bash(dir:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(wc:*)"
     ]
   }
 }

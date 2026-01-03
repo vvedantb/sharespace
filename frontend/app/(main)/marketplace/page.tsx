@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { MarketplaceBrowser } from "./MarketplaceBrowser";
 
@@ -26,7 +27,7 @@ export default async function MarketplacePage() {
     views: item.views,
     saves: item.saves,
     isMentorRecommended: item.isMentorRecommended,
-    createdAt: item.createdAt.toISOString(),
+    createdAt: dayjs(item.createdAt).toISOString(),
   }));
 
   return (

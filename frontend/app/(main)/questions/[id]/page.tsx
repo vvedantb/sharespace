@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { QuestionDetail } from "./QuestionDetail";
 import Link from "next/link";
@@ -43,7 +44,7 @@ export default async function QuestionDetailPage({
     courseCode: question.courseCode,
     status: question.status,
     answerCount: question._count.answers,
-    createdAt: question.createdAt.toISOString(),
+    createdAt: dayjs(question.createdAt).toISOString(),
   };
 
   const formattedAnswers = answers.map((a) => ({
@@ -54,7 +55,7 @@ export default async function QuestionDetailPage({
     content: a.content,
     helpfulCount: a.helpfulCount,
     isEndorsed: a.isEndorsed,
-    createdAt: a.createdAt.toISOString(),
+    createdAt: dayjs(a.createdAt).toISOString(),
   }));
 
   return <QuestionDetail question={formattedQuestion} initialAnswers={formattedAnswers} />;

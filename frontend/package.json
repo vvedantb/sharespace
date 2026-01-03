@@ -30,6 +30,7 @@
     "autoprefixer": "^10.4.20",
     "aws-jwt-verify": "^5.1.1",
     "babel-plugin-react-compiler": "^1.0.0",
+    "dayjs": "^1.11.19",
     "dotenv": "^17.2.3",
     "eslint": "^9.38.0",
     "eslint-config-next": "16.0.0",
