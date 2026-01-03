@@ -3,13 +3,21 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconArrowLeft, IconSchool, IconPlus, IconX } from "@tabler/icons-react";
+import { useMutation } from "@tanstack/react-query";
+import { createMentor } from "@/lib/actions/mentors";
 
 export default function MentorApplicationPage() {
   const router = useRouter();
   const [bio, setBio] = useState("");
   const [expertise, setExpertise] = useState<string[]>([]);
   const [newExpertise, setNewExpertise] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const createMentorMutation = useMutation({
+    mutationFn: createMentor,
+    onSuccess: () => router.push("/profile"),
+  });
+
+  const isSubmitting = createMentorMutation.isPending;
 
   const addExpertise = () => {
     if (newExpertise.trim() && expertise.length < 6) {
@@ -24,11 +32,7 @@ export default function MentorApplicationPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      router.push("/profile");
-    }, 1500);
+    createMentorMutation.mutate({ bio, expertise });
   };
 
   const isFormValid = bio.length >= 50 && expertise.length >= 2;

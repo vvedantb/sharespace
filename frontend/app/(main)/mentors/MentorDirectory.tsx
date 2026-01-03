@@ -1,24 +1,26 @@
 "use client";
 
-import { useMemo } from "react";
 import { useQueryStates } from "nuqs";
-import { mentors } from "@/lib/mock-data";
+import { useQuery } from "@tanstack/react-query";
+import { Mentor } from "@/lib/types";
 import { MentorCard } from "@/components/MentorCard";
 import { SearchInput } from "@/components/SearchInput";
 import { mentorsSearchParams } from "./searchParams";
+import { getMentors } from "@/lib/actions/mentors";
 
-export function MentorDirectory() {
+interface MentorDirectoryProps {
+  initialMentors: Mentor[];
+}
+
+export function MentorDirectory({ initialMentors }: MentorDirectoryProps) {
   const [{ q }, setParams] = useQueryStates(mentorsSearchParams);
 
-  const filteredMentors = useMemo(() => {
-    if (!q) return mentors;
-    const searchLower = q.toLowerCase();
-    return mentors.filter(
-      (m) =>
-        m.name.toLowerCase().includes(searchLower) ||
-        m.expertise.some((e) => e.toLowerCase().includes(searchLower))
-    );
-  }, [q]);
+  const { data: mentors = initialMentors, isLoading: loading } = useQuery({
+    queryKey: ["mentors", { q }],
+    queryFn: () => getMentors(q || undefined),
+    enabled: !!q,
+    placeholderData: initialMentors,
+  });
 
   return (
     <>
@@ -30,13 +32,17 @@ export function MentorDirectory() {
         />
       </div>
 
-      {filteredMentors.length === 0 ? (
+      {loading ? (
+        <div className="py-16 text-center text-gray-500 dark:text-gray-400">
+          Loading...
+        </div>
+      ) : mentors.length === 0 ? (
         <div className="py-16 text-center text-gray-500 dark:text-gray-400">
           No mentors found
         </div>
       ) : (
         <div className="mt-6 grid gap-3 md:grid-cols-2">
-          {filteredMentors.map((mentor) => (
+          {mentors.map((mentor) => (
             <MentorCard key={mentor.id} mentor={mentor} />
           ))}
         </div>

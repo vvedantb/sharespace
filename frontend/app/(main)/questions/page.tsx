@@ -1,9 +1,28 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { IconPlus } from "@tabler/icons-react";
+import { prisma } from "@/lib/prisma";
 import { QuestionsFeed } from "./QuestionsFeed";
 
-export default function QuestionsPage() {
+export default async function QuestionsPage() {
+  const questions = await prisma.question.findMany({
+    include: { asker: true, _count: { select: { answers: true } } },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const formattedQuestions = questions.map((q) => ({
+    id: q.id,
+    askerId: q.askerId,
+    askerName: `${q.asker.firstName} ${q.asker.lastName}`,
+    title: q.title,
+    content: q.content,
+    category: q.category,
+    courseCode: q.courseCode,
+    status: q.status,
+    answerCount: q._count.answers,
+    createdAt: q.createdAt.toISOString(),
+  }));
+
   return (
     <div className="px-4 py-6">
       <div className="flex items-center justify-between">
@@ -16,8 +35,8 @@ export default function QuestionsPage() {
           Ask
         </Link>
       </div>
-      <Suspense>
-        <QuestionsFeed />
+      <Suspense fallback={<div className="py-16 text-center text-gray-500">Loading...</div>}>
+        <QuestionsFeed initialQuestions={formattedQuestions} />
       </Suspense>
     </div>
   );

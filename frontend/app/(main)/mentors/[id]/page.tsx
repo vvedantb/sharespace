@@ -1,17 +1,16 @@
-"use client";
-
-import { use } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { IconArrowLeft, IconMessageCircle } from "@tabler/icons-react";
-import { mentors, answers } from "@/lib/mock-data";
+import { IconMessageCircle } from "@tabler/icons-react";
+import { prisma } from "@/lib/prisma";
 import { Avatar } from "@/components/Avatar";
+import { BackButton } from "@/components/BackButton";
 
-export default function MentorDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
-  const router = useRouter();
+export default async function MentorDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
-  const mentor = mentors.find((m) => m.id === id);
+  const mentor = await prisma.mentorProfile.findUnique({
+    where: { id },
+    include: { user: true },
+  });
 
   if (!mentor) {
     return (
@@ -26,35 +25,26 @@ export default function MentorDetailPage({ params }: { params: Promise<{ id: str
     );
   }
 
-  const mentorAnswers = Object.values(answers)
-    .flat()
-    .filter((a) => a.mentorId === mentor.id)
-    .slice(0, 3);
+  const name = `${mentor.user.firstName} ${mentor.user.lastName}`;
 
   return (
     <div className="px-4 py-6">
-      <button
-        onClick={() => router.back()}
-        className="mb-4 flex items-center gap-1 text-sm text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white"
-      >
-        <IconArrowLeft className="h-4 w-4" stroke={2} />
-        Back
-      </button>
+      <BackButton />
 
       <div className="flex items-center gap-4">
-        <Avatar name={mentor.name} size="xl" />
+        <Avatar name={name} size="xl" />
         <div>
           <h1 className="text-xl font-bold text-black dark:text-white">
-            {mentor.name}
+            {name}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400">{mentor.course}</p>
-          <p className="text-sm text-gray-400 dark:text-gray-500">{mentor.university}</p>
+          <p className="text-gray-500 dark:text-gray-400">{mentor.user.course}</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">{mentor.user.university}</p>
         </div>
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-4">
         <div className="text-center">
-          <p className="text-xl font-bold text-black dark:text-white">{mentor.rating}★</p>
+          <p className="text-xl font-bold text-black dark:text-white">-</p>
           <p className="text-xs text-gray-500 dark:text-gray-400">Rating</p>
         </div>
         <div className="text-center">
@@ -86,26 +76,6 @@ export default function MentorDetailPage({ params }: { params: Promise<{ id: str
         <IconMessageCircle className="h-5 w-5" stroke={2} />
         Message
       </Link>
-
-      {mentorAnswers.length > 0 && (
-        <div className="mt-8">
-          <h2 className="font-medium text-black dark:text-white">Recent Answers</h2>
-          <div className="mt-3 space-y-3">
-            {mentorAnswers.map((answer) => (
-              <Link key={answer.id} href={`/questions/${answer.questionId}`}>
-                <div className="rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black p-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                    {answer.content}
-                  </p>
-                  <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-                    {answer.helpfulCount} found helpful
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

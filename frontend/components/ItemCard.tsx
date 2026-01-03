@@ -12,7 +12,7 @@ export function ItemCard({ item }: ItemCardProps) {
       <div className="group overflow-hidden rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black transition-all hover:border-gray-300 dark:hover:border-neutral-700">
         <div className="relative aspect-square bg-gray-50 dark:bg-neutral-900 flex items-center justify-center">
           <IconPhoto className="h-12 w-12 text-gray-300 dark:text-neutral-700" stroke={1.5} />
-          {item.status === "sold" && (
+          {item.status === "SOLD" && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
               <span className="text-sm font-medium text-white">Sold</span>
             </div>

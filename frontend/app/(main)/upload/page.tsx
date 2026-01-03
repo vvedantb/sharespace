@@ -1,38 +1,79 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { IconCloudUpload, IconX, IconPhoto } from "@tabler/icons-react";
-import { categories, conditions } from "@/lib/mock-data";
+import { useMutation } from "@tanstack/react-query";
+import { categories, conditions } from "@/lib/constants";
+import { createItem } from "@/lib/actions/items";
+import { uploadImages } from "@/lib/actions/images";
 
 export default function UploadPage() {
   const router = useRouter();
-  const [images, setImages] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [condition, setCondition] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [courseCode, setCourseCode] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleImageUpload = () => {
-    if (images.length < 5) {
-      setImages([...images, `image-${images.length + 1}`]);
+  const uploadImagesMutation = useMutation({
+    mutationFn: async (files: File[]) => {
+      const formData = new FormData();
+      files.forEach((file) => formData.append("files", file));
+      return uploadImages(formData);
+    },
+  });
+
+  const createItemMutation = useMutation({
+    mutationFn: createItem,
+    onSuccess: () => router.push("/marketplace"),
+  });
+
+  const isSubmitting = uploadImagesMutation.isPending || createItemMutation.isPending;
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newFiles: File[] = [];
+    const newPreviews: string[] = [];
+
+    for (let i = 0; i < files.length && imageFiles.length + newFiles.length < 5; i++) {
+      newFiles.push(files[i]);
+      newPreviews.push(URL.createObjectURL(files[i]));
     }
+
+    setImageFiles([...imageFiles, ...newFiles]);
+    setImagePreviews([...imagePreviews, ...newPreviews]);
   };
 
   const removeImage = (index: number) => {
-    setImages(images.filter((_, i) => i !== index));
+    URL.revokeObjectURL(imagePreviews[index]);
+    setImageFiles(imageFiles.filter((_, i) => i !== index));
+    setImagePreviews(imagePreviews.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      router.push("/marketplace");
-    }, 1000);
+
+    let imageUrls: string[] = [];
+    if (imageFiles.length > 0) {
+      imageUrls = await uploadImagesMutation.mutateAsync(imageFiles);
+    }
+
+    createItemMutation.mutate({
+      title,
+      description,
+      price: parseFloat(price),
+      category,
+      condition,
+      images: imageUrls,
+      courseCode: courseCode || undefined,
+    });
   };
 
   const isFormValid = title && category && condition && price && description;
@@ -53,15 +94,21 @@ export default function UploadPage() {
           <label className="mb-2 block text-sm font-medium text-black dark:text-white">
             Item Images (up to 5)
           </label>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            accept="image/*"
+            multiple
+            className="hidden"
+          />
           <div className="grid grid-cols-5 gap-3">
-            {images.map((_, index) => (
+            {imagePreviews.map((preview, index) => (
               <div
                 key={index}
                 className="relative aspect-square rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-900 overflow-hidden"
               >
-                <div className="flex h-full items-center justify-center">
-                  <IconPhoto className="h-8 w-8 text-gray-300 dark:text-neutral-600" stroke={1.5} />
-                </div>
+                <img src={preview} alt="" className="h-full w-full object-cover" />
                 <button
                   type="button"
                   onClick={() => removeImage(index)}
@@ -71,10 +118,10 @@ export default function UploadPage() {
                 </button>
               </div>
             ))}
-            {images.length < 5 && (
+            {imagePreviews.length < 5 && (
               <button
                 type="button"
-                onClick={handleImageUpload}
+                onClick={() => fileInputRef.current?.click()}
                 className="aspect-square rounded-xl border-2 border-dashed border-gray-300 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 flex items-center justify-center transition-colors hover:border-red-800 hover:bg-red-50 dark:hover:border-red-600 dark:hover:bg-red-900/20"
               >
                 <IconCloudUpload className="h-6 w-6 text-gray-400 dark:text-gray-500" stroke={1.5} />
@@ -110,7 +157,7 @@ export default function UploadPage() {
               className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
             >
               <option value="">Select category</option>
-              {categories.filter(c => c.value !== "all").map((cat) => (
+              {categories.map((cat) => (
                 <option key={cat.value} value={cat.value}>
                   {cat.label}
                 </option>
@@ -128,7 +175,7 @@ export default function UploadPage() {
               className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
             >
               <option value="">Select condition</option>
-              {conditions.filter(c => c.value !== "all").map((cond) => (
+              {conditions.map((cond) => (
                 <option key={cond.value} value={cond.value}>
                   {cond.label}
                 </option>

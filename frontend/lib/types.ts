@@ -1,11 +1,11 @@
-export type Category = "textbooks" | "electronics" | "furniture" | "clothing" | "notes" | "other";
-export type Condition = "new" | "like-new" | "good" | "fair" | "poor";
-export type ItemStatus = "active" | "sold" | "removed";
+export type Category = "TEXTBOOKS" | "ELECTRONICS" | "FURNITURE" | "CLOTHING" | "NOTES" | "OTHER";
+export type Condition = "NEW" | "LIKE_NEW" | "GOOD" | "FAIR" | "POOR";
+export type ItemStatus = "ACTIVE" | "SOLD" | "REMOVED";
 
 export interface Item {
   id: string;
   title: string;
-  description: string;
+  description: string | null;
   price: number;
   category: Category;
   condition: Condition;
@@ -13,13 +13,13 @@ export interface Item {
   images: string[];
   sellerId: string;
   sellerName: string;
-  sellerRating: number;
-  university: string;
-  courseCode?: string;
+  sellerRating?: number;
+  university?: string | null;
+  courseCode?: string | null;
   createdAt: string;
   views: number;
   saves: number;
-  isMentorRecommended: boolean;
+  isMentorRecommended?: boolean;
 }
 
 export interface User {
@@ -27,28 +27,28 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  username: string;
-  university: string;
-  course: string;
-  yearOfStudy: number;
-  bio: string;
-  rating: number;
-  itemsListed: number;
-  itemsSold: number;
-  isMentor: boolean;
-  isVerified: boolean;
-  createdAt: string;
+  username: string | null;
+  university: string | null;
+  course: string | null;
+  yearOfStudy: number | null;
+  bio: string | null;
+  rating?: number;
+  itemsListed?: number;
+  itemsSold?: number;
+  isMentor?: boolean;
+  isVerified?: boolean;
+  createdAt?: string;
 }
 
 export interface Conversation {
   id: string;
   participantId: string;
   participantName: string;
-  lastMessage: string;
+  lastMessage: string | null;
   lastMessageTime: string;
   unread: boolean;
-  itemId?: string;
-  itemTitle?: string;
+  itemId?: string | null;
+  itemTitle?: string | null;
 }
 
 export interface Message {
@@ -64,9 +64,9 @@ export interface Mentor {
   id: string;
   userId: string;
   name: string;
-  university: string;
-  course: string;
-  bio: string;
+  university: string | null;
+  course: string | null;
+  bio: string | null;
   expertise: string[];
   rating: number;
   endorsements: number;
@@ -75,15 +75,18 @@ export interface Mentor {
   isVerified: boolean;
 }
 
+export type QuestionCategory = "ACADEMIC" | "STUDENT_LIFE" | "COURSE_ADVICE" | "TEXTBOOK_RECOMMENDATION";
+export type QuestionStatus = "OPEN" | "ANSWERED" | "CLOSED";
+
 export interface Question {
   id: string;
   title: string;
   content: string;
   askerId: string;
   askerName: string;
-  category: "academic" | "student-life" | "course-advice" | "textbook-recommendation";
-  courseCode?: string;
-  status: "open" | "answered" | "closed";
+  category: QuestionCategory;
+  courseCode?: string | null;
+  status: QuestionStatus;
   createdAt: string;
   answerCount: number;
 }
@@ -108,12 +111,14 @@ export interface Review {
   createdAt: string;
 }
 
+export type NotificationType = "MESSAGE" | "SALE" | "QUESTION" | "ANSWER" | "ENDORSEMENT" | "REVIEW";
+
 export interface Notification {
   id: string;
-  type: "message" | "sale" | "question" | "answer" | "endorsement" | "review";
+  type: NotificationType;
   title: string;
-  description: string;
+  description: string | null;
   isRead: boolean;
   createdAt: string;
-  link?: string;
+  link?: string | null;
 }

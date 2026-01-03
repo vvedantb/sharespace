@@ -1,26 +1,55 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState } from "react";
 import { useQueryStates } from "nuqs";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { IconMessageCircle, IconSend, IconPhoto } from "@tabler/icons-react";
-import { conversations, messages, currentUser } from "@/lib/mock-data";
+import { Conversation, Message } from "@/lib/types";
 import { Avatar } from "@/components/Avatar";
 import { SearchInput } from "@/components/SearchInput";
 import { messagesSearchParams } from "./searchParams";
+import { getMessages, sendMessage, markConversationRead } from "@/lib/actions/messages";
 
-export function MessagesInbox() {
+const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
+
+interface MessagesInboxProps {
+  initialConversations: Conversation[];
+}
+
+export function MessagesInbox({ initialConversations }: MessagesInboxProps) {
   const [{ q, conversation }, setParams] = useQueryStates(messagesSearchParams);
-
-  const filteredConversations = useMemo(() => {
-    if (!q) return conversations;
-    return conversations.filter((conv) =>
-      conv.participantName.toLowerCase().includes(q.toLowerCase())
-    );
-  }, [q]);
+  const [conversations] = useState(initialConversations);
+  const [newMessage, setNewMessage] = useState("");
 
   const selectedConversation = conversation || conversations[0]?.id || "";
-  const currentMessages = messages[selectedConversation] || [];
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
+
+  const { data: messages = [] } = useQuery({
+    queryKey: ["messages", selectedConversation],
+    queryFn: async () => {
+      const data = await getMessages(selectedConversation);
+      markConversationRead(selectedConversation).catch(() => {});
+      return data;
+    },
+    enabled: !!selectedConversation,
+  });
+
+  const sendMessageMutation = useMutation({
+    mutationFn: (content: string) => sendMessage(selectedConversation, content),
+  });
+
+  const filteredConversations = q
+    ? conversations.filter((conv) =>
+        conv.participantName.toLowerCase().includes(q.toLowerCase())
+      )
+    : conversations;
+
+  const handleSendMessage = () => {
+    if (!newMessage.trim() || !selectedConversation) return;
+    sendMessageMutation.mutate(newMessage, {
+      onSuccess: () => setNewMessage(""),
+    });
+  };
 
   return (
     <div className="flex-1 overflow-hidden rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black mx-4 mb-4">
@@ -97,8 +126,8 @@ export function MessagesInbox() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {currentMessages.map((msg) => {
-                    const isOwn = msg.senderId === currentUser.id;
+                  {messages.map((msg) => {
+                    const isOwn = msg.senderId === CURRENT_USER_ID;
                     return (
                       <div
                         key={msg.id}
@@ -129,10 +158,16 @@ export function MessagesInbox() {
                   <div className="flex gap-2">
                     <input
                       type="text"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                       placeholder="Type a message..."
                       className="flex-1 rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none dark:focus:border-red-600"
                     />
-                    <button className="rounded-xl bg-red-800 px-4 py-2.5 text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800">
+                    <button
+                      onClick={handleSendMessage}
+                      className="rounded-xl bg-red-800 px-4 py-2.5 text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800"
+                    >
                       <IconSend className="h-5 w-5" stroke={2} />
                     </button>
                   </div>

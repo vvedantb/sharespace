@@ -1,24 +1,26 @@
 "use client";
 
-import { useMemo } from "react";
 import { useQueryStates } from "nuqs";
-import { questions } from "@/lib/mock-data";
+import { useQuery } from "@tanstack/react-query";
+import { Question } from "@/lib/types";
 import { QuestionCard } from "@/components/QuestionCard";
 import { SearchInput } from "@/components/SearchInput";
 import { questionsSearchParams } from "./searchParams";
+import { getQuestions } from "@/lib/actions/questions";
 
-export function QuestionsFeed() {
+interface QuestionsFeedProps {
+  initialQuestions: Question[];
+}
+
+export function QuestionsFeed({ initialQuestions }: QuestionsFeedProps) {
   const [{ q }, setParams] = useQueryStates(questionsSearchParams);
 
-  const filteredQuestions = useMemo(() => {
-    if (!q) return questions;
-    const searchLower = q.toLowerCase();
-    return questions.filter(
-      (question) =>
-        question.title.toLowerCase().includes(searchLower) ||
-        question.content.toLowerCase().includes(searchLower)
-    );
-  }, [q]);
+  const { data: questions = initialQuestions, isLoading: loading } = useQuery({
+    queryKey: ["questions", { q }],
+    queryFn: () => getQuestions({ search: q || undefined }),
+    enabled: !!q,
+    placeholderData: initialQuestions,
+  });
 
   return (
     <>
@@ -30,13 +32,17 @@ export function QuestionsFeed() {
         />
       </div>
 
-      {filteredQuestions.length === 0 ? (
+      {loading ? (
+        <div className="py-16 text-center text-gray-500 dark:text-gray-400">
+          Loading...
+        </div>
+      ) : questions.length === 0 ? (
         <div className="py-16 text-center text-gray-500 dark:text-gray-400">
           No questions found
         </div>
       ) : (
         <div className="mt-6 space-y-3">
-          {filteredQuestions.map((question) => (
+          {questions.map((question) => (
             <QuestionCard key={question.id} question={question} />
           ))}
         </div>
