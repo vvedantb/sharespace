@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { getCurrentSession, signOut as cognitoSignOut } from "@/lib/cognito";
+import { setAuthCookie, clearAuthCookie } from "@/lib/cookies";
 import { User } from "@/lib/types";
 
 interface AuthContextType {
@@ -21,6 +23,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -31,25 +34,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!session) {
         setUser(null);
         setAccessToken(null);
+        clearAuthCookie();
         return;
       }
 
       const token = session.getAccessToken().getJwtToken();
       setAccessToken(token);
+      setAuthCookie(token);
 
       const response = await fetch("/api/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
+        setUser(await response.json());
       } else {
         setUser(null);
       }
     } catch {
       setUser(null);
       setAccessToken(null);
+      clearAuthCookie();
     } finally {
       setIsLoading(false);
     }
@@ -61,8 +66,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = () => {
     cognitoSignOut();
+    clearAuthCookie();
     setUser(null);
     setAccessToken(null);
+    router.push("/login");
   };
 
   return (
