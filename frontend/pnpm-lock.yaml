@@ -78,7 +78,7 @@ importers:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
       react-hook-form:
-        specifier: ^7.69.0
+        specifier: ^7.56.1
         version: 7.69.0(react@19.2.0)
       tailwind-merge:
         specifier: ^2.5.5
@@ -87,8 +87,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.18)
       zod:
-        specifier: ^4.3.4
-        version: 4.3.4
+        specifier: ^3.25.67
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^20
@@ -3906,9 +3906,6 @@ packages:
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
-
-  zod@4.3.4:
-    resolution: {integrity: sha512-Zw/uYiiyF6pUT1qmKbZziChgNPRu+ZRneAsMUDU6IwmXdWt5JwcUfy2bvLOCUtz5UniaN/Zx5aFttZYbYc7O/A==}
 
 snapshots:
 
@@ -7839,8 +7836,8 @@ snapshots:
       '@babel/parser': 7.28.5
       eslint: 9.39.1(jiti@1.21.7)
       hermes-parser: 0.25.1
-      zod: 4.3.4
-      zod-validation-error: 4.0.2(zod@4.3.4)
+      zod: 3.25.76
+      zod-validation-error: 4.0.2(zod@3.25.76)
     transitivePeerDependencies:
       - supports-color
 
@@ -9219,10 +9216,8 @@ snapshots:
     dependencies:
       zod: 3.25.76
 
-  zod-validation-error@4.0.2(zod@4.3.4):
+  zod-validation-error@4.0.2(zod@3.25.76):
     dependencies:
-      zod: 4.3.4
+      zod: 3.25.76
 
   zod@3.25.76: {}
-
-  zod@4.3.4: {}
