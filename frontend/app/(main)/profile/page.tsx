@@ -12,31 +12,29 @@ export default async function ProfilePage() {
 
   const listings = await prisma.item.findMany({
     where: { sellerId: user.id },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      title: true,
-      price: true,
-      status: true,
-      images: true,
-    },
+    select: { status: true },
   });
 
-  const serializedListings = listings.map((item) => ({
-    ...item,
-    price: Number(item.price),
-  }));
+  const stats = {
+    itemsListed: listings.length,
+    itemsSold: listings.filter((i) => i.status === "SOLD").length,
+  };
 
   return (
     <ProfileContent
       user={{
+        id: user.id,
+        email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        username: user.username,
         avatarUrl: user.avatarUrl,
+        university: user.university,
         course: user.course,
         yearOfStudy: user.yearOfStudy,
+        bio: user.bio,
       }}
-      listings={serializedListings}
+      stats={stats}
     />
   );
 }
