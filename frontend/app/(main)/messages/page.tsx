@@ -6,7 +6,11 @@ import { getCurrentUser } from "@/lib/auth";
 import { MessagesInbox } from "./MessagesInbox";
 import { loadMessagesSearchParams } from "./searchParams";
 
-export default async function MessagesPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
+export default async function MessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string>>;
+}) {
   const { user: initialUserId } = await loadMessagesSearchParams(searchParams);
   const user = await getCurrentUser();
   if (!user) redirect("/login");
@@ -47,21 +51,20 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
   });
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col">
-      <div className="mb-4 px-4 pt-4">
-        <h1 className="text-2xl font-bold text-black dark:text-white md:text-3xl">
-          Messages
-        </h1>
-        <p className="mt-1 text-gray-500 dark:text-gray-400">
-          Chat with other students about items
-        </p>
-      </div>
+    <div className="flex h-full flex-col gap-4 px-4 py-6">
+      <h1 className="text-2xl font-bold text-black dark:text-white">
+        Messages
+      </h1>
       <Suspense
         fallback={
           <div className="py-16 text-center text-gray-500">Loading...</div>
         }
       >
-        <MessagesInbox initialConversations={formattedConversations} currentUserId={user.id} initialUserId={initialUserId || undefined} />
+        <MessagesInbox
+          initialConversations={formattedConversations}
+          currentUserId={user.id}
+          initialUserId={initialUserId || undefined}
+        />
       </Suspense>
     </div>
   );
