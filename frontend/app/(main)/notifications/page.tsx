@@ -1,11 +1,14 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { NotificationsList } from "./NotificationsList";
 
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
-
 export default async function NotificationsPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
   const notifications = await prisma.notification.findMany({
-    where: { userId: CURRENT_USER_ID },
+    where: { userId: user.id },
     orderBy: { createdAt: "desc" },
   });
 

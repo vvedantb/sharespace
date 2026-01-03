@@ -1,16 +1,10 @@
-import { prisma } from "@/lib/prisma";
 import { EditProfileForm } from "./EditProfileForm";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 export default async function EditProfilePage() {
   const user = await getCurrentUser();
-  const userData = await prisma.user.findUnique({
-    where: { id: user?.id },
-  });
-  if (!user || !userData) {
-    redirect("/login");
-  }
+  if (!user) redirect("/login");
 
   return (
     <EditProfileForm

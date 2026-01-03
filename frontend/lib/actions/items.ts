@@ -1,11 +1,13 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { Item } from "@/lib/types";
 
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
-
-export async function getItems(params?: { search?: string; category?: string }): Promise<Item[]> {
+export async function getItems(params?: {
+  search?: string;
+  category?: string;
+}): Promise<Item[]> {
   const items = await prisma.item.findMany({
     where: {
       status: "ACTIVE",
@@ -51,11 +53,12 @@ export async function createItem(data: {
   images: string[];
   courseCode?: string;
 }) {
-  const user = await prisma.user.findUnique({ where: { id: CURRENT_USER_ID } });
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
 
   return prisma.item.create({
     data: {
-      sellerId: CURRENT_USER_ID,
+      sellerId: user.id,
       title: data.title,
       description: data.description,
       price: data.price,
@@ -63,7 +66,7 @@ export async function createItem(data: {
       condition: data.condition as never,
       images: data.images,
       courseCode: data.courseCode,
-      university: user?.university,
+      university: user.university,
     },
   });
 }

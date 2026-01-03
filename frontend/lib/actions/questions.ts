@@ -1,9 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { Question, Answer } from "@/lib/types";
-
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
 
 export async function getQuestions(params?: { search?: string }): Promise<Question[]> {
   const questions = await prisma.question.findMany({
@@ -39,9 +38,12 @@ export async function createQuestion(data: {
   category: string;
   courseCode?: string;
 }) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
   return prisma.question.create({
     data: {
-      askerId: CURRENT_USER_ID,
+      askerId: user.id,
       title: data.title,
       content: data.content,
       category: data.category as never,
@@ -51,9 +53,11 @@ export async function createQuestion(data: {
 }
 
 export async function createAnswer(questionId: string, content: string): Promise<Answer> {
-  const user = await prisma.user.findUnique({ where: { id: CURRENT_USER_ID } });
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
   const mentorProfile = await prisma.mentorProfile.findFirst({
-    where: { userId: CURRENT_USER_ID },
+    where: { userId: user.id },
   });
 
   if (!mentorProfile) {
@@ -72,7 +76,7 @@ export async function createAnswer(questionId: string, content: string): Promise
     id: answer.id,
     questionId: answer.questionId,
     mentorId: answer.mentorId,
-    mentorName: `${user?.firstName} ${user?.lastName}`,
+    mentorName: `${user.firstName} ${user.lastName}`,
     content: answer.content,
     helpfulCount: answer.helpfulCount,
     isEndorsed: answer.isEndorsed,

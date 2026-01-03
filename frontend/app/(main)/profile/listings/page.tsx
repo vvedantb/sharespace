@@ -1,11 +1,14 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { ListingsManager } from "./ListingsManager";
 
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
-
 export default async function ProfileListingsPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
   const listings = await prisma.item.findMany({
-    where: { sellerId: CURRENT_USER_ID },
+    where: { sellerId: user.id },
     include: { seller: true },
     orderBy: { createdAt: "desc" },
   });

@@ -10,13 +10,12 @@ import { SearchInput } from "@/components/SearchInput";
 import { messagesSearchParams } from "./searchParams";
 import { getMessages, sendMessage, markConversationRead } from "@/lib/actions/messages";
 
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
-
 interface MessagesInboxProps {
   initialConversations: Conversation[];
+  currentUserId: string;
 }
 
-export function MessagesInbox({ initialConversations }: MessagesInboxProps) {
+export function MessagesInbox({ initialConversations, currentUserId }: MessagesInboxProps) {
   const [{ q, conversation }, setParams] = useQueryStates(messagesSearchParams);
   const [conversations] = useState(initialConversations);
   const [newMessage, setNewMessage] = useState("");
@@ -127,7 +126,7 @@ export function MessagesInbox({ initialConversations }: MessagesInboxProps) {
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {messages.map((msg) => {
-                    const isOwn = msg.senderId === CURRENT_USER_ID;
+                    const isOwn = msg.senderId === currentUserId;
                     return (
                       <div
                         key={msg.id}

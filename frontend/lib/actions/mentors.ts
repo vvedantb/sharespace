@@ -1,9 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { Mentor } from "@/lib/types";
-
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
 
 export async function getMentors(search?: string): Promise<Mentor[]> {
   const mentors = await prisma.mentorProfile.findMany({
@@ -37,9 +36,12 @@ export async function getMentors(search?: string): Promise<Mentor[]> {
 }
 
 export async function createMentor(data: { bio: string; expertise: string[] }) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
   return prisma.mentorProfile.create({
     data: {
-      userId: CURRENT_USER_ID,
+      userId: user.id,
       bio: data.bio,
       expertise: data.expertise,
     },

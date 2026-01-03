@@ -1,16 +1,16 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { MessagesInbox } from "./MessagesInbox";
 
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
-
 export default async function MessagesPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
   const conversations = await prisma.conversation.findMany({
     where: {
-      OR: [
-        { participant1Id: CURRENT_USER_ID },
-        { participant2Id: CURRENT_USER_ID },
-      ],
+      OR: [{ participant1Id: user.id }, { participant2Id: user.id }],
     },
     include: {
       participant1: true,
@@ -26,7 +26,7 @@ export default async function MessagesPage() {
 
   const formattedConversations = conversations.map((c) => {
     const otherParticipant =
-      c.participant1Id === CURRENT_USER_ID ? c.participant2 : c.participant1;
+      c.participant1Id === user.id ? c.participant2 : c.participant1;
     const lastMessage = c.messages[0];
 
     return {
@@ -36,7 +36,7 @@ export default async function MessagesPage() {
       lastMessage: lastMessage?.content || null,
       lastMessageTime: (lastMessage?.sentAt || c.createdAt).toISOString(),
       unread: lastMessage
-        ? !lastMessage.isRead && lastMessage.senderId !== CURRENT_USER_ID
+        ? !lastMessage.isRead && lastMessage.senderId !== user.id
         : false,
       itemId: c.itemId,
       itemTitle: c.item?.title || null,
@@ -58,7 +58,7 @@ export default async function MessagesPage() {
           <div className="py-16 text-center text-gray-500">Loading...</div>
         }
       >
-        <MessagesInbox initialConversations={formattedConversations} />
+        <MessagesInbox initialConversations={formattedConversations} currentUserId={user.id} />
       </Suspense>
     </div>
   );

@@ -1,9 +1,8 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { Message } from "@/lib/types";
-
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
 
 export async function getMessages(conversationId: string): Promise<Message[]> {
   const messages = await prisma.message.findMany({
@@ -22,10 +21,13 @@ export async function getMessages(conversationId: string): Promise<Message[]> {
 }
 
 export async function sendMessage(conversationId: string, content: string): Promise<Message> {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
   const message = await prisma.message.create({
     data: {
       conversationId,
-      senderId: CURRENT_USER_ID,
+      senderId: user.id,
       content,
     },
   });
@@ -41,10 +43,13 @@ export async function sendMessage(conversationId: string, content: string): Prom
 }
 
 export async function markConversationRead(conversationId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
   return prisma.message.updateMany({
     where: {
       conversationId,
-      senderId: { not: CURRENT_USER_ID },
+      senderId: { not: user.id },
       isRead: false,
     },
     data: { isRead: true },
