@@ -83,23 +83,15 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-red-800 focus:ring-red-800"
-              />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                Remember me
-              </span>
-            </label>
-            <Link
-              href="/forgot-password"
-              className="text-sm text-red-800 hover:text-red-900 dark:text-red-500 dark:hover:text-red-400"
-            >
-              Forgot password?
-            </Link>
-          </div>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-300 text-red-800 focus:ring-red-800"
+            />
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              Remember me
+            </span>
+          </label>
 
           <button
             type="submit"

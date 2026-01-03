@@ -5,9 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   IconArrowLeft,
   IconBell,
-  IconLock,
   IconPalette,
-  IconTrash,
   IconLogout,
 } from "@tabler/icons-react";
 import { useThemeContext } from "@/components/contexts/ThemeContext";
@@ -140,31 +138,10 @@ export default function SettingsPage() {
         </div>
 
         <div className="rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black overflow-hidden">
-          <div className="flex items-center gap-3 border-b border-gray-200 dark:border-neutral-800 px-6 py-4">
-            <IconLock className="h-5 w-5 text-gray-500 dark:text-gray-400" stroke={1.5} />
-            <h2 className="font-semibold text-black dark:text-white">Security</h2>
-          </div>
-          <div className="p-6 space-y-4">
-            <button className="w-full flex items-center justify-between rounded-xl border border-gray-200 dark:border-neutral-700 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
-              <span className="font-medium text-black dark:text-white">Change Password</span>
-              <span className="text-gray-400 dark:text-gray-500">→</span>
-            </button>
-            <button className="w-full flex items-center justify-between rounded-xl border border-gray-200 dark:border-neutral-700 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
-              <span className="font-medium text-black dark:text-white">Two-Factor Authentication</span>
-              <span className="text-gray-400 dark:text-gray-500">→</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black overflow-hidden">
-          <div className="p-6 space-y-4">
+          <div className="p-6">
             <button className="w-full flex items-center gap-3 rounded-xl border border-gray-200 dark:border-neutral-700 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
               <IconLogout className="h-5 w-5 text-gray-500" stroke={1.5} />
               <span className="font-medium text-black dark:text-white">Sign Out</span>
-            </button>
-            <button className="w-full flex items-center gap-3 rounded-xl border border-red-200 dark:border-red-900 px-4 py-3 text-left hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-              <IconTrash className="h-5 w-5 text-red-600" stroke={1.5} />
-              <span className="font-medium text-red-600">Delete Account</span>
             </button>
           </div>
         </div>
