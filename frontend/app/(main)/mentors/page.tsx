@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { MentorDirectory } from "./MentorDirectory";
 
@@ -30,7 +31,9 @@ export default async function MentorsPage() {
       <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
         Get help from experienced students
       </p>
-      <MentorDirectory initialMentors={formattedMentors} />
+      <Suspense fallback={<div className="py-16 text-center text-gray-500">Loading...</div>}>
+        <MentorDirectory initialMentors={formattedMentors} />
+      </Suspense>
     </div>
   );
 }

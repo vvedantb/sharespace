@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { MessagesInbox } from "./MessagesInbox";
 
@@ -47,7 +48,9 @@ export default async function MessagesPage() {
           Chat with other students about items
         </p>
       </div>
-      <MessagesInbox initialConversations={formattedConversations} />
+      <Suspense fallback={<div className="py-16 text-center text-gray-500">Loading...</div>}>
+        <MessagesInbox initialConversations={formattedConversations} />
+      </Suspense>
     </div>
   );
 }

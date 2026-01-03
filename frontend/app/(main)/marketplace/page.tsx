@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
 import { MarketplaceBrowser } from "./MarketplaceBrowser";
 
@@ -33,7 +34,9 @@ export default async function MarketplacePage() {
       <h1 className="text-2xl font-bold text-black dark:text-white">
         Marketplace
       </h1>
-      <MarketplaceBrowser initialItems={formattedItems} />
+      <Suspense fallback={<div className="py-16 text-center text-gray-500">Loading...</div>}>
+        <MarketplaceBrowser initialItems={formattedItems} />
+      </Suspense>
     </div>
   );
 }

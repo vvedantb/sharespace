@@ -8,29 +8,29 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(uuid())
-  cognitoId   String?   @unique @map("cognito_id")
-  email       String    @unique
-  firstName   String    @map("first_name")
-  lastName    String    @map("last_name")
-  username    String?   @unique
+  id          String   @id @default(uuid())
+  cognitoId   String?  @unique @map("cognito_id")
+  email       String   @unique
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  username    String?  @unique
   university  String?
   course      String?
-  yearOfStudy Int?      @map("year_of_study")
+  yearOfStudy Int?     @map("year_of_study")
   bio         String?
-  isVerified  Boolean   @default(false) @map("is_verified")
-  createdAt   DateTime  @default(now()) @map("created_at")
+  isVerified  Boolean  @default(false) @map("is_verified")
+  createdAt   DateTime @default(now()) @map("created_at")
 
-  items           Item[]          @relation("Seller")
+  items           Item[]         @relation("Seller")
   mentorProfile   MentorProfile?
   questions       Question[]
   answers         Answer[]
-  reviewsGiven    Review[]        @relation("Reviewer")
-  reviewsReceived Review[]        @relation("Reviewee")
+  reviewsGiven    Review[]       @relation("Reviewer")
+  reviewsReceived Review[]       @relation("Reviewee")
   savedItems      SavedItem[]
   notifications   Notification[]
-  conversations1  Conversation[]  @relation("Participant1")
-  conversations2  Conversation[]  @relation("Participant2")
+  conversations1  Conversation[] @relation("Participant1")
+  conversations2  Conversation[] @relation("Participant2")
   messages        Message[]
 
   @@map("users")
@@ -99,14 +99,14 @@ model MentorProfile {
 }
 
 model Conversation {
-  id             String    @id @default(uuid())
-  participant1Id String    @map("participant1_id")
-  participant1   User      @relation("Participant1", fields: [participant1Id], references: [id])
-  participant2Id String    @map("participant2_id")
-  participant2   User      @relation("Participant2", fields: [participant2Id], references: [id])
-  itemId         String?   @map("item_id")
-  item           Item?     @relation(fields: [itemId], references: [id])
-  createdAt      DateTime  @default(now()) @map("created_at")
+  id             String   @id @default(uuid())
+  participant1Id String   @map("participant1_id")
+  participant1   User     @relation("Participant1", fields: [participant1Id], references: [id])
+  participant2Id String   @map("participant2_id")
+  participant2   User     @relation("Participant2", fields: [participant2Id], references: [id])
+  itemId         String?  @map("item_id")
+  item           Item?    @relation(fields: [itemId], references: [id])
+  createdAt      DateTime @default(now()) @map("created_at")
 
   messages Message[]
 

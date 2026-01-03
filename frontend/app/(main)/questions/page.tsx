@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { IconPlus } from "@tabler/icons-react";
 import { prisma } from "@/lib/prisma";
@@ -34,7 +35,9 @@ export default async function QuestionsPage() {
           Ask
         </Link>
       </div>
-      <QuestionsFeed initialQuestions={formattedQuestions} />
+      <Suspense fallback={<div className="py-16 text-center text-gray-500">Loading...</div>}>
+        <QuestionsFeed initialQuestions={formattedQuestions} />
+      </Suspense>
     </div>
   );
 }
