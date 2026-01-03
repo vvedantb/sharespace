@@ -8,7 +8,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconMail, IconLock, IconUser, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { signUp, signIn } from "@/lib/cognito";
-import { useAuth } from "@/components/contexts/AuthContext";
 
 const schema = z
   .object({
@@ -34,7 +33,6 @@ type FormData = z.infer<typeof schema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { refreshAuth } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
@@ -42,9 +40,7 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: FormData) => {
     setError("");
@@ -64,7 +60,6 @@ export default function RegisterPage() {
         }),
       });
 
-      await refreshAuth();
       router.push("/marketplace");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -105,9 +100,7 @@ export default function RegisterPage() {
                   }`}
                 />
               </div>
-              {errors.firstName && (
-                <p className="mt-1 text-xs text-red-500">{errors.firstName.message}</p>
-              )}
+              {errors.firstName && <p className="mt-1 text-xs text-red-500">{errors.firstName.message}</p>}
             </div>
             <div>
               <label className="mb-2 block text-sm font-medium text-black dark:text-white">
@@ -122,9 +115,7 @@ export default function RegisterPage() {
                     : "border-gray-300 dark:border-neutral-700 focus:border-red-800 focus:ring-red-800/20"
                 }`}
               />
-              {errors.lastName && (
-                <p className="mt-1 text-xs text-red-500">{errors.lastName.message}</p>
-              )}
+              {errors.lastName && <p className="mt-1 text-xs text-red-500">{errors.lastName.message}</p>}
             </div>
           </div>
 
@@ -192,9 +183,7 @@ export default function RegisterPage() {
                 }`}
               />
             </div>
-            {errors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-500">{errors.confirmPassword.message}</p>
-            )}
+            {errors.confirmPassword && <p className="mt-1 text-xs text-red-500">{errors.confirmPassword.message}</p>}
           </div>
 
           <button

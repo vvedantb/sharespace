@@ -8,7 +8,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconMail, IconLock, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { signIn } from "@/lib/cognito";
-import { useAuth } from "@/components/contexts/AuthContext";
 
 const schema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email"),
@@ -19,7 +18,6 @@ type FormData = z.infer<typeof schema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const { refreshAuth } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
@@ -27,9 +25,7 @@ export default function LoginPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (data: FormData) => {
     setError("");
@@ -54,7 +50,6 @@ export default function LoginPage() {
         });
       }
 
-      await refreshAuth();
       router.push("/marketplace");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");
