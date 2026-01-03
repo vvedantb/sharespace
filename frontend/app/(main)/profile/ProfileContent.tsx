@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { Avatar, Button, Card, CardBody, Image } from "@heroui/react";
-import { IconSettings, IconPhoto, IconChevronRight } from "@tabler/icons-react";
+import { IconSettings, IconPhoto, IconChevronRight, IconLogout } from "@tabler/icons-react";
+import { signOut } from "@/lib/cognito";
 
 interface ProfileContentProps {
   user: {
@@ -79,6 +80,18 @@ export function ProfileContent({ user, listings }: ProfileContentProps) {
           </CardBody>
         </Card>
       </div>
+
+      <Button
+        variant="bordered"
+        color="danger"
+        radius="lg"
+        fullWidth
+        startContent={<IconLogout className="h-5 w-5" stroke={1.5} />}
+        onPress={signOut}
+        className="mt-8"
+      >
+        Log Out
+      </Button>
 
       <div className="mt-8">
         <div className="flex items-center justify-between">
