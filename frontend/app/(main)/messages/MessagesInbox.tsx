@@ -62,6 +62,7 @@ export function MessagesInbox({
       return data;
     },
     enabled: !!selectedConversation,
+    refetchInterval: 3000,
   });
 
   const sendMessageMutation = useMutation({

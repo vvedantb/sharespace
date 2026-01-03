@@ -22,7 +22,7 @@ import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { categories, conditions } from "@/lib/constants";
 import { createItem } from "@/lib/actions/items";
-import { uploadImages } from "@/lib/actions/images";
+import { uploadMultipleToS3 } from "@/lib/upload";
 
 const itemSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -65,11 +65,7 @@ export function CreateItemModal({ isOpen, onOpenChange }: CreateItemModalProps) 
   });
 
   const uploadImagesMutation = useMutation({
-    mutationFn: async (files: File[]) => {
-      const formData = new FormData();
-      files.forEach((file) => formData.append("files", file));
-      return uploadImages(formData);
-    },
+    mutationFn: (files: File[]) => uploadMultipleToS3(files, "items"),
   });
 
   const createItemMutation = useMutation({
@@ -97,6 +93,10 @@ export function CreateItemModal({ isOpen, onOpenChange }: CreateItemModalProps) 
 
     setImageFiles([...imageFiles, ...newFiles]);
     setImagePreviews([...imagePreviews, ...newPreviews]);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const removeImage = (index: number) => {

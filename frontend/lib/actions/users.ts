@@ -32,6 +32,7 @@ export async function updateUser(
     firstName?: string;
     lastName?: string;
     username?: string;
+    avatarUrl?: string;
     bio?: string;
     course?: string;
     yearOfStudy?: number;

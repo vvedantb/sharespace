@@ -71,7 +71,34 @@ export function getCurrentSession(): Promise<CognitoUserSession | null> {
         resolve(null);
         return;
       }
+      setAuthCookie(session.getAccessToken().getJwtToken());
       resolve(session);
+    });
+  });
+}
+
+export function refreshSession(): Promise<CognitoUserSession | null> {
+  return new Promise((resolve) => {
+    const cognitoUser = userPool.getCurrentUser();
+    if (!cognitoUser) {
+      resolve(null);
+      return;
+    }
+
+    cognitoUser.getSession((err: Error | null, session: CognitoUserSession | null) => {
+      if (err || !session) {
+        resolve(null);
+        return;
+      }
+      const refreshToken = session.getRefreshToken();
+      cognitoUser.refreshSession(refreshToken, (refreshErr, newSession) => {
+        if (refreshErr || !newSession) {
+          resolve(null);
+          return;
+        }
+        setAuthCookie(newSession.getAccessToken().getJwtToken());
+        resolve(newSession);
+      });
     });
   });
 }

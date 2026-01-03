@@ -14,6 +14,7 @@ export default async function EditProfilePage() {
         firstName: user.firstName,
         lastName: user.lastName,
         username: user.username,
+        avatarUrl: user.avatarUrl,
         university: user.university,
         course: user.course,
         yearOfStudy: user.yearOfStudy,

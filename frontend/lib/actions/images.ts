@@ -1,6 +1,7 @@
 "use server";
 
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
 
 const s3 = new S3Client({
@@ -11,25 +12,21 @@ const s3 = new S3Client({
   },
 });
 
-export async function uploadImages(formData: FormData): Promise<string[]> {
-  const files = formData.getAll("files") as File[];
-  const urls: string[] = [];
+export async function getPresignedUrl(
+  filename: string,
+  contentType: string,
+  folder: string = "items"
+): Promise<{ uploadUrl: string; fileUrl: string }> {
+  const key = `${folder}/${randomUUID()}-${filename}`;
 
-  for (const file of files) {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const key = `items/${randomUUID()}-${file.name}`;
+  const command = new PutObjectCommand({
+    Bucket: process.env.S3_BUCKET!,
+    Key: key,
+    ContentType: contentType,
+  });
 
-    await s3.send(
-      new PutObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET!,
-        Key: key,
-        Body: buffer,
-        ContentType: file.type,
-      })
-    );
+  const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
+  const fileUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
-    urls.push(`https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`);
-  }
-
-  return urls;
+  return { uploadUrl, fileUrl };
 }

@@ -28,6 +28,7 @@ export interface User {
   lastName: string;
   email: string;
   username: string | null;
+  avatarUrl: string | null;
   university: string | null;
   course: string | null;
   yearOfStudy: number | null;
