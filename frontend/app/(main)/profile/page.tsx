@@ -6,6 +6,7 @@ import {
   IconChevronRight,
 } from "@tabler/icons-react";
 import { serverApi } from "@/lib/api-server";
+import Image from "next/image";
 
 const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
 
@@ -113,10 +114,12 @@ export default async function ProfilePage() {
               <div className="rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black overflow-hidden">
                 <div className="aspect-square bg-gray-50 dark:bg-neutral-900 flex items-center justify-center">
                   {item.images && item.images.length > 0 ? (
-                    <img
+                    <Image
                       src={item.images[0]}
                       alt={item.title}
                       className="h-full w-full object-cover"
+                      width={80}
+                      height={80}
                     />
                   ) : (
                     <IconPhoto
