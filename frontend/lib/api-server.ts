@@ -1,9 +1,12 @@
 import { Item, User, Conversation, Message, Mentor, Question, Answer, Review, Notification } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+function getBaseUrl() {
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return `http://localhost:${process.env.PORT || 3000}`;
+}
 
 async function fetchApi<T>(endpoint: string): Promise<T> {
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  const res = await fetch(`${getBaseUrl()}${endpoint}`, {
     cache: "no-store",
   });
   if (!res.ok) {

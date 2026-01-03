@@ -4,7 +4,12 @@
       "Bash(npx tsc:*)",
       "Bash(mvn wrapper:wrapper:*)",
       "Bash(find:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm approve-builds:*)",
+      "Bash(pnpm exec prisma generate:*)",
+      "Bash(pnpm exec tsc:*)",
+      "Bash(pnpm exec prisma:*)"
     ]
   }
 }

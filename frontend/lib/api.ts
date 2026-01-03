@@ -1,9 +1,7 @@
 import { Item, User, Conversation, Message, Mentor, Question, Answer, Review, Notification } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
-
 async function fetchApi<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${endpoint}`, {
+  const res = await fetch(endpoint, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -128,7 +126,7 @@ export const api = {
     upload: async (files: File[]) => {
       const formData = new FormData();
       files.forEach((file) => formData.append("files", file));
-      const res = await fetch(`${API_URL}/api/images/upload`, {
+      const res = await fetch("/api/images/upload", {
         method: "POST",
         body: formData,
       });
@@ -141,18 +139,18 @@ export const api = {
 };
 
 export const categories = [
-  { value: "textbooks", label: "Textbooks" },
-  { value: "electronics", label: "Electronics" },
-  { value: "furniture", label: "Furniture" },
-  { value: "clothing", label: "Clothing" },
-  { value: "notes", label: "Notes" },
-  { value: "other", label: "Other" },
+  { value: "TEXTBOOKS", label: "Textbooks" },
+  { value: "ELECTRONICS", label: "Electronics" },
+  { value: "FURNITURE", label: "Furniture" },
+  { value: "CLOTHING", label: "Clothing" },
+  { value: "NOTES", label: "Notes" },
+  { value: "OTHER", label: "Other" },
 ];
 
 export const conditions = [
-  { value: "new", label: "New" },
-  { value: "like-new", label: "Like New" },
-  { value: "good", label: "Good" },
-  { value: "fair", label: "Fair" },
-  { value: "poor", label: "Poor" },
+  { value: "NEW", label: "New" },
+  { value: "LIKE_NEW", label: "Like New" },
+  { value: "GOOD", label: "Good" },
+  { value: "FAIR", label: "Fair" },
+  { value: "POOR", label: "Poor" },
 ];
