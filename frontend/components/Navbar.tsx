@@ -3,24 +3,26 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { Switch } from "@heroui/react";
-import { useThemeContext } from "./contexts/ThemeContext";
-import { IconSun, IconMoon, IconX, IconMenu2 } from "@tabler/icons-react";
+import {
+  IconX,
+  IconMenu2,
+  IconBuildingStore,
+  IconMessageQuestion,
+  IconUsers,
+  IconMessage,
+  IconUser,
+} from "@tabler/icons-react";
 
 const navLinks = [
-  { href: "/marketplace", label: "Marketplace" },
-  { href: "/questions", label: "Q&A" },
-  { href: "/mentors", label: "Mentors" },
-  { href: "/messages", label: "Messages" },
-  { href: "/profile", label: "Profile" },
+  { href: "/marketplace", label: "Marketplace", icon: IconBuildingStore },
+  { href: "/questions", label: "Q&A", icon: IconMessageQuestion },
+  { href: "/mentors", label: "Mentors", icon: IconUsers },
+  { href: "/messages", label: "Messages", icon: IconMessage },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
-  const { theme, toggleTheme, mounted } = useThemeContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const isDark = theme === "dark";
 
   return (
     <nav className="sticky top-0 z-50 bg-neutral-200 dark:bg-black">
@@ -38,37 +40,30 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   pathname === link.href
                     ? "bg-red-800 text-white dark:bg-red-700"
                     : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
                 }`}
               >
+                <link.icon className="h-5 w-5" stroke={2} />
                 {link.label}
               </Link>
             ))}
           </div>
 
           <div className="flex items-center gap-3">
-            {mounted && (
-              <div className="hidden md:flex md:items-center md:gap-2">
-                <IconSun
-                  className="h-4 w-4 text-gray-500 dark:text-gray-400"
-                  stroke={2}
-                />
-                <Switch
-                  isSelected={isDark}
-                  onValueChange={toggleTheme}
-                  size="sm"
-                  color="danger"
-                  aria-label="Toggle dark mode"
-                />
-                <IconMoon
-                  className="h-4 w-4 text-gray-500 dark:text-gray-400"
-                  stroke={2}
-                />
-              </div>
-            )}
+            <Link
+              href="/profile"
+              className={`hidden md:flex rounded-lg p-2 transition-colors ${
+                pathname === "/profile"
+                  ? "bg-red-800 text-white dark:bg-red-700"
+                  : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
+              }`}
+              aria-label="Profile"
+            >
+              <IconUser className="h-6 w-6" stroke={2} />
+            </Link>
 
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -98,42 +93,29 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`block rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                     pathname === link.href
                       ? "bg-red-800 text-white dark:bg-red-700"
                       : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
                   }`}
                 >
+                  <link.icon className="h-5 w-5" stroke={2} />
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/profile"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                  pathname === "/profile"
+                    ? "bg-red-800 text-white dark:bg-red-700"
+                    : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
+                }`}
+              >
+                <IconUser className="h-5 w-5" stroke={2} />
+                Profile
+              </Link>
             </div>
-            {mounted && (
-              <div className="border-t border-neutral-300 dark:border-neutral-800 px-4 py-3">
-                <div className="flex items-center justify-between rounded-lg px-4 py-3">
-                  <div className="flex items-center gap-2 text-sm font-medium text-black dark:text-white">
-                    {isDark ? (
-                      <>
-                        <IconMoon className="h-5 w-5" stroke={2} />
-                        Dark Mode
-                      </>
-                    ) : (
-                      <>
-                        <IconSun className="h-5 w-5" stroke={2} />
-                        Light Mode
-                      </>
-                    )}
-                  </div>
-                  <Switch
-                    isSelected={isDark}
-                    onValueChange={toggleTheme}
-                    size="sm"
-                    color="danger"
-                    aria-label="Toggle dark mode"
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </>
       )}
