@@ -32,6 +32,7 @@ export default async function ProfilePage() {
       user={{
         firstName: user.firstName,
         lastName: user.lastName,
+        avatarUrl: user.avatarUrl,
         course: user.course,
         yearOfStudy: user.yearOfStudy,
       }}

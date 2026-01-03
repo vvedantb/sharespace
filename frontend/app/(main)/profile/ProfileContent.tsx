@@ -9,6 +9,7 @@ interface ProfileContentProps {
   user: {
     firstName: string;
     lastName: string;
+    avatarUrl: string | null;
     course: string | null;
     yearOfStudy: number | null;
   };
@@ -36,7 +37,7 @@ export function ProfileContent({ user, listings }: ProfileContentProps) {
       </div>
 
       <div className="mt-6 flex items-center gap-4">
-        <Avatar name={fullName} size="lg" color="danger" showFallback className="h-16 w-16 text-xl" />
+        <Avatar src={user.avatarUrl ?? undefined} name={fullName} size="lg" color="danger" showFallback className="h-16 w-16 text-xl" />
         <div>
           <h2 className="text-lg font-bold text-foreground">{fullName}</h2>
           <p className="text-sm text-default-500">

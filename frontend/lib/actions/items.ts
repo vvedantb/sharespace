@@ -70,7 +70,7 @@ export async function createItem(data: {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
-  return prisma.item.create({
+  const item = await prisma.item.create({
     data: {
       sellerId: user.id,
       title: data.title,
@@ -83,21 +83,27 @@ export async function createItem(data: {
       university: user.university,
     },
   });
+
+  return {
+    ...item,
+    price: Number(item.price),
+    createdAt: dayjs(item.createdAt).toISOString(),
+  };
 }
 
 export async function deleteItem(id: string) {
-  return prisma.item.delete({ where: { id } });
+  await prisma.item.delete({ where: { id } });
 }
 
 export async function saveItem(id: string) {
-  return prisma.item.update({
+  await prisma.item.update({
     where: { id },
     data: { saves: { increment: 1 } },
   });
 }
 
 export async function unsaveItem(id: string) {
-  return prisma.item.update({
+  await prisma.item.update({
     where: { id },
     data: { saves: { decrement: 1 } },
   });
