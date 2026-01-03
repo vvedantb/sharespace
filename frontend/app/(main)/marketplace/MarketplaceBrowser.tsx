@@ -7,6 +7,7 @@ import { SearchInput } from "@/components/SearchInput";
 import { categories } from "@/lib/constants";
 import { Item } from "@/lib/types";
 import { marketplaceSearchParams } from "./searchParams";
+import { getItems } from "@/lib/actions/items";
 
 const allCategories = [{ value: "all", label: "All" }, ...categories];
 
@@ -19,14 +20,10 @@ export function MarketplaceBrowser({ initialItems }: MarketplaceBrowserProps) {
 
   const { data: items = initialItems, isLoading: loading } = useQuery({
     queryKey: ["items", { q, category }],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (q) params.set("search", q);
-      if (category && category !== "all") params.set("category", category);
-      const res = await fetch(`/api/items?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch items");
-      return res.json() as Promise<Item[]>;
-    },
+    queryFn: () => getItems({
+      search: q || undefined,
+      category: category && category !== "all" ? category : undefined,
+    }),
     enabled: !!(q || category),
     placeholderData: initialItems,
   });

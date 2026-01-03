@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { questionCategories } from "@/lib/constants";
+import { createQuestion } from "@/lib/actions/questions";
 
 export default function AskQuestionPage() {
   const router = useRouter();
@@ -24,15 +25,7 @@ export default function AskQuestionPage() {
   }));
 
   const createQuestionMutation = useMutation({
-    mutationFn: async (data: Record<string, unknown>) => {
-      const res = await fetch("/api/questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to create question");
-      return res.json();
-    },
+    mutationFn: createQuestion,
     onSuccess: () => router.push("/questions"),
   });
 

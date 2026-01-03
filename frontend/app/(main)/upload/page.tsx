@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { IconCloudUpload, IconX, IconPhoto } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { categories, conditions } from "@/lib/constants";
+import { createItem } from "@/lib/actions/items";
+import { uploadImages } from "@/lib/actions/images";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -22,22 +24,12 @@ export default function UploadPage() {
     mutationFn: async (files: File[]) => {
       const formData = new FormData();
       files.forEach((file) => formData.append("files", file));
-      const res = await fetch("/api/images/upload", { method: "POST", body: formData });
-      if (!res.ok) throw new Error("Failed to upload images");
-      return res.json() as Promise<string[]>;
+      return uploadImages(formData);
     },
   });
 
   const createItemMutation = useMutation({
-    mutationFn: async (data: Record<string, unknown>) => {
-      const res = await fetch("/api/items", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to create item");
-      return res.json();
-    },
+    mutationFn: createItem,
     onSuccess: () => router.push("/marketplace"),
   });
 

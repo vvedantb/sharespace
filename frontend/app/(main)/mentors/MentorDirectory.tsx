@@ -6,6 +6,7 @@ import { Mentor } from "@/lib/types";
 import { MentorCard } from "@/components/MentorCard";
 import { SearchInput } from "@/components/SearchInput";
 import { mentorsSearchParams } from "./searchParams";
+import { getMentors } from "@/lib/actions/mentors";
 
 interface MentorDirectoryProps {
   initialMentors: Mentor[];
@@ -16,13 +17,7 @@ export function MentorDirectory({ initialMentors }: MentorDirectoryProps) {
 
   const { data: mentors = initialMentors, isLoading: loading } = useQuery({
     queryKey: ["mentors", { q }],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (q) params.set("search", q);
-      const res = await fetch(`/api/mentors?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch mentors");
-      return res.json() as Promise<Mentor[]>;
-    },
+    queryFn: () => getMentors(q || undefined),
     enabled: !!q,
     placeholderData: initialMentors,
   });

@@ -8,6 +8,7 @@ import { Conversation, Message } from "@/lib/types";
 import { Avatar } from "@/components/Avatar";
 import { SearchInput } from "@/components/SearchInput";
 import { messagesSearchParams } from "./searchParams";
+import { getMessages, sendMessage, markConversationRead } from "@/lib/actions/messages";
 
 const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
 
@@ -26,24 +27,15 @@ export function MessagesInbox({ initialConversations }: MessagesInboxProps) {
   const { data: messages = [] } = useQuery({
     queryKey: ["messages", selectedConversation],
     queryFn: async () => {
-      const res = await fetch(`/api/conversations/${selectedConversation}/messages`);
-      if (!res.ok) throw new Error("Failed to fetch messages");
-      fetch(`/api/conversations/${selectedConversation}/read`, { method: "PUT" }).catch(() => {});
-      return res.json() as Promise<Message[]>;
+      const data = await getMessages(selectedConversation);
+      markConversationRead(selectedConversation).catch(() => {});
+      return data;
     },
     enabled: !!selectedConversation,
   });
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const res = await fetch(`/api/conversations/${selectedConversation}/messages`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-      if (!res.ok) throw new Error("Failed to send message");
-      return res.json() as Promise<Message>;
-    },
+    mutationFn: (content: string) => sendMessage(selectedConversation, content),
   });
 
   const filteredConversations = q

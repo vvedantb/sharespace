@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { IconHeart, IconMessageCircle } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
+import { saveItem, unsaveItem } from "@/lib/actions/items";
 
 interface ItemActionsProps {
   itemId: string;
@@ -14,12 +15,7 @@ export function ItemActions({ itemId, sellerId }: ItemActionsProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   const saveMutation = useMutation({
-    mutationFn: async (saved: boolean) => {
-      const res = await fetch(`/api/items/${itemId}/${saved ? "unsave" : "save"}`, {
-        method: "POST",
-      });
-      if (!res.ok) throw new Error("Failed to save item");
-    },
+    mutationFn: (saved: boolean) => saved ? unsaveItem(itemId) : saveItem(itemId),
     onSuccess: () => setIsSaved(!isSaved),
   });
 

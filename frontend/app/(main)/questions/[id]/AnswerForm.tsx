@@ -5,6 +5,7 @@ import { IconSend } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { Answer } from "@/lib/types";
 import { Avatar } from "@/components/Avatar";
+import { createAnswer } from "@/lib/actions/questions";
 
 interface AnswerFormProps {
   questionId: string;
@@ -15,15 +16,7 @@ export function AnswerForm({ questionId, onAnswerPosted }: AnswerFormProps) {
   const [newAnswer, setNewAnswer] = useState("");
 
   const createAnswerMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const res = await fetch(`/api/questions/${questionId}/answers`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content }),
-      });
-      if (!res.ok) throw new Error("Failed to post answer");
-      return res.json() as Promise<Answer>;
-    },
+    mutationFn: (content: string) => createAnswer(questionId, content),
     onSuccess: (answer) => {
       onAnswerPosted(answer);
       setNewAnswer("");

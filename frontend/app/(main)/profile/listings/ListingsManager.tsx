@@ -11,6 +11,7 @@ import {
 } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { Item } from "@/lib/types";
+import { deleteItem } from "@/lib/actions/items";
 import { Tabs } from "@/components/Tabs";
 import { Badge } from "@/components/Badge";
 import { BackButton } from "@/components/BackButton";
@@ -36,10 +37,7 @@ export function ListingsManager({ initialListings }: ListingsManagerProps) {
     activeTab === "active" ? activeListings : soldListings;
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/items/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete item");
-    },
+    mutationFn: deleteItem,
     onSuccess: (_, id) => {
       setListings(listings.filter((item) => item.id !== id));
     },

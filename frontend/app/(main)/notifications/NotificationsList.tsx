@@ -5,6 +5,7 @@ import Link from "next/link";
 import { IconMessage, IconShoppingBag, IconStar, IconBell } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { Notification } from "@/lib/types";
+import { markNotificationRead } from "@/lib/actions/notifications";
 
 function getIcon(type: Notification["type"]) {
   switch (type) {
@@ -27,10 +28,7 @@ export function NotificationsList({ initialNotifications }: NotificationsListPro
   const [notifications, setNotifications] = useState(initialNotifications);
 
   const markReadMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/notifications/${id}/read`, { method: "PUT" });
-      if (!res.ok) throw new Error("Failed to mark notification as read");
-    },
+    mutationFn: markNotificationRead,
     onSuccess: (_, id) => {
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))

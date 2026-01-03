@@ -6,6 +6,7 @@ import { IconUser, IconArrowLeft } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { User } from "@/lib/types";
 import { BackButton } from "@/components/BackButton";
+import { updateUser } from "@/lib/actions/users";
 
 interface EditProfileFormProps {
   user: User;
@@ -21,15 +22,7 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
   const [yearOfStudy, setYearOfStudy] = useState((user.yearOfStudy ?? 1).toString());
 
   const updateProfileMutation = useMutation({
-    mutationFn: async (data: Record<string, unknown>) => {
-      const res = await fetch(`/api/users/${user.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to update profile");
-      return res.json();
-    },
+    mutationFn: (data: Parameters<typeof updateUser>[1]) => updateUser(user.id, data),
     onSuccess: () => router.push("/profile"),
   });
 

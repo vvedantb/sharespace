@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconArrowLeft, IconSchool, IconPlus, IconX } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
+import { createMentor } from "@/lib/actions/mentors";
 
 export default function MentorApplicationPage() {
   const router = useRouter();
@@ -12,15 +13,7 @@ export default function MentorApplicationPage() {
   const [newExpertise, setNewExpertise] = useState("");
 
   const createMentorMutation = useMutation({
-    mutationFn: async (data: { bio: string; expertise: string[] }) => {
-      const res = await fetch("/api/mentors", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to create mentor profile");
-      return res.json();
-    },
+    mutationFn: createMentor,
     onSuccess: () => router.push("/profile"),
   });
 

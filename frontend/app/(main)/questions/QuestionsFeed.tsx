@@ -6,6 +6,7 @@ import { Question } from "@/lib/types";
 import { QuestionCard } from "@/components/QuestionCard";
 import { SearchInput } from "@/components/SearchInput";
 import { questionsSearchParams } from "./searchParams";
+import { getQuestions } from "@/lib/actions/questions";
 
 interface QuestionsFeedProps {
   initialQuestions: Question[];
@@ -16,13 +17,7 @@ export function QuestionsFeed({ initialQuestions }: QuestionsFeedProps) {
 
   const { data: questions = initialQuestions, isLoading: loading } = useQuery({
     queryKey: ["questions", { q }],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      if (q) params.set("search", q);
-      const res = await fetch(`/api/questions?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch questions");
-      return res.json() as Promise<Question[]>;
-    },
+    queryFn: () => getQuestions({ search: q || undefined }),
     enabled: !!q,
     placeholderData: initialQuestions,
   });
