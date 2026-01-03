@@ -3,6 +3,7 @@ import { Instrument_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { ClientProvider } from "@/components/providers/ClientProvider";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const instrumentSans = Instrument_Sans({
   weight: ["400", "500", "600", "700"],

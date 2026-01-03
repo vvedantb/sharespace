@@ -3,8 +3,8 @@ import { headers } from "next/headers";
 import { prisma } from "./prisma";
 
 const verifier = CognitoJwtVerifier.create({
-  userPoolId: process.env.COGNITO_USER_POOL_ID!,
-  clientId: process.env.COGNITO_CLIENT_ID!,
+  userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID!,
+  clientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID!,
   tokenUse: "access",
 });
 

@@ -10,7 +10,8 @@
       "Bash(pnpm exec prisma generate:*)",
       "Bash(pnpm exec tsc:*)",
       "Bash(pnpm exec prisma:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(cat:*)"
     ]
   }
 }
