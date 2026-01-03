@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconArrowLeft, IconSchool, IconPlus, IconX } from "@tabler/icons-react";
+import { api } from "@/lib/api";
 
 export default function MentorApplicationPage() {
   const router = useRouter();
@@ -22,13 +23,16 @@ export default function MentorApplicationPage() {
     setExpertise(expertise.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await api.mentors.create({ bio, expertise });
       router.push("/profile");
-    }, 1500);
+    } catch (error) {
+      console.error("Failed to create mentor profile:", error);
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = bio.length >= 50 && expertise.length >= 2;

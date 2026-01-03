@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { api } from "@/lib/api";
 
 export default function AskQuestionPage() {
   const router = useRouter();
@@ -19,13 +20,21 @@ export default function AskQuestionPage() {
     { value: "textbook-recommendation", label: "Textbook Recommendation", description: "Books and resources" },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await api.questions.create({
+        title,
+        content,
+        category,
+        courseCode: courseCode || undefined,
+      });
       router.push("/questions");
-    }, 1000);
+    } catch (error) {
+      console.error("Failed to create question:", error);
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = title && content && category;

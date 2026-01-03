@@ -1,9 +1,10 @@
-import { Suspense } from "react";
 import Link from "next/link";
 import { IconPlus } from "@tabler/icons-react";
+import { serverApi } from "@/lib/api-server";
 import { QuestionsFeed } from "./QuestionsFeed";
 
-export default function QuestionsPage() {
+export default async function QuestionsPage() {
+  const questions = await serverApi.questions.list();
   return (
     <div className="px-4 py-6">
       <div className="flex items-center justify-between">
@@ -16,9 +17,7 @@ export default function QuestionsPage() {
           Ask
         </Link>
       </div>
-      <Suspense>
-        <QuestionsFeed />
-      </Suspense>
+      <QuestionsFeed initialQuestions={questions} />
     </div>
   );
 }

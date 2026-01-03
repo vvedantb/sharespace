@@ -1,7 +1,9 @@
-import { Suspense } from "react";
+import { serverApi } from "@/lib/api-server";
 import { MessagesInbox } from "./MessagesInbox";
 
-export default function MessagesPage() {
+export default async function MessagesPage() {
+  const conversations = await serverApi.conversations.list();
+
   return (
     <div className="flex h-[calc(100vh-8rem)] flex-col">
       <div className="mb-4 px-4 pt-4">
@@ -12,9 +14,7 @@ export default function MessagesPage() {
           Chat with other students about items
         </p>
       </div>
-      <Suspense>
-        <MessagesInbox />
-      </Suspense>
+      <MessagesInbox initialConversations={conversations} />
     </div>
   );
 }
