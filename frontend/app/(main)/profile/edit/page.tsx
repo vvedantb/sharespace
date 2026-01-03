@@ -1,15 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { EditProfileForm } from "./EditProfileForm";
-
-const CURRENT_USER_ID = "11111111-1111-1111-1111-111111111111";
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
 export default async function EditProfilePage() {
-  const user = await prisma.user.findUnique({
-    where: { id: CURRENT_USER_ID },
+  const user = await getCurrentUser();
+  const userData = await prisma.user.findUnique({
+    where: { id: user?.id },
   });
-
-  if (!user) {
-    return <div className="px-4 py-6">User not found</div>;
+  if (!user || !userData) {
+    redirect("/login");
   }
 
   return (
