@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Switch, Card, CardHeader, CardBody, Divider } from "@heroui/react";
 import {
   IconArrowLeft,
   IconBell,
@@ -19,132 +20,111 @@ export default function SettingsPage() {
 
   return (
     <div className="px-4 py-8">
-      <button
-        onClick={() => router.back()}
-        className="mb-4 flex items-center gap-1 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors"
+      <Button
+        variant="light"
+        startContent={<IconArrowLeft className="h-4 w-4" stroke={2} />}
+        onPress={() => router.back()}
+        className="mb-4 text-default-500"
       >
-        <IconArrowLeft className="h-5 w-5" stroke={2} />
         Back
-      </button>
+      </Button>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-black dark:text-white md:text-4xl">
+        <h1 className="text-3xl font-bold text-foreground md:text-4xl">
           Settings
         </h1>
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-default-500">
           Manage your account preferences
         </p>
       </div>
 
       <div className="max-w-2xl space-y-6">
-        <div className="rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black overflow-hidden">
-          <div className="flex items-center gap-3 border-b border-gray-200 dark:border-neutral-800 px-6 py-4">
-            <IconPalette className="h-5 w-5 text-gray-500 dark:text-gray-400" stroke={1.5} />
-            <h2 className="font-semibold text-black dark:text-white">Appearance</h2>
-          </div>
-          <div className="p-6">
+        <Card className="border border-default-200">
+          <CardHeader className="flex gap-3">
+            <IconPalette className="h-5 w-5 text-default-500" stroke={1.5} />
+            <p className="font-semibold">Appearance</p>
+          </CardHeader>
+          <Divider />
+          <CardBody>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-black dark:text-white">Dark Mode</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="font-medium">Dark Mode</p>
+                <p className="text-sm text-default-500">
                   Switch between light and dark themes
                 </p>
               </div>
               {mounted && (
-                <button
-                  onClick={toggleTheme}
-                  className={`relative h-7 w-12 rounded-full transition-colors ${
-                    theme === "dark" ? "bg-red-800" : "bg-gray-300"
-                  }`}
-                >
-                  <span
-                    className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
-                      theme === "dark" ? "left-6" : "left-1"
-                    }`}
-                  />
-                </button>
+                <Switch
+                  isSelected={theme === "dark"}
+                  onValueChange={toggleTheme}
+                  color="danger"
+                />
               )}
             </div>
-          </div>
-        </div>
+          </CardBody>
+        </Card>
 
-        <div className="rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black overflow-hidden">
-          <div className="flex items-center gap-3 border-b border-gray-200 dark:border-neutral-800 px-6 py-4">
-            <IconBell className="h-5 w-5 text-gray-500 dark:text-gray-400" stroke={1.5} />
-            <h2 className="font-semibold text-black dark:text-white">Notifications</h2>
-          </div>
-          <div className="p-6 space-y-4">
+        <Card className="border border-default-200">
+          <CardHeader className="flex gap-3">
+            <IconBell className="h-5 w-5 text-default-500" stroke={1.5} />
+            <p className="font-semibold">Notifications</p>
+          </CardHeader>
+          <Divider />
+          <CardBody className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-black dark:text-white">Email Notifications</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="font-medium">Email Notifications</p>
+                <p className="text-sm text-default-500">
                   Receive updates via email
                 </p>
               </div>
-              <button
-                onClick={() => setEmailNotifications(!emailNotifications)}
-                className={`relative h-7 w-12 rounded-full transition-colors ${
-                  emailNotifications ? "bg-red-800" : "bg-gray-300 dark:bg-neutral-700"
-                }`}
-              >
-                <span
-                  className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
-                    emailNotifications ? "left-6" : "left-1"
-                  }`}
-                />
-              </button>
+              <Switch
+                isSelected={emailNotifications}
+                onValueChange={setEmailNotifications}
+                color="danger"
+              />
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-black dark:text-white">Push Notifications</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="font-medium">Push Notifications</p>
+                <p className="text-sm text-default-500">
                   Get notified in your browser
                 </p>
               </div>
-              <button
-                onClick={() => setPushNotifications(!pushNotifications)}
-                className={`relative h-7 w-12 rounded-full transition-colors ${
-                  pushNotifications ? "bg-red-800" : "bg-gray-300 dark:bg-neutral-700"
-                }`}
-              >
-                <span
-                  className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
-                    pushNotifications ? "left-6" : "left-1"
-                  }`}
-                />
-              </button>
+              <Switch
+                isSelected={pushNotifications}
+                onValueChange={setPushNotifications}
+                color="danger"
+              />
             </div>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-black dark:text-white">Message Alerts</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="font-medium">Message Alerts</p>
+                <p className="text-sm text-default-500">
                   Get notified for new messages
                 </p>
               </div>
-              <button
-                onClick={() => setMessageNotifications(!messageNotifications)}
-                className={`relative h-7 w-12 rounded-full transition-colors ${
-                  messageNotifications ? "bg-red-800" : "bg-gray-300 dark:bg-neutral-700"
-                }`}
-              >
-                <span
-                  className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-transform ${
-                    messageNotifications ? "left-6" : "left-1"
-                  }`}
-                />
-              </button>
+              <Switch
+                isSelected={messageNotifications}
+                onValueChange={setMessageNotifications}
+                color="danger"
+              />
             </div>
-          </div>
-        </div>
+          </CardBody>
+        </Card>
 
-        <div className="rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black overflow-hidden">
-          <div className="p-6">
-            <button className="w-full flex items-center gap-3 rounded-xl border border-gray-200 dark:border-neutral-700 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
-              <IconLogout className="h-5 w-5 text-gray-500" stroke={1.5} />
-              <span className="font-medium text-black dark:text-white">Sign Out</span>
-            </button>
-          </div>
-        </div>
+        <Card className="border border-default-200">
+          <CardBody>
+            <Button
+              variant="bordered"
+              startContent={<IconLogout className="h-5 w-5" stroke={1.5} />}
+              fullWidth
+              className="justify-start"
+            >
+              Sign Out
+            </Button>
+          </CardBody>
+        </Card>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Input, Textarea, Select, SelectItem, Card, CardBody } from "@heroui/react";
 import { IconCloudUpload, IconX, IconPhoto } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { categories, conditions } from "@/lib/constants";
@@ -81,17 +82,17 @@ export default function UploadPage() {
   return (
     <div className="px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-black dark:text-white md:text-4xl">
+        <h1 className="text-3xl font-bold text-foreground md:text-4xl">
           Upload Item
         </h1>
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-default-500">
           List your item for other students to discover
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+          <label className="mb-2 block text-sm font-medium">
             Item Images (up to 5)
           </label>
           <input
@@ -104,144 +105,136 @@ export default function UploadPage() {
           />
           <div className="grid grid-cols-5 gap-3">
             {imagePreviews.map((preview, index) => (
-              <div
-                key={index}
-                className="relative aspect-square rounded-xl border border-gray-200 dark:border-neutral-700 bg-gray-100 dark:bg-neutral-900 overflow-hidden"
-              >
-                <img src={preview} alt="" className="h-full w-full object-cover" />
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute top-1 right-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
-                >
-                  <IconX className="h-3 w-3" stroke={2} />
-                </button>
-              </div>
+              <Card key={index} className="aspect-square overflow-hidden border border-default-200">
+                <CardBody className="p-0 relative">
+                  <img src={preview} alt="" className="h-full w-full object-cover" />
+                  <Button
+                    isIconOnly
+                    size="sm"
+                    color="default"
+                    variant="solid"
+                    className="absolute top-1 right-1 min-w-6 w-6 h-6"
+                    onPress={() => removeImage(index)}
+                  >
+                    <IconX className="h-3 w-3" stroke={2} />
+                  </Button>
+                </CardBody>
+              </Card>
             ))}
             {imagePreviews.length < 5 && (
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="aspect-square rounded-xl border-2 border-dashed border-gray-300 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 flex items-center justify-center transition-colors hover:border-red-800 hover:bg-red-50 dark:hover:border-red-600 dark:hover:bg-red-900/20"
+              <Button
+                variant="bordered"
+                className="aspect-square h-auto border-dashed"
+                onPress={() => fileInputRef.current?.click()}
               >
-                <IconCloudUpload className="h-6 w-6 text-gray-400 dark:text-gray-500" stroke={1.5} />
-              </button>
+                <IconCloudUpload className="h-6 w-6 text-default-400" stroke={1.5} />
+              </Button>
             )}
           </div>
-          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
+          <p className="mt-2 text-xs text-default-400">
             PNG, JPG up to 10MB each. First image will be the cover.
           </p>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-            Title *
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g., Calculus Textbook - 3rd Edition"
-            className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-          />
+        <Input
+          label="Title"
+          value={title}
+          onValueChange={setTitle}
+          placeholder="e.g., Calculus Textbook - 3rd Edition"
+          variant="bordered"
+          radius="lg"
+          isRequired
+        />
+
+        <div className="grid gap-4 md:grid-cols-2">
+          <Select
+            label="Category"
+            selectedKeys={category ? [category] : []}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0];
+              if (selected) setCategory(selected.toString());
+            }}
+            variant="bordered"
+            radius="lg"
+            isRequired
+          >
+            {categories.map((cat) => (
+              <SelectItem key={cat.value}>{cat.label}</SelectItem>
+            ))}
+          </Select>
+
+          <Select
+            label="Condition"
+            selectedKeys={condition ? [condition] : []}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0];
+              if (selected) setCondition(selected.toString());
+            }}
+            variant="bordered"
+            radius="lg"
+            isRequired
+          >
+            {conditions.map((cond) => (
+              <SelectItem key={cond.value}>{cond.label}</SelectItem>
+            ))}
+          </Select>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              Category *
-            </label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            >
-              <option value="">Select category</option>
-              {categories.map((cat) => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Input
+            type="number"
+            label="Price (£)"
+            value={price}
+            onValueChange={setPrice}
+            placeholder="0.00"
+            min={0}
+            step={0.01}
+            variant="bordered"
+            radius="lg"
+            isRequired
+          />
 
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              Condition *
-            </label>
-            <select
-              value={condition}
-              onChange={(e) => setCondition(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            >
-              <option value="">Select condition</option>
-              {conditions.map((cond) => (
-                <option key={cond.value} value={cond.value}>
-                  {cond.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              Price (£) *
-            </label>
-            <input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-              className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              Course Code (optional)
-            </label>
-            <input
-              type="text"
-              value={courseCode}
-              onChange={(e) => setCourseCode(e.target.value)}
-              placeholder="e.g., COMP101"
-              className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-            Description *
-          </label>
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            placeholder="Describe your item, its condition, and any other details..."
-            className="w-full resize-none rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
+          <Input
+            label="Course Code (optional)"
+            value={courseCode}
+            onValueChange={setCourseCode}
+            placeholder="e.g., COMP101"
+            variant="bordered"
+            radius="lg"
           />
         </div>
+
+        <Textarea
+          label="Description"
+          value={description}
+          onValueChange={setDescription}
+          minRows={4}
+          placeholder="Describe your item, its condition, and any other details..."
+          variant="bordered"
+          radius="lg"
+          isRequired
+        />
 
         <div className="flex gap-3">
-          <button
+          <Button
             type="button"
-            onClick={() => router.back()}
-            className="flex-1 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-6 py-3 font-semibold text-black dark:text-white transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900"
+            variant="bordered"
+            radius="lg"
+            fullWidth
+            onPress={() => router.back()}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            disabled={!isFormValid || isSubmitting}
-            className="flex-1 rounded-xl bg-red-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            color="danger"
+            radius="lg"
+            fullWidth
+            isDisabled={!isFormValid}
+            isLoading={isSubmitting}
           >
             {isSubmitting ? "Listing..." : "List Item"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

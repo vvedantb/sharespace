@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { Avatar, Card, CardBody } from "@heroui/react";
 import { Mentor } from "@/lib/types";
-import { Avatar } from "./Avatar";
 
 interface MentorCardProps {
   mentor: Mentor;
@@ -9,9 +9,10 @@ interface MentorCardProps {
 export function MentorCard({ mentor }: MentorCardProps) {
   return (
     <Link href={`/mentors/${mentor.id}`}>
-      <div className="group rounded-2xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-black p-5 transition-all hover:border-gray-300 dark:hover:border-neutral-700">
+      <Card className="border border-default-200 hover:border-default-300 transition-all">
+        <CardBody className="p-5">
         <div className="flex items-center gap-3">
-          <Avatar name={mentor.name} size="lg" />
+          <Avatar name={mentor.name} size="lg" color="danger" showFallback />
           <div className="min-w-0 flex-1">
             <h3 className="font-medium text-black dark:text-white truncate">
               {mentor.name}
@@ -39,7 +40,8 @@ export function MentorCard({ mentor }: MentorCardProps) {
             </span>
           ))}
         </div>
-      </div>
+        </CardBody>
+      </Card>
     </Link>
   );
 }

@@ -2,15 +2,23 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Input, Textarea, Select, SelectItem, Avatar } from "@heroui/react";
 import { IconUser, IconArrowLeft } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { User } from "@/lib/types";
-import { BackButton } from "@/components/BackButton";
 import { updateUser } from "@/lib/actions/users";
 
 interface EditProfileFormProps {
   user: User;
 }
+
+const yearOptions = [
+  { value: "1", label: "Year 1" },
+  { value: "2", label: "Year 2" },
+  { value: "3", label: "Year 3" },
+  { value: "4", label: "Year 4" },
+  { value: "5", label: "Postgraduate" },
+];
 
 export function EditProfileForm({ user }: EditProfileFormProps) {
   const router = useRouter();
@@ -42,148 +50,128 @@ export function EditProfileForm({ user }: EditProfileFormProps) {
 
   return (
     <div className="px-4 py-8">
-      <BackButton />
+      <Button
+        variant="light"
+        startContent={<IconArrowLeft className="h-4 w-4" stroke={2} />}
+        onPress={() => router.back()}
+        className="mb-4 text-default-500"
+      >
+        Back
+      </Button>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-black dark:text-white md:text-4xl">
+        <h1 className="text-3xl font-bold text-foreground md:text-4xl">
           Edit Profile
         </h1>
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-default-500">
           Update your profile information
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
         <div className="flex items-center gap-4">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gray-100 dark:bg-neutral-800">
-            <IconUser className="h-10 w-10 text-gray-400 dark:text-gray-500" stroke={1.5} />
-          </div>
-          <button
-            type="button"
-            className="rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-2 text-sm font-medium text-black dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
-          >
+          <Avatar
+            name={`${firstName} ${lastName}`}
+            size="lg"
+            color="danger"
+            showFallback
+            className="h-20 w-20 text-xl"
+            fallback={<IconUser className="h-10 w-10" stroke={1.5} />}
+          />
+          <Button variant="bordered" radius="lg">
             Change Photo
-          </button>
+          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              First Name
-            </label>
-            <input
-              type="text"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              Last Name
-            </label>
-            <input
-              type="text"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-            Username
-          </label>
-          <div className="flex">
-            <span className="inline-flex items-center rounded-l-xl border border-r-0 border-gray-300 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 px-4 text-gray-500 dark:text-gray-400">
-              @
-            </span>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full rounded-r-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-            Email
-          </label>
-          <input
-            type="email"
-            value={user.email}
-            disabled
-            className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+          <Input
+            label="First Name"
+            value={firstName}
+            onValueChange={setFirstName}
+            variant="bordered"
+            radius="lg"
           />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            Email cannot be changed
-          </p>
+          <Input
+            label="Last Name"
+            value={lastName}
+            onValueChange={setLastName}
+            variant="bordered"
+            radius="lg"
+          />
         </div>
+
+        <Input
+          label="Username"
+          value={username}
+          onValueChange={setUsername}
+          variant="bordered"
+          radius="lg"
+          startContent={<span className="text-default-400">@</span>}
+        />
+
+        <Input
+          label="Email"
+          value={user.email}
+          isDisabled
+          variant="bordered"
+          radius="lg"
+          description="Email cannot be changed"
+        />
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              Course / Major
-            </label>
-            <input
-              type="text"
-              value={course}
-              onChange={(e) => setCourse(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            />
-          </div>
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              Year of Study
-            </label>
-            <select
-              value={yearOfStudy}
-              onChange={(e) => setYearOfStudy(e.target.value)}
-              className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-            >
-              <option value="1">Year 1</option>
-              <option value="2">Year 2</option>
-              <option value="3">Year 3</option>
-              <option value="4">Year 4</option>
-              <option value="5">Postgraduate</option>
-            </select>
-          </div>
+          <Input
+            label="Course / Major"
+            value={course}
+            onValueChange={setCourse}
+            variant="bordered"
+            radius="lg"
+          />
+          <Select
+            label="Year of Study"
+            selectedKeys={[yearOfStudy]}
+            onSelectionChange={(keys) => {
+              const selected = Array.from(keys)[0];
+              if (selected) setYearOfStudy(selected.toString());
+            }}
+            variant="bordered"
+            radius="lg"
+          >
+            {yearOptions.map((option) => (
+              <SelectItem key={option.value}>{option.label}</SelectItem>
+            ))}
+          </Select>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-            Bio
-          </label>
-          <textarea
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            rows={4}
-            placeholder="Tell other students about yourself..."
-            className="w-full resize-none rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-          />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            {bio.length}/200 characters
-          </p>
-        </div>
+        <Textarea
+          label="Bio"
+          value={bio}
+          onValueChange={setBio}
+          variant="bordered"
+          radius="lg"
+          minRows={4}
+          placeholder="Tell other students about yourself..."
+          description={`${bio.length}/200 characters`}
+        />
 
         <div className="flex gap-3">
-          <button
+          <Button
             type="button"
-            onClick={() => router.back()}
-            className="flex-1 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-6 py-3 font-semibold text-black dark:text-white transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900"
+            variant="bordered"
+            radius="lg"
+            fullWidth
+            onPress={() => router.back()}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            disabled={isSubmitting}
-            className="flex-1 rounded-xl bg-red-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800 disabled:opacity-50"
+            color="danger"
+            radius="lg"
+            fullWidth
+            isLoading={isSubmitting}
           >
             {isSubmitting ? "Saving..." : "Save Changes"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

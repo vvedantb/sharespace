@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Input, Textarea, Card, CardBody } from "@heroui/react";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { questionCategories } from "@/lib/constants";
@@ -45,128 +46,121 @@ export default function AskQuestionPage() {
 
   return (
     <div className="px-4 py-8">
-      <button
-        onClick={() => router.back()}
-        className="mb-4 flex items-center gap-1 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors"
+      <Button
+        variant="light"
+        startContent={<IconArrowLeft className="h-4 w-4" stroke={2} />}
+        onPress={() => router.back()}
+        className="mb-4 text-default-500"
       >
-        <IconArrowLeft className="h-5 w-5" stroke={2} />
         Back
-      </button>
+      </Button>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-black dark:text-white md:text-4xl">
+        <h1 className="text-3xl font-bold text-foreground md:text-4xl">
           Ask a Question
         </h1>
-        <p className="mt-2 text-gray-500 dark:text-gray-400">
+        <p className="mt-2 text-default-500">
           Get help from experienced mentors and fellow students
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-        <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-            Question Title *
-          </label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g., How do I prepare for organic chemistry exams?"
-            className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-          />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            Be specific and concise
-          </p>
-        </div>
+        <Input
+          label="Question Title"
+          value={title}
+          onValueChange={setTitle}
+          placeholder="e.g., How do I prepare for organic chemistry exams?"
+          variant="bordered"
+          radius="lg"
+          isRequired
+          description="Be specific and concise"
+        />
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+          <label className="mb-2 block text-sm font-medium">
             Category *
           </label>
           <div className="grid gap-3 sm:grid-cols-2">
             {categories.map((cat) => (
-              <button
+              <Card
                 key={cat.value}
-                type="button"
-                onClick={() => setCategory(cat.value)}
-                className={`rounded-xl border p-4 text-left transition-colors ${
+                isPressable
+                onPress={() => setCategory(cat.value)}
+                className={`border transition-colors ${
                   category === cat.value
-                    ? "border-red-800 bg-red-50 dark:border-red-600 dark:bg-red-900/20"
-                    : "border-gray-200 dark:border-neutral-700 hover:border-gray-300 dark:hover:border-neutral-600"
+                    ? "border-danger bg-danger-50"
+                    : "border-default-200 hover:border-default-300"
                 }`}
               >
-                <p className={`font-medium ${
-                  category === cat.value
-                    ? "text-red-800 dark:text-red-500"
-                    : "text-black dark:text-white"
-                }`}>
-                  {cat.label}
-                </p>
-                <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
-                  {cat.description}
-                </p>
-              </button>
+                <CardBody className="p-4">
+                  <p className={`font-medium ${
+                    category === cat.value ? "text-danger" : ""
+                  }`}>
+                    {cat.label}
+                  </p>
+                  <p className="mt-0.5 text-sm text-default-500">
+                    {cat.description}
+                  </p>
+                </CardBody>
+              </Card>
             ))}
           </div>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-            Course Code (optional)
-          </label>
-          <input
-            type="text"
-            value={courseCode}
-            onChange={(e) => setCourseCode(e.target.value)}
-            placeholder="e.g., COMP101"
-            className="w-full rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-          />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            Add a course code to help mentors find relevant questions
-          </p>
-        </div>
+        <Input
+          label="Course Code (optional)"
+          value={courseCode}
+          onValueChange={setCourseCode}
+          placeholder="e.g., COMP101"
+          variant="bordered"
+          radius="lg"
+          description="Add a course code to help mentors find relevant questions"
+        />
 
-        <div>
-          <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-            Question Details *
-          </label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={6}
-            placeholder="Provide more context about your question. What have you tried? What specifically do you need help with?"
-            className="w-full resize-none rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-red-800 focus:outline-none focus:ring-2 focus:ring-red-800/20 dark:focus:border-red-600 dark:focus:ring-red-600/20"
-          />
-          <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-            {content.length}/2000 characters
-          </p>
-        </div>
+        <Textarea
+          label="Question Details"
+          value={content}
+          onValueChange={setContent}
+          minRows={6}
+          placeholder="Provide more context about your question. What have you tried? What specifically do you need help with?"
+          variant="bordered"
+          radius="lg"
+          isRequired
+          description={`${content.length}/2000 characters`}
+        />
 
-        <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4">
-          <h3 className="font-medium text-blue-800 dark:text-blue-300">Tips for a great question</h3>
-          <ul className="mt-2 space-y-1 text-sm text-blue-700 dark:text-blue-400">
-            <li>• Be specific about what you need help with</li>
-            <li>• Include relevant context (course, year, etc.)</li>
-            <li>• Mention what you&apos;ve already tried</li>
-            <li>• Keep it focused on one topic</li>
-          </ul>
-        </div>
+        <Card className="border border-primary-200 bg-primary-50">
+          <CardBody className="p-4">
+            <h3 className="font-medium text-primary">Tips for a great question</h3>
+            <ul className="mt-2 space-y-1 text-sm text-primary-700">
+              <li>• Be specific about what you need help with</li>
+              <li>• Include relevant context (course, year, etc.)</li>
+              <li>• Mention what you&apos;ve already tried</li>
+              <li>• Keep it focused on one topic</li>
+            </ul>
+          </CardBody>
+        </Card>
 
         <div className="flex gap-3">
-          <button
+          <Button
             type="button"
-            onClick={() => router.back()}
-            className="flex-1 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-6 py-3 font-semibold text-black dark:text-white transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900"
+            variant="bordered"
+            radius="lg"
+            fullWidth
+            onPress={() => router.back()}
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            disabled={!isFormValid || isSubmitting}
-            className="flex-1 rounded-xl bg-red-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-red-900 dark:bg-red-700 dark:hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
+            color="danger"
+            radius="lg"
+            fullWidth
+            isDisabled={!isFormValid}
+            isLoading={isSubmitting}
           >
             {isSubmitting ? "Posting..." : "Post Question"}
-          </button>
+          </Button>
         </div>
       </form>
     </div>

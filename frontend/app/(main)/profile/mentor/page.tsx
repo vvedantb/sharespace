@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Button, Input, Textarea, Chip, Card, CardBody } from "@heroui/react";
 import { IconArrowLeft, IconSchool, IconPlus, IconX } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { createMentor } from "@/lib/actions/mentors";
@@ -39,24 +40,25 @@ export default function MentorApplicationPage() {
 
   return (
     <div className="px-4 py-8">
-      <button
-        onClick={() => router.back()}
-        className="mb-4 flex items-center gap-1 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors"
+      <Button
+        variant="light"
+        startContent={<IconArrowLeft className="h-4 w-4" stroke={2} />}
+        onPress={() => router.back()}
+        className="mb-4 text-default-500"
       >
-        <IconArrowLeft className="h-5 w-5" stroke={2} />
         Back
-      </button>
+      </Button>
 
       <div className="mb-8">
         <div className="flex items-center gap-3">
-          <div className="rounded-full bg-purple-100 dark:bg-purple-900/30 p-3">
-            <IconSchool className="h-6 w-6 text-purple-600 dark:text-purple-400" stroke={2} />
+          <div className="rounded-full bg-secondary-100 p-3">
+            <IconSchool className="h-6 w-6 text-secondary" stroke={2} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-black dark:text-white md:text-4xl">
+            <h1 className="text-3xl font-bold text-foreground md:text-4xl">
               Become a Mentor
             </h1>
-            <p className="mt-1 text-gray-500 dark:text-gray-400">
+            <p className="mt-1 text-default-500">
               Help fellow students and build your reputation
             </p>
           </div>
@@ -64,108 +66,115 @@ export default function MentorApplicationPage() {
       </div>
 
       <div className="max-w-2xl">
-        <div className="mb-8 rounded-2xl border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20 p-6">
-          <h2 className="font-semibold text-purple-800 dark:text-purple-300">
-            What Mentors Do
-          </h2>
-          <ul className="mt-3 space-y-2 text-sm text-purple-700 dark:text-purple-400">
-            <li>• Answer academic and student-life questions</li>
-            <li>• Endorse quality items and sellers</li>
-            <li>• Recommend textbooks and resources</li>
-            <li>• Help new students navigate university life</li>
-          </ul>
-        </div>
+        <Card className="mb-8 border border-secondary-200 bg-secondary-50">
+          <CardBody className="p-6">
+            <h2 className="font-semibold text-secondary">
+              What Mentors Do
+            </h2>
+            <ul className="mt-3 space-y-2 text-sm text-secondary-600">
+              <li>• Answer academic and student-life questions</li>
+              <li>• Endorse quality items and sellers</li>
+              <li>• Recommend textbooks and resources</li>
+              <li>• Help new students navigate university life</li>
+            </ul>
+          </CardBody>
+        </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
-              Mentor Bio *
-            </label>
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              rows={4}
-              placeholder="Tell students about yourself, your experience, and how you can help them..."
-              className="w-full resize-none rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-600/20"
-            />
-            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-              {bio.length}/500 characters (minimum 50)
-            </p>
-          </div>
+          <Textarea
+            label="Mentor Bio"
+            value={bio}
+            onValueChange={setBio}
+            minRows={4}
+            placeholder="Tell students about yourself, your experience, and how you can help them..."
+            variant="bordered"
+            radius="lg"
+            isRequired
+            description={`${bio.length}/500 characters (minimum 50)`}
+            classNames={{
+              inputWrapper: "focus-within:border-secondary focus-within:ring-secondary/20",
+            }}
+          />
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-black dark:text-white">
+            <label className="mb-2 block text-sm font-medium text-foreground">
               Areas of Expertise * (2-6)
             </label>
             <div className="flex gap-2">
-              <input
-                type="text"
+              <Input
                 value={newExpertise}
-                onChange={(e) => setNewExpertise(e.target.value)}
+                onValueChange={setNewExpertise}
                 onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addExpertise())}
                 placeholder="e.g., Python, Calculus, Essay Writing"
-                className="flex-1 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-4 py-3 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-600/20"
+                variant="bordered"
+                radius="lg"
+                classNames={{
+                  inputWrapper: "focus-within:border-secondary focus-within:ring-secondary/20",
+                }}
               />
-              <button
-                type="button"
-                onClick={addExpertise}
-                disabled={expertise.length >= 6}
-                className="rounded-xl bg-purple-600 px-4 py-3 text-white hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              <Button
+                isIconOnly
+                color="secondary"
+                radius="lg"
+                onPress={addExpertise}
+                isDisabled={expertise.length >= 6}
               >
                 <IconPlus className="h-5 w-5" stroke={2} />
-              </button>
+              </Button>
             </div>
             {expertise.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {expertise.map((skill, index) => (
-                  <span
+                  <Chip
                     key={index}
-                    className="inline-flex items-center gap-1 rounded-full bg-purple-100 dark:bg-purple-900/30 px-3 py-1 text-sm text-purple-700 dark:text-purple-400"
+                    color="secondary"
+                    variant="flat"
+                    onClose={() => removeExpertise(index)}
                   >
                     {skill}
-                    <button
-                      type="button"
-                      onClick={() => removeExpertise(index)}
-                      className="hover:text-purple-900 dark:hover:text-purple-200"
-                    >
-                      <IconX className="h-3 w-3" stroke={2} />
-                    </button>
-                  </span>
+                  </Chip>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 p-4">
-            <h3 className="font-medium text-black dark:text-white">Requirements</h3>
-            <ul className="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
-              <li className={bio.length >= 50 ? "text-green-600 dark:text-green-500" : ""}>
-                ✓ Bio with at least 50 characters
-              </li>
-              <li className={expertise.length >= 2 ? "text-green-600 dark:text-green-500" : ""}>
-                ✓ At least 2 areas of expertise
-              </li>
-              <li className="text-green-600 dark:text-green-500">
-                ✓ Verified university email
-              </li>
-            </ul>
-          </div>
+          <Card className="border border-default-200 bg-default-50">
+            <CardBody className="p-4">
+              <h3 className="font-medium text-foreground">Requirements</h3>
+              <ul className="mt-2 space-y-1 text-sm text-default-600">
+                <li className={bio.length >= 50 ? "text-success" : ""}>
+                  ✓ Bio with at least 50 characters
+                </li>
+                <li className={expertise.length >= 2 ? "text-success" : ""}>
+                  ✓ At least 2 areas of expertise
+                </li>
+                <li className="text-success">
+                  ✓ Verified university email
+                </li>
+              </ul>
+            </CardBody>
+          </Card>
 
           <div className="flex gap-3">
-            <button
+            <Button
               type="button"
-              onClick={() => router.back()}
-              className="flex-1 rounded-xl border border-gray-300 dark:border-neutral-700 bg-white dark:bg-black px-6 py-3 font-semibold text-black dark:text-white transition-colors hover:bg-gray-50 dark:hover:bg-neutral-900"
+              variant="bordered"
+              radius="lg"
+              fullWidth
+              onPress={() => router.back()}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              disabled={!isFormValid || isSubmitting}
-              className="flex-1 rounded-xl bg-purple-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              color="secondary"
+              radius="lg"
+              fullWidth
+              isDisabled={!isFormValid}
+              isLoading={isSubmitting}
             >
               {isSubmitting ? "Submitting..." : "Apply to be a Mentor"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
