@@ -2,12 +2,13 @@
 
 import { useQueryStates } from "nuqs";
 import { useQuery } from "@tanstack/react-query";
-import { Input, Spinner } from "@heroui/react";
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { Input, Spinner, Button, useDisclosure } from "@heroui/react";
+import { IconSearch, IconX, IconPlus } from "@tabler/icons-react";
 import { Question } from "@/lib/types";
 import { QuestionCard } from "@/components/QuestionCard";
 import { questionsSearchParams } from "./searchParams";
 import { getQuestions } from "@/lib/actions/questions";
+import { AskQuestionModal } from "./AskQuestionModal";
 
 interface QuestionsFeedProps {
   initialQuestions: Question[];
@@ -15,6 +16,7 @@ interface QuestionsFeedProps {
 
 export function QuestionsFeed({ initialQuestions }: QuestionsFeedProps) {
   const [{ q }, setParams] = useQueryStates(questionsSearchParams);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const { data: questions = initialQuestions, isLoading: loading } = useQuery({
     queryKey: ["questions", { q }],
@@ -25,7 +27,7 @@ export function QuestionsFeed({ initialQuestions }: QuestionsFeedProps) {
 
   return (
     <>
-      <div className="mt-4">
+      <div className="mt-4 flex gap-3">
         <Input
           value={q}
           onValueChange={(value) => setParams({ q: value || null })}
@@ -42,7 +44,17 @@ export function QuestionsFeed({ initialQuestions }: QuestionsFeedProps) {
           radius="lg"
           classNames={{ inputWrapper: "bg-default-50" }}
         />
+        <Button
+          color="danger"
+          radius="lg"
+          startContent={<IconPlus className="h-5 w-5" stroke={2} />}
+          onPress={onOpen}
+          className="shrink-0"
+        >
+          Ask
+        </Button>
       </div>
+      <AskQuestionModal isOpen={isOpen} onOpenChange={onOpenChange} />
 
       {loading ? (
         <div className="py-16 flex justify-center">
