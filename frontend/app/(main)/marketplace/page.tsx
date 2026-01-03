@@ -8,7 +8,7 @@ export default async function MarketplacePage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const formattedItems = items.map((item) => ({
+  const formattedItems = items.map((item: typeof items[number]) => ({
     id: item.id,
     sellerId: item.sellerId,
     sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
