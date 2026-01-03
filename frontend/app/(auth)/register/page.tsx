@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, Button, Card, CardBody } from "@heroui/react";
 import { IconMail, IconLock, IconUser, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { signUp, signIn } from "@/lib/cognito";
+import { createUser } from "@/lib/actions";
 
 const schema = z
   .object({
@@ -50,15 +51,11 @@ export default function RegisterPage() {
       const session = await signIn(data.email, data.password);
       const cognitoId = session.getIdToken().payload.sub;
 
-      await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          cognitoId,
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-        }),
+      await createUser({
+        cognitoId,
+        email: data.email,
+        firstName: data.firstName,
+        lastName: data.lastName,
       });
 
       router.push("/marketplace");
