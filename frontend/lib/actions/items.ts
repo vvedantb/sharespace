@@ -19,29 +19,42 @@ export async function getItems(params?: {
         ],
       }),
     },
-    include: { seller: true },
+    include: {
+      seller: {
+        include: {
+          reviewsReceived: { select: { rating: true } },
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
 
-  return items.map((item) => ({
-    id: item.id,
-    sellerId: item.sellerId,
-    sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
-    sellerRating: 0,
-    title: item.title,
-    description: item.description,
-    price: Number(item.price),
-    category: item.category,
-    condition: item.condition,
-    status: item.status,
-    images: item.images,
-    courseCode: item.courseCode,
-    university: item.university,
-    views: item.views,
-    saves: item.saves,
-    isMentorRecommended: item.isMentorRecommended,
-    createdAt: item.createdAt.toISOString(),
-  }));
+  return items.map((item) => {
+    const reviews = item.seller.reviewsReceived;
+    const sellerRating =
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        : 0;
+    return {
+      id: item.id,
+      sellerId: item.sellerId,
+      sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
+      sellerRating,
+      title: item.title,
+      description: item.description,
+      price: Number(item.price),
+      category: item.category,
+      condition: item.condition,
+      status: item.status,
+      images: item.images,
+      courseCode: item.courseCode,
+      university: item.university,
+      views: item.views,
+      saves: item.saves,
+      isMentorRecommended: item.isMentorRecommended,
+      createdAt: item.createdAt.toISOString(),
+    };
+  });
 }
 
 export async function createItem(data: {

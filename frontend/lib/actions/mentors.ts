@@ -19,20 +19,24 @@ export async function getMentors(search?: string): Promise<Mentor[]> {
     orderBy: { endorsements: "desc" },
   });
 
-  return mentors.map((m) => ({
-    id: m.id,
-    userId: m.userId,
-    name: `${m.user.firstName} ${m.user.lastName}`,
-    university: m.user.university,
-    course: m.user.course,
-    bio: m.bio,
-    expertise: m.expertise,
-    rating: 0,
-    endorsements: m.endorsements,
-    totalAnswers: m.totalAnswers,
-    helpfulAnswers: m.helpfulAnswers,
-    isVerified: m.user.isVerified,
-  }));
+  return mentors.map((m) => {
+    const rating =
+      m.totalAnswers > 0 ? (m.helpfulAnswers / m.totalAnswers) * 5 : 0;
+    return {
+      id: m.id,
+      userId: m.userId,
+      name: `${m.user.firstName} ${m.user.lastName}`,
+      university: m.user.university,
+      course: m.user.course,
+      bio: m.bio,
+      expertise: m.expertise,
+      rating,
+      endorsements: m.endorsements,
+      totalAnswers: m.totalAnswers,
+      helpfulAnswers: m.helpfulAnswers,
+      isVerified: m.user.isVerified,
+    };
+  });
 }
 
 export async function createMentor(data: { bio: string; expertise: string[] }) {
