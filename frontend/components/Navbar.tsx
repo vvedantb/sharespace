@@ -13,7 +13,10 @@ import {
   IconUser,
   IconShield,
   IconChartBar,
+  IconBell,
 } from "@tabler/icons-react";
+import { NotificationBell } from "./NotificationBell";
+import { Notification } from "@/lib/types";
 
 const browseLinks = [
   { href: "/marketplace", label: "Marketplace", icon: IconBuildingStore },
@@ -23,9 +26,11 @@ const browseLinks = [
 
 interface NavbarProps {
   isAdmin?: boolean;
+  notifications: Notification[];
+  unreadCount: number;
 }
 
-export function Navbar({ isAdmin }: NavbarProps) {
+export function Navbar({ isAdmin, notifications, unreadCount }: NavbarProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -84,6 +89,9 @@ export function Navbar({ isAdmin }: NavbarProps) {
 
           <div className="flex items-center gap-1">
             <div className="hidden md:block mx-2 h-6 w-px bg-neutral-400 dark:bg-neutral-600" />
+            <div className="hidden md:block">
+              <NotificationBell notifications={notifications} unreadCount={unreadCount} />
+            </div>
             <Link
               href="/profile"
               className={`hidden md:flex rounded-lg p-2 transition-colors ${
@@ -178,6 +186,23 @@ export function Navbar({ isAdmin }: NavbarProps) {
 
               <div className="my-2 h-px bg-neutral-300 dark:bg-neutral-700" />
               <p className="px-4 py-1 text-xs font-medium text-neutral-500 uppercase">Account</p>
+              <Link
+                href="/notifications"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                  pathname === "/notifications"
+                    ? "bg-red-800 text-white dark:bg-red-700"
+                    : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
+                }`}
+              >
+                <IconBell className="h-5 w-5" stroke={2} />
+                Notifications
+                {unreadCount > 0 && (
+                  <span className="ml-auto rounded-full bg-red-600 px-2 py-0.5 text-xs text-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </Link>
               <Link
                 href="/profile"
                 onClick={() => setMobileMenuOpen(false)}

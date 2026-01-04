@@ -2,12 +2,16 @@ import { Suspense } from "react";
 import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { QuestionsFeed } from "./QuestionsFeed";
+import { getTrendingQuestions } from "@/lib/actions/questions";
 
 export default async function QuestionsPage() {
-  const questions = await prisma.question.findMany({
-    include: { asker: true, _count: { select: { answers: true } } },
-    orderBy: { createdAt: "desc" },
-  });
+  const [questions, trendingQuestions] = await Promise.all([
+    prisma.question.findMany({
+      include: { asker: true, _count: { select: { answers: true } } },
+      orderBy: { createdAt: "desc" },
+    }),
+    getTrendingQuestions(),
+  ]);
 
   const formattedQuestions = questions.map((q) => ({
     id: q.id,
@@ -18,6 +22,7 @@ export default async function QuestionsPage() {
     category: q.category,
     courseCode: q.courseCode,
     status: q.status,
+    views: q.views,
     answerCount: q._count.answers,
     createdAt: dayjs(q.createdAt).toISOString(),
   }));
@@ -30,7 +35,7 @@ export default async function QuestionsPage() {
           <div className="py-16 text-center text-gray-500">Loading...</div>
         }
       >
-        <QuestionsFeed initialQuestions={formattedQuestions} />
+        <QuestionsFeed initialQuestions={formattedQuestions} trendingQuestions={trendingQuestions} />
       </Suspense>
     </div>
   );

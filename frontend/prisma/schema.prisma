@@ -38,6 +38,8 @@ model User {
   reviewsReceived Review[]       @relation("Reviewee")
   reviewsGiven    Review[]       @relation("Reviewer")
   savedItems      SavedItem[]
+  badges          UserBadge[]
+  points          UserPoints?
 
   @@map("users")
 }
@@ -122,6 +124,7 @@ model Question {
   category   QuestionCategory
   courseCode String?          @map("course_code")
   status     QuestionStatus   @default(OPEN)
+  views      Int              @default(0)
   createdAt  DateTime         @default(now()) @map("created_at")
   answers    Answer[]
   asker      User             @relation(fields: [askerId], references: [id])
@@ -136,6 +139,7 @@ model Answer {
   content      String
   helpfulCount Int      @default(0) @map("helpful_count")
   isEndorsed   Boolean  @default(false) @map("is_endorsed")
+  isBestAnswer Boolean  @default(false) @map("is_best_answer")
   createdAt    DateTime @default(now()) @map("created_at")
   mentor       User     @relation(fields: [mentorId], references: [id])
   question     Question @relation(fields: [questionId], references: [id])
@@ -194,6 +198,39 @@ model MentorEndorsement {
   @@map("mentor_endorsements")
 }
 
+model Badge {
+  id          String        @id @default(uuid())
+  name        String        @unique
+  description String
+  icon        String
+  category    BadgeCategory
+  threshold   Int           @default(1)
+  userBadges  UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  badgeId  String   @map("badge_id")
+  earnedAt DateTime @default(now()) @map("earned_at")
+  user     User     @relation(fields: [userId], references: [id])
+  badge    Badge    @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model UserPoints {
+  id     String @id @default(uuid())
+  userId String @unique @map("user_id")
+  points Int    @default(0)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("user_points")
+}
+
 enum Category {
   TEXTBOOKS
   ELECTRONICS
@@ -248,4 +285,11 @@ enum MentorStatus {
 enum MentorType {
   STUDENT
   ALUMNI
+}
+
+enum BadgeCategory {
+  SELLER
+  BUYER
+  MENTOR
+  COMMUNITY
 }

@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { QuestionDetail } from "./QuestionDetail";
+import { incrementQuestionViews } from "@/lib/actions/questions";
 import Link from "next/link";
 
 export default async function QuestionDetailPage({
@@ -11,6 +12,8 @@ export default async function QuestionDetailPage({
 }) {
   const { id } = await params;
   const currentUser = await getCurrentUser();
+
+  await incrementQuestionViews(id);
 
   const question = await prisma.question.findUnique({
     where: { id },
@@ -33,7 +36,7 @@ export default async function QuestionDetailPage({
   const answers = await prisma.answer.findMany({
     where: { questionId: id },
     include: { mentor: { include: { mentorProfile: true } } },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ isBestAnswer: "desc" }, { createdAt: "desc" }],
   });
 
   const formattedQuestion = {
@@ -45,6 +48,7 @@ export default async function QuestionDetailPage({
     category: question.category,
     courseCode: question.courseCode,
     status: question.status,
+    views: question.views,
     answerCount: question._count.answers,
     createdAt: dayjs(question.createdAt).toISOString(),
   };
@@ -57,6 +61,7 @@ export default async function QuestionDetailPage({
     content: a.content,
     helpfulCount: a.helpfulCount,
     isEndorsed: a.isEndorsed,
+    isBestAnswer: a.isBestAnswer,
     createdAt: dayjs(a.createdAt).toISOString(),
   }));
 

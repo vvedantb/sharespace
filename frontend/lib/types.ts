@@ -96,6 +96,7 @@ export interface Question {
   category: QuestionCategory;
   courseCode?: string | null;
   status: QuestionStatus;
+  views: number;
   createdAt: string;
   answerCount: number;
 }
@@ -108,6 +109,7 @@ export interface Answer {
   content: string;
   helpfulCount: number;
   isEndorsed: boolean;
+  isBestAnswer: boolean;
   createdAt: string;
 }
 
@@ -121,6 +123,21 @@ export interface Review {
 }
 
 export type NotificationType = "MESSAGE" | "SALE" | "QUESTION" | "ANSWER" | "ENDORSEMENT" | "REVIEW";
+export type BadgeCategory = "SELLER" | "BUYER" | "MENTOR" | "COMMUNITY";
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: BadgeCategory;
+}
+
+export interface UserBadge {
+  id: string;
+  badge: Badge;
+  earnedAt: string;
+}
 
 export interface Notification {
   id: string;

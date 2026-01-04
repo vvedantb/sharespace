@@ -5,11 +5,29 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { Item } from "@/lib/types";
 import { calculateMoneySaved, calculateCO2Saved } from "@/lib/sustainability";
+import { onItemListed, onItemSold } from "./gamification";
 
 export async function getItems(params?: {
   search?: string;
   category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  courseCode?: string;
+  sortBy?: string;
 }): Promise<Item[]> {
+  const orderBy = (() => {
+    switch (params?.sortBy) {
+      case "price_asc":
+        return { price: "asc" as const };
+      case "price_desc":
+        return { price: "desc" as const };
+      case "popular":
+        return { views: "desc" as const };
+      default:
+        return { createdAt: "desc" as const };
+    }
+  })();
+
   const items = await prisma.item.findMany({
     where: {
       status: "ACTIVE",
@@ -20,6 +38,15 @@ export async function getItems(params?: {
           { description: { contains: params.search, mode: "insensitive" } },
         ],
       }),
+      ...(params?.minPrice !== undefined && params.minPrice > 0 && {
+        price: { gte: params.minPrice },
+      }),
+      ...(params?.maxPrice !== undefined && params.maxPrice > 0 && {
+        price: { lte: params.maxPrice },
+      }),
+      ...(params?.courseCode && {
+        courseCode: { contains: params.courseCode, mode: "insensitive" },
+      }),
     },
     include: {
       seller: {
@@ -28,7 +55,7 @@ export async function getItems(params?: {
         },
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy,
   });
 
   return items.map((item) => {
@@ -128,6 +155,8 @@ export async function createItem(data: {
       university: user.university,
     },
   });
+
+  await onItemListed(user.id);
 
   return {
     ...item,
@@ -285,6 +314,8 @@ export async function markAsSold(itemId: string, buyerId: string) {
       link: `/marketplace/${itemId}`,
     },
   });
+
+  await onItemSold(user.id, buyerId);
 }
 
 export async function getSavedItems(): Promise<Item[]> {

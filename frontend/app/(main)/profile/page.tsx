@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { Review } from "@/lib/types";
 import { ProfileContent } from "./ProfileContent";
+import { getUserBadges, getUserPoints } from "@/lib/actions/gamification";
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -12,7 +13,7 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [reviewsData, mentorProfile, dbUser] = await Promise.all([
+  const [reviewsData, mentorProfile, dbUser, badges, points] = await Promise.all([
     prisma.review.findMany({
       where: { revieweeId: user.id },
       include: { reviewer: true },
@@ -20,6 +21,8 @@ export default async function ProfilePage() {
     }),
     prisma.mentorProfile.findUnique({ where: { userId: user.id } }),
     prisma.user.findUnique({ where: { id: user.id }, select: { isSeller: true } }),
+    getUserBadges(user.id),
+    getUserPoints(user.id),
   ]);
 
   const reviews: Review[] = reviewsData.map((r) => ({
@@ -57,6 +60,8 @@ export default async function ProfilePage() {
       mentorProfileId={mentorProfile?.id}
       mentorStatus={mentorProfile?.status}
       isSeller={dbUser?.isSeller ?? false}
+      badges={badges}
+      points={points}
     />
   );
 }

@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useQueryStates } from "nuqs";
 import { useQuery } from "@tanstack/react-query";
-import { Input, Spinner, Button, useDisclosure } from "@heroui/react";
-import { IconSearch, IconX, IconPlus } from "@tabler/icons-react";
+import { Input, Spinner, Button, useDisclosure, Card, CardBody } from "@heroui/react";
+import { IconSearch, IconX, IconPlus, IconFlame, IconEye } from "@tabler/icons-react";
 import { Question } from "@/lib/types";
 import { QuestionCard } from "@/components/QuestionCard";
 import { questionsSearchParams } from "./searchParams";
@@ -12,9 +13,10 @@ import { AskQuestionModal } from "./AskQuestionModal";
 
 interface QuestionsFeedProps {
   initialQuestions: Question[];
+  trendingQuestions?: Question[];
 }
 
-export function QuestionsFeed({ initialQuestions }: QuestionsFeedProps) {
+export function QuestionsFeed({ initialQuestions, trendingQuestions = [] }: QuestionsFeedProps) {
   const [{ q }, setParams] = useQueryStates(questionsSearchParams);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -55,6 +57,32 @@ export function QuestionsFeed({ initialQuestions }: QuestionsFeedProps) {
         </Button>
       </div>
       <AskQuestionModal isOpen={isOpen} onOpenChange={onOpenChange} />
+
+      {trendingQuestions.length > 0 && !q && (
+        <div className="mt-6">
+          <div className="flex items-center gap-2 mb-3">
+            <IconFlame className="h-5 w-5 text-orange-500" stroke={2} />
+            <h2 className="font-semibold text-foreground">Trending This Week</h2>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2">
+            {trendingQuestions.map((question) => (
+              <Link key={question.id} href={`/questions/${question.id}`} className="shrink-0 w-64">
+                <Card className="border border-orange-200 dark:border-orange-800 hover:border-orange-400 transition-colors h-full">
+                  <CardBody className="p-4">
+                    <h3 className="font-medium text-foreground line-clamp-2 text-sm">{question.title}</h3>
+                    <div className="mt-2 flex items-center gap-3 text-xs text-default-500">
+                      <span className="flex items-center gap-1">
+                        <IconEye className="h-3 w-3" /> {question.views}
+                      </span>
+                      <span>{question.answerCount} answers</span>
+                    </div>
+                  </CardBody>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="py-16 flex justify-center">

@@ -5,10 +5,11 @@ import { Avatar, Button, Card, CardBody, Modal, ModalContent, ModalHeader, Modal
 import { IconEdit, IconLogout, IconMoon, IconSun, IconStar, IconSparkles, IconShoppingBag } from "@tabler/icons-react";
 import { signOut } from "@/lib/cognito";
 import { useThemeContext } from "@/components/contexts/ThemeContext";
-import { User, Review } from "@/lib/types";
+import { User, Review, UserBadge } from "@/lib/types";
 import { EditProfileModal } from "./EditProfileModal";
 import { BecomeMentorModal } from "@/components/BecomeMentorModal";
 import { BecomeSellerModal } from "@/components/BecomeSellerModal";
+import { BadgeDisplay } from "@/components/BadgeDisplay";
 
 interface ProfileContentProps {
   user: User;
@@ -18,9 +19,11 @@ interface ProfileContentProps {
   mentorProfileId?: string;
   mentorStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
   isSeller?: boolean;
+  badges: UserBadge[];
+  points: number;
 }
 
-export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileId, mentorStatus, isSeller }: ProfileContentProps) {
+export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileId, mentorStatus, isSeller, badges, points }: ProfileContentProps) {
   const { theme, toggleTheme, mounted } = useThemeContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { isOpen: isMentorModalOpen, onOpen: onMentorModalOpen, onOpenChange: onMentorModalOpenChange } = useDisclosure();
@@ -146,8 +149,12 @@ export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileI
         )}
       </div>
 
+      <div className="mt-6">
+        <BadgeDisplay badges={badges} points={points} />
+      </div>
+
       {reviews.length > 0 && (
-        <div className="mt-8">
+        <div className="mt-6">
           <h2 className="text-lg font-bold text-foreground mb-4">Reviews</h2>
           <div className="space-y-3">
             {reviews.map((review) => (

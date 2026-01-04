@@ -6,10 +6,10 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Avatar, Button, Card, CardBody, useDisclosure } from "@heroui/react";
-import { IconArrowLeft, IconThumbUp } from "@tabler/icons-react";
+import { IconArrowLeft, IconThumbUp, IconCheck, IconTrophy } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { Question, Answer } from "@/lib/types";
-import { markAnswerHelpful } from "@/lib/actions/questions";
+import { markAnswerHelpful, markBestAnswer } from "@/lib/actions/questions";
 import { AnswerForm } from "./AnswerForm";
 import { BecomeMentorModal } from "@/components/BecomeMentorModal";
 
@@ -51,7 +51,17 @@ export function QuestionDetail({
     },
   });
 
+  const markBestMutation = useMutation({
+    mutationFn: (answerId: string) => markBestAnswer(answerId),
+    onSuccess: (_, answerId) => {
+      setAnswers((prev) =>
+        prev.map((a) => ({ ...a, isBestAnswer: a.id === answerId }))
+      );
+    },
+  });
+
   const isAsker = currentUserId === question.askerId;
+  const hasBestAnswer = answers.some((a) => a.isBestAnswer);
 
   return (
     <div className="px-4 py-6 md:px-8 lg:px-12">
@@ -93,8 +103,18 @@ export function QuestionDetail({
               ) : (
                 <div className="mt-4 space-y-4">
                   {answers.map((answer) => (
-                    <Card key={answer.id} className="border border-default-200" shadow="none">
+                    <Card
+                      key={answer.id}
+                      className={`border ${answer.isBestAnswer ? "border-success-500 bg-success-50 dark:bg-success-900/20" : "border-default-200"}`}
+                      shadow="none"
+                    >
                       <CardBody className="p-5">
+                        {answer.isBestAnswer && (
+                          <div className="flex items-center gap-2 mb-3 text-success-600 font-semibold">
+                            <IconTrophy className="h-5 w-5" stroke={2} />
+                            Best Answer
+                          </div>
+                        )}
                         <div className="flex items-center gap-3">
                           <Avatar
                             name={answer.mentorName}
@@ -121,23 +141,37 @@ export function QuestionDetail({
                           <p className="text-xs text-default-400">
                             {answer.helpfulCount} found helpful
                           </p>
-                          {isAsker && !answer.isEndorsed && (
-                            <Button
-                              size="sm"
-                              variant="flat"
-                              color="success"
-                              startContent={<IconThumbUp className="h-4 w-4" />}
-                              isLoading={markHelpfulMutation.isPending}
-                              onPress={() => markHelpfulMutation.mutate(answer.id)}
-                            >
-                              Mark Helpful
-                            </Button>
-                          )}
-                          {answer.isEndorsed && (
-                            <span className="text-xs text-success-500 flex items-center gap-1">
-                              <IconThumbUp className="h-3 w-3" /> Helpful
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {isAsker && !hasBestAnswer && (
+                              <Button
+                                size="sm"
+                                variant="flat"
+                                color="warning"
+                                startContent={<IconCheck className="h-4 w-4" />}
+                                isLoading={markBestMutation.isPending}
+                                onPress={() => markBestMutation.mutate(answer.id)}
+                              >
+                                Best Answer
+                              </Button>
+                            )}
+                            {isAsker && !answer.isEndorsed && (
+                              <Button
+                                size="sm"
+                                variant="flat"
+                                color="success"
+                                startContent={<IconThumbUp className="h-4 w-4" />}
+                                isLoading={markHelpfulMutation.isPending}
+                                onPress={() => markHelpfulMutation.mutate(answer.id)}
+                              >
+                                Helpful
+                              </Button>
+                            )}
+                            {answer.isEndorsed && !isAsker && (
+                              <span className="text-xs text-success-500 flex items-center gap-1">
+                                <IconThumbUp className="h-3 w-3" /> Helpful
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </CardBody>
                     </Card>
