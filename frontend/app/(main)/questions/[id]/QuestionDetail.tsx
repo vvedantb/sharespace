@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Avatar, Button, Card, CardBody } from "@heroui/react";
+import { Avatar, Button, Card, CardBody, useDisclosure } from "@heroui/react";
 import { IconArrowLeft, IconThumbUp } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { Question, Answer } from "@/lib/types";
 import { markAnswerHelpful } from "@/lib/actions/questions";
 import { AnswerForm } from "./AnswerForm";
+import { BecomeMentorModal } from "@/components/BecomeMentorModal";
 
 dayjs.extend(relativeTime);
 
@@ -18,15 +19,18 @@ interface QuestionDetailProps {
   question: Question;
   initialAnswers: Answer[];
   currentUserId?: string;
+  isMentor?: boolean;
 }
 
 export function QuestionDetail({
   question,
   initialAnswers,
   currentUserId,
+  isMentor,
 }: QuestionDetailProps) {
   const router = useRouter();
   const [answers, setAnswers] = useState(initialAnswers);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const handleAnswerPosted = (answer: Answer) => {
     setAnswers([...answers, answer]);
@@ -130,10 +134,22 @@ export function QuestionDetail({
         </div>
 
         <div className="mt-6 border-t border-gray-100 dark:border-neutral-800 pt-6">
-          <AnswerForm
-            questionId={question.id}
-            onAnswerPosted={handleAnswerPosted}
-          />
+          {isMentor ? (
+            <AnswerForm
+              questionId={question.id}
+              onAnswerPosted={handleAnswerPosted}
+            />
+          ) : (
+            <Card className="border border-default-200">
+              <CardBody className="p-4 text-center">
+                <p className="text-default-600">Only mentors can answer questions.</p>
+                <Button color="danger" variant="flat" size="sm" className="mt-3" onPress={onOpen}>
+                  Become a Mentor
+                </Button>
+              </CardBody>
+            </Card>
+          )}
+          {!isMentor && <BecomeMentorModal isOpen={isOpen} onOpenChange={onOpenChange} />}
         </div>
       </div>
     </div>

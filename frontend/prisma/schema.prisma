@@ -20,6 +20,8 @@ model User {
   yearOfStudy     Int?           @map("year_of_study")
   bio             String?
   isVerified      Boolean        @default(false) @map("is_verified")
+  isSeller        Boolean        @default(false) @map("is_seller")
+  sellerBio       String?        @map("seller_bio")
   createdAt       DateTime       @default(now()) @map("created_at")
   answers         Answer[]
   conversations1  Conversation[] @relation("Participant1")

@@ -2,19 +2,22 @@
 
 import { useQueryStates } from "nuqs";
 import { useQuery } from "@tanstack/react-query";
-import { Input, Spinner } from "@heroui/react";
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { Input, Spinner, Button, useDisclosure } from "@heroui/react";
+import { IconSearch, IconX, IconSparkles } from "@tabler/icons-react";
 import { Mentor } from "@/lib/types";
 import { MentorCard } from "@/components/MentorCard";
+import { BecomeMentorModal } from "@/components/BecomeMentorModal";
 import { mentorsSearchParams } from "./searchParams";
 import { getMentors } from "@/lib/actions/mentors";
 
 interface MentorDirectoryProps {
   initialMentors: Mentor[];
+  isMentor?: boolean;
 }
 
-export function MentorDirectory({ initialMentors }: MentorDirectoryProps) {
+export function MentorDirectory({ initialMentors, isMentor }: MentorDirectoryProps) {
   const [{ q }, setParams] = useQueryStates(mentorsSearchParams);
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   const { data: mentors = initialMentors, isLoading: loading } = useQuery({
     queryKey: ["mentors", { q }],
@@ -25,7 +28,7 @@ export function MentorDirectory({ initialMentors }: MentorDirectoryProps) {
 
   return (
     <>
-      <div className="mt-4">
+      <div className="mt-4 flex gap-3">
         <Input
           value={q}
           onValueChange={(value) => setParams({ q: value || null })}
@@ -42,7 +45,19 @@ export function MentorDirectory({ initialMentors }: MentorDirectoryProps) {
           radius="lg"
           classNames={{ inputWrapper: "bg-default-50" }}
         />
+        {!isMentor && (
+          <Button
+            color="secondary"
+            radius="lg"
+            startContent={<IconSparkles className="h-5 w-5" stroke={2} />}
+            onPress={onOpen}
+            className="shrink-0"
+          >
+            Become a Mentor
+          </Button>
+        )}
       </div>
+      {!isMentor && <BecomeMentorModal isOpen={isOpen} onOpenChange={onOpenChange} />}
 
       {loading ? (
         <div className="py-16 flex justify-center">

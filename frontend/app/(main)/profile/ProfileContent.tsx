@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { Avatar, Button, Card, CardBody, Switch, useDisclosure } from "@heroui/react";
-import { IconEdit, IconLogout, IconMoon, IconSun, IconStar } from "@tabler/icons-react";
+import { IconEdit, IconLogout, IconMoon, IconSun, IconStar, IconSparkles, IconShoppingBag } from "@tabler/icons-react";
 import { signOut } from "@/lib/cognito";
 import { useThemeContext } from "@/components/contexts/ThemeContext";
 import { User, Review } from "@/lib/types";
 import { EditProfileModal } from "./EditProfileModal";
+import { BecomeMentorModal } from "@/components/BecomeMentorModal";
 
 interface ProfileContentProps {
   user: User;
@@ -15,11 +17,15 @@ interface ProfileContentProps {
     rating: number;
   };
   reviews: Review[];
+  isMentor?: boolean;
+  mentorProfileId?: string;
+  isSeller?: boolean;
 }
 
-export function ProfileContent({ user, stats, reviews }: ProfileContentProps) {
+export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId, isSeller }: ProfileContentProps) {
   const { theme, toggleTheme, mounted } = useThemeContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen: isMentorModalOpen, onOpen: onMentorModalOpen, onOpenChange: onMentorModalOpenChange } = useDisclosure();
   const fullName = `${user.firstName} ${user.lastName}`;
 
   return (
@@ -67,6 +73,61 @@ export function ProfileContent({ user, stats, reviews }: ProfileContentProps) {
             <p className="text-xs text-default-500">Rating</p>
           </CardBody>
         </Card>
+      </div>
+
+      <div className="mt-6 grid grid-cols-2 gap-4">
+        {isMentor ? (
+          <Card className="border border-success-200 bg-success-50">
+            <CardBody className="p-4 flex flex-row items-center gap-3">
+              <IconSparkles className="h-6 w-6 text-success-600" />
+              <div className="flex-1">
+                <p className="font-medium text-success-700">Mentor</p>
+                <Link href={`/mentors/${mentorProfileId}`} className="text-xs text-success-600 hover:underline">
+                  View Profile
+                </Link>
+              </div>
+            </CardBody>
+          </Card>
+        ) : (
+          <Card className="border border-default-200">
+            <CardBody className="p-4 flex flex-row items-center gap-3">
+              <IconSparkles className="h-6 w-6 text-default-400" />
+              <div className="flex-1">
+                <p className="font-medium text-foreground">Become a Mentor</p>
+                <p className="text-xs text-default-500">Help other students</p>
+              </div>
+              <Button size="sm" color="danger" variant="flat" onPress={onMentorModalOpen}>
+                Apply
+              </Button>
+            </CardBody>
+          </Card>
+        )}
+        {isSeller ? (
+          <Card className="border border-success-200 bg-success-50">
+            <CardBody className="p-4 flex flex-row items-center gap-3">
+              <IconShoppingBag className="h-6 w-6 text-success-600" />
+              <div className="flex-1">
+                <p className="font-medium text-success-700">Seller</p>
+                <Link href="/marketplace" className="text-xs text-success-600 hover:underline">
+                  My Listings
+                </Link>
+              </div>
+            </CardBody>
+          </Card>
+        ) : (
+          <Card className="border border-default-200">
+            <CardBody className="p-4 flex flex-row items-center gap-3">
+              <IconShoppingBag className="h-6 w-6 text-default-400" />
+              <div className="flex-1">
+                <p className="font-medium text-foreground">Become a Seller</p>
+                <p className="text-xs text-default-500">List your items</p>
+              </div>
+              <Button as={Link} href="/profile/seller" size="sm" color="danger" variant="flat">
+                Apply
+              </Button>
+            </CardBody>
+          </Card>
+        )}
       </div>
 
       {reviews.length > 0 && (
@@ -122,6 +183,7 @@ export function ProfileContent({ user, stats, reviews }: ProfileContentProps) {
       </Button>
 
       <EditProfileModal user={user} isOpen={isOpen} onOpenChange={onOpenChange} />
+      {!isMentor && <BecomeMentorModal isOpen={isMentorModalOpen} onOpenChange={onMentorModalOpenChange} />}
     </div>
   );
 }

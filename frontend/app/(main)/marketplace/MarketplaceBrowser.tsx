@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQueryStates } from "nuqs";
 import { useQuery } from "@tanstack/react-query";
 import { Input, Chip, Spinner, Button, useDisclosure, Tabs, Tab } from "@heroui/react";
-import { IconSearch, IconX, IconPlus } from "@tabler/icons-react";
+import { IconSearch, IconX, IconPlus, IconShoppingBag } from "@tabler/icons-react";
 import { ItemCard } from "@/components/ItemCard";
 import { categories } from "@/lib/constants";
 import { Item } from "@/lib/types";
@@ -16,9 +17,10 @@ const allCategories = [{ value: "all", label: "All" }, ...categories];
 
 interface MarketplaceBrowserProps {
   initialItems: Item[];
+  isSeller?: boolean;
 }
 
-export function MarketplaceBrowser({ initialItems }: MarketplaceBrowserProps) {
+export function MarketplaceBrowser({ initialItems, isSeller }: MarketplaceBrowserProps) {
   const [tab, setTab] = useState("browse");
   const [{ q, category }, setParams] = useQueryStates(marketplaceSearchParams);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -72,17 +74,30 @@ export function MarketplaceBrowser({ initialItems }: MarketplaceBrowserProps) {
           radius="lg"
           classNames={{ inputWrapper: "bg-default-50" }}
         />
-        <Button
-          color="danger"
-          radius="lg"
-          startContent={<IconPlus className="h-5 w-5" stroke={2} />}
-          onPress={onOpen}
-          className="shrink-0"
-        >
-          List Item
-        </Button>
+        {isSeller ? (
+          <Button
+            color="danger"
+            radius="lg"
+            startContent={<IconPlus className="h-5 w-5" stroke={2} />}
+            onPress={onOpen}
+            className="shrink-0"
+          >
+            List Item
+          </Button>
+        ) : (
+          <Button
+            as={Link}
+            href="/profile/seller"
+            color="danger"
+            radius="lg"
+            startContent={<IconShoppingBag className="h-5 w-5" stroke={2} />}
+            className="shrink-0"
+          >
+            Become a Seller
+          </Button>
+        )}
       </div>
-      <CreateItemModal isOpen={isOpen} onOpenChange={onOpenChange} />
+      {isSeller && <CreateItemModal isOpen={isOpen} onOpenChange={onOpenChange} />}
 
       {tab === "browse" && (
         <div className="mt-4 flex gap-2 overflow-x-auto pb-2">

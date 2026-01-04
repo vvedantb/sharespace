@@ -12,7 +12,7 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [listings, reviewsData] = await Promise.all([
+  const [listings, reviewsData, mentorProfile, dbUser] = await Promise.all([
     prisma.item.findMany({
       where: { sellerId: user.id },
       select: { status: true },
@@ -22,6 +22,8 @@ export default async function ProfilePage() {
       include: { reviewer: true },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.mentorProfile.findUnique({ where: { userId: user.id } }),
+    prisma.user.findUnique({ where: { id: user.id }, select: { isSeller: true } }),
   ]);
 
   const reviews: Review[] = reviewsData.map((r) => ({
@@ -60,6 +62,9 @@ export default async function ProfilePage() {
       }}
       stats={stats}
       reviews={reviews}
+      isMentor={!!mentorProfile}
+      mentorProfileId={mentorProfile?.id}
+      isSeller={dbUser?.isSeller ?? false}
     />
   );
 }

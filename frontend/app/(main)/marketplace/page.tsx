@@ -1,14 +1,22 @@
 import { Suspense } from "react";
 import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { MarketplaceBrowser } from "./MarketplaceBrowser";
 
 export default async function MarketplacePage() {
-  const items = await prisma.item.findMany({
-    where: { status: "ACTIVE" },
-    include: { seller: true },
-    orderBy: { createdAt: "desc" },
-  });
+  const currentUser = await getCurrentUser();
+
+  const [items, isSeller] = await Promise.all([
+    prisma.item.findMany({
+      where: { status: "ACTIVE" },
+      include: { seller: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    currentUser
+      ? prisma.user.findUnique({ where: { id: currentUser.id }, select: { isSeller: true } }).then((u) => u?.isSeller ?? false)
+      : false,
+  ]);
 
   const formattedItems = items.map((item) => ({
     id: item.id,
@@ -40,7 +48,7 @@ export default async function MarketplacePage() {
           <div className="py-16 text-center text-gray-500">Loading...</div>
         }
       >
-        <MarketplaceBrowser initialItems={formattedItems} />
+        <MarketplaceBrowser initialItems={formattedItems} isSeller={isSeller} />
       </Suspense>
     </div>
   );

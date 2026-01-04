@@ -1,12 +1,20 @@
 import { Suspense } from "react";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { MentorDirectory } from "./MentorDirectory";
 
 export default async function MentorsPage() {
-  const mentors = await prisma.mentorProfile.findMany({
-    include: { user: true },
-    orderBy: { endorsements: "desc" },
-  });
+  const currentUser = await getCurrentUser();
+
+  const [mentors, isMentor] = await Promise.all([
+    prisma.mentorProfile.findMany({
+      include: { user: true },
+      orderBy: { endorsements: "desc" },
+    }),
+    currentUser
+      ? prisma.mentorProfile.findUnique({ where: { userId: currentUser.id } }).then(Boolean)
+      : false,
+  ]);
 
   const formattedMentors = mentors.map((m) => ({
     id: m.id,
@@ -34,7 +42,7 @@ export default async function MentorsPage() {
           <div className="py-16 text-center text-gray-500">Loading...</div>
         }
       >
-        <MentorDirectory initialMentors={formattedMentors} />
+        <MentorDirectory initialMentors={formattedMentors} isMentor={isMentor} />
       </Suspense>
     </div>
   );
