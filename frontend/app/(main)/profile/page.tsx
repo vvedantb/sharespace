@@ -12,11 +12,7 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const [listings, reviewsData, mentorProfile, dbUser] = await Promise.all([
-    prisma.item.findMany({
-      where: { sellerId: user.id },
-      select: { status: true },
-    }),
+  const [reviewsData, mentorProfile, dbUser] = await Promise.all([
     prisma.review.findMany({
       where: { revieweeId: user.id },
       include: { reviewer: true },
@@ -40,12 +36,6 @@ export default async function ProfilePage() {
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : 0;
 
-  const stats = {
-    itemsListed: listings.length,
-    itemsSold: listings.filter((i) => i.status === "SOLD").length,
-    rating,
-  };
-
   return (
     <ProfileContent
       user={{
@@ -61,7 +51,7 @@ export default async function ProfilePage() {
         graduationYear: user.graduationYear,
         bio: user.bio,
       }}
-      stats={stats}
+      rating={rating}
       reviews={reviews}
       isMentor={mentorProfile?.status === "APPROVED"}
       mentorProfileId={mentorProfile?.id}

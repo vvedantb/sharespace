@@ -1,8 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardBody, Button } from "@heroui/react";
-import { IconEye, IconHeart, IconMessage, IconArrowLeft, IconPercentage, IconRecycle, IconCoin, IconLeaf } from "@tabler/icons-react";
+import { Card, CardBody, Button, Tabs, Tab } from "@heroui/react";
+import {
+  IconEye,
+  IconHeart,
+  IconMessage,
+  IconPercentage,
+  IconRecycle,
+  IconCoin,
+  IconLeaf,
+  IconPackage,
+  IconCheck,
+} from "@tabler/icons-react";
 import { formatMoney, formatCO2 } from "@/lib/sustainability";
 
 interface AnalyticsItem {
@@ -15,39 +25,102 @@ interface AnalyticsItem {
   createdAt: string;
 }
 
-interface AnalyticsContentProps {
-  analytics: {
-    items: AnalyticsItem[];
-    totals: {
-      views: number;
-      saves: number;
-      inquiries: number;
-      items: number;
-    };
-    sustainability: {
-      itemsReused: number;
-      moneySaved: number;
-      co2Saved: number;
-    };
+interface SellerAnalytics {
+  items: AnalyticsItem[];
+  totals: {
+    views: number;
+    saves: number;
+    inquiries: number;
+    items: number;
+  };
+  sustainability: {
+    itemsReused: number;
+    moneySaved: number;
+    co2Saved: number;
   };
 }
 
-export function AnalyticsContent({ analytics }: AnalyticsContentProps) {
+interface AnalyticsContentProps {
+  isSeller: boolean;
+  sellerAnalytics: SellerAnalytics | null;
+  profileStats: {
+    itemsListed: number;
+    itemsSold: number;
+  };
+}
+
+export function AnalyticsContent({ isSeller, sellerAnalytics, profileStats }: AnalyticsContentProps) {
+  return (
+    <div className="px-4 py-6">
+      <h1 className="text-2xl font-bold text-foreground">Analytics</h1>
+
+      <Tabs aria-label="Analytics tabs" color="danger" className="mt-6">
+        <Tab key="profile" title="Profile">
+          <ProfileAnalytics stats={profileStats} />
+        </Tab>
+        {isSeller && sellerAnalytics && (
+          <Tab key="seller" title="Seller">
+            <SellerAnalyticsTab analytics={sellerAnalytics} />
+          </Tab>
+        )}
+      </Tabs>
+    </div>
+  );
+}
+
+function ProfileAnalytics({ stats }: { stats: { itemsListed: number; itemsSold: number } }) {
+  return (
+    <div className="mt-4">
+      <div className="grid grid-cols-2 gap-4">
+        <Card className="bg-default-50" shadow="none">
+          <CardBody className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary-100 p-2">
+                <IconPackage className="h-5 w-5 text-primary-600" stroke={1.5} />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{stats.itemsListed}</p>
+                <p className="text-xs text-default-500">Items Listed</p>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card className="bg-default-50" shadow="none">
+          <CardBody className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-success-100 p-2">
+                <IconCheck className="h-5 w-5 text-success-600" stroke={1.5} />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-foreground">{stats.itemsSold}</p>
+                <p className="text-xs text-default-500">Items Sold</p>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+
+      {stats.itemsListed === 0 && (
+        <Card className="mt-6 border border-default-200" shadow="none">
+          <CardBody className="p-8 text-center">
+            <p className="text-default-500">No items listed yet</p>
+            <Button as={Link} href="/marketplace" color="danger" className="mt-4">
+              List Your First Item
+            </Button>
+          </CardBody>
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function SellerAnalyticsTab({ analytics }: { analytics: SellerAnalytics }) {
   const { items, totals, sustainability } = analytics;
   const conversionRate = totals.views > 0 ? ((totals.inquiries / totals.views) * 100).toFixed(1) : "0";
 
   return (
-    <>
-      <Button
-        as={Link}
-        href="/profile"
-        variant="light"
-        startContent={<IconArrowLeft className="h-4 w-4" stroke={2} />}
-        className="mt-2 mb-4 text-default-500"
-      >
-        Back to Profile
-      </Button>
-
+    <div className="mt-4">
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Card className="bg-default-50" shadow="none">
           <CardBody className="p-4">
@@ -191,6 +264,6 @@ export function AnalyticsContent({ analytics }: AnalyticsContentProps) {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

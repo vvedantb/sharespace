@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/Navbar";
 import { getCurrentUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 
 export default async function MainLayout({
   children,
@@ -8,16 +7,10 @@ export default async function MainLayout({
   children: React.ReactNode;
 }) {
   const user = await getCurrentUser();
-  const dbUser = user
-    ? await prisma.user.findUnique({
-        where: { id: user.id },
-        select: { isSeller: true },
-      })
-    : null;
 
   return (
     <div className="h-screen bg-neutral-200 dark:bg-black flex flex-col">
-      <Navbar isAdmin={user?.isAdmin} isSeller={dbUser?.isSeller} />
+      <Navbar isAdmin={user?.isAdmin} />
       <main className="flex-1 mx-auto w-full overflow-hidden">
         <div className="mx-3 bg-white dark:bg-neutral-900 rounded-t-2xl h-full overflow-y-auto">
           {children}

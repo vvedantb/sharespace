@@ -23,10 +23,9 @@ const browseLinks = [
 
 interface NavbarProps {
   isAdmin?: boolean;
-  isSeller?: boolean;
 }
 
-export function Navbar({ isAdmin, isSeller }: NavbarProps) {
+export function Navbar({ isAdmin }: NavbarProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -70,19 +69,17 @@ export function Navbar({ isAdmin, isSeller }: NavbarProps) {
               <IconMessage className="h-5 w-5" stroke={2} />
               Messages
             </Link>
-            {isSeller && (
-              <Link
-                href="/profile/analytics"
-                className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  pathname === "/profile/analytics"
-                    ? "bg-red-800 text-white dark:bg-red-700"
-                    : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
-                }`}
-              >
-                <IconChartBar className="h-5 w-5" stroke={2} />
-                Analytics
-              </Link>
-            )}
+            <Link
+              href="/analytics"
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                pathname === "/analytics"
+                  ? "bg-red-800 text-white dark:bg-red-700"
+                  : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
+              }`}
+            >
+              <IconChartBar className="h-5 w-5" stroke={2} />
+              Analytics
+            </Link>
           </div>
 
           <div className="flex items-center gap-1">
@@ -166,20 +163,18 @@ export function Navbar({ isAdmin, isSeller }: NavbarProps) {
                 <IconMessage className="h-5 w-5" stroke={2} />
                 Messages
               </Link>
-              {isSeller && (
-                <Link
-                  href="/profile/analytics"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                    pathname === "/profile/analytics"
-                      ? "bg-red-800 text-white dark:bg-red-700"
-                      : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
-                  }`}
-                >
-                  <IconChartBar className="h-5 w-5" stroke={2} />
-                  Analytics
-                </Link>
-              )}
+              <Link
+                href="/analytics"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                  pathname === "/analytics"
+                    ? "bg-red-800 text-white dark:bg-red-700"
+                    : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
+                }`}
+              >
+                <IconChartBar className="h-5 w-5" stroke={2} />
+                Analytics
+              </Link>
 
               <div className="my-2 h-px bg-neutral-300 dark:bg-neutral-700" />
               <p className="px-4 py-1 text-xs font-medium text-neutral-500 uppercase">Account</p>

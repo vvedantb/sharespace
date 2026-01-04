@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Avatar, Button, Card, CardBody, Switch, useDisclosure } from "@heroui/react";
-import { IconEdit, IconLogout, IconMoon, IconSun, IconStar, IconSparkles, IconShoppingBag, IconChartBar } from "@tabler/icons-react";
+import { IconEdit, IconLogout, IconMoon, IconSun, IconStar, IconSparkles, IconShoppingBag } from "@tabler/icons-react";
 import { signOut } from "@/lib/cognito";
 import { useThemeContext } from "@/components/contexts/ThemeContext";
 import { User, Review } from "@/lib/types";
@@ -12,11 +12,7 @@ import { BecomeSellerModal } from "@/components/BecomeSellerModal";
 
 interface ProfileContentProps {
   user: User;
-  stats: {
-    itemsListed: number;
-    itemsSold: number;
-    rating: number;
-  };
+  rating: number;
   reviews: Review[];
   isMentor?: boolean;
   mentorProfileId?: string;
@@ -24,7 +20,7 @@ interface ProfileContentProps {
   isSeller?: boolean;
 }
 
-export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId, mentorStatus, isSeller }: ProfileContentProps) {
+export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileId, mentorStatus, isSeller }: ProfileContentProps) {
   const { theme, toggleTheme, mounted } = useThemeContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { isOpen: isMentorModalOpen, onOpen: onMentorModalOpen, onOpenChange: onMentorModalOpenChange } = useDisclosure();
@@ -45,7 +41,15 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
           className="h-16 w-16 text-xl"
         />
         <div className="flex-1">
-          <h2 className="text-lg font-bold text-foreground">{fullName}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-bold text-foreground">{fullName}</h2>
+            {rating > 0 && (
+              <div className="flex items-center gap-1 text-warning">
+                <IconStar className="h-4 w-4" fill="currentColor" />
+                <span className="text-sm font-medium">{rating.toFixed(1)}</span>
+              </div>
+            )}
+          </div>
           <p className="text-sm text-default-500">
             {user.course || "No course"} · Year {user.yearOfStudy || "-"}
           </p>
@@ -55,28 +59,6 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
         </Button>
       </div>
 
-      <div className="mt-6 grid grid-cols-3 gap-4">
-        <Card className="bg-default-50" shadow="none">
-          <CardBody className="p-4 text-center">
-            <p className="text-xl font-bold text-foreground">{stats.itemsListed}</p>
-            <p className="text-xs text-default-500">Listed</p>
-          </CardBody>
-        </Card>
-        <Card className="bg-default-50" shadow="none">
-          <CardBody className="p-4 text-center">
-            <p className="text-xl font-bold text-foreground">{stats.itemsSold}</p>
-            <p className="text-xs text-default-500">Sold</p>
-          </CardBody>
-        </Card>
-        <Card className="bg-default-50" shadow="none">
-          <CardBody className="p-4 text-center">
-            <p className="text-xl font-bold text-foreground">
-              {stats.rating > 0 ? stats.rating.toFixed(1) : "-"}
-            </p>
-            <p className="text-xs text-default-500">Rating</p>
-          </CardBody>
-        </Card>
-      </div>
 
       <div className="mt-6 grid grid-cols-2 gap-4">
         {isMentor ? (
@@ -134,16 +116,9 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
               <IconShoppingBag className="h-6 w-6 text-success-600" />
               <div className="flex-1">
                 <p className="font-medium text-success-700">Seller</p>
-                <div className="flex gap-2">
-                  <Link href="/marketplace" className="text-xs text-success-600 hover:underline">
-                    Listings
-                  </Link>
-                  <span className="text-xs text-success-400">·</span>
-                  <Link href="/profile/analytics" className="text-xs text-success-600 hover:underline flex items-center gap-1">
-                    <IconChartBar className="h-3 w-3" />
-                    Analytics
-                  </Link>
-                </div>
+                <Link href="/marketplace" className="text-xs text-success-600 hover:underline">
+                  View Listings
+                </Link>
               </div>
             </CardBody>
           </Card>
