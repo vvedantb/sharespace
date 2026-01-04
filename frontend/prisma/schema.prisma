@@ -171,6 +171,16 @@ model SavedItem {
   @@map("saved_items")
 }
 
+model MentorEndorsement {
+  id        String   @id @default(uuid())
+  mentorId  String   @map("mentor_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([mentorId, userId])
+  @@map("mentor_endorsements")
+}
+
 enum Category {
   TEXTBOOKS
   ELECTRONICS

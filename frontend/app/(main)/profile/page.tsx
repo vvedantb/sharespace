@@ -1,6 +1,8 @@
+import dayjs from "dayjs";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { Review } from "@/lib/types";
 import { ProfileContent } from "./ProfileContent";
 
 export default async function ProfilePage() {
@@ -10,14 +12,36 @@ export default async function ProfilePage() {
     redirect("/login");
   }
 
-  const listings = await prisma.item.findMany({
-    where: { sellerId: user.id },
-    select: { status: true },
-  });
+  const [listings, reviewsData] = await Promise.all([
+    prisma.item.findMany({
+      where: { sellerId: user.id },
+      select: { status: true },
+    }),
+    prisma.review.findMany({
+      where: { revieweeId: user.id },
+      include: { reviewer: true },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  const reviews: Review[] = reviewsData.map((r) => ({
+    id: r.id,
+    reviewerId: r.reviewerId,
+    reviewerName: `${r.reviewer.firstName} ${r.reviewer.lastName}`,
+    rating: r.rating,
+    comment: r.comment ?? "",
+    createdAt: dayjs(r.createdAt).toISOString(),
+  }));
+
+  const rating =
+    reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
 
   const stats = {
     itemsListed: listings.length,
     itemsSold: listings.filter((i) => i.status === "SOLD").length,
+    rating,
   };
 
   return (
@@ -35,6 +59,7 @@ export default async function ProfilePage() {
         bio: user.bio,
       }}
       stats={stats}
+      reviews={reviews}
     />
   );
 }

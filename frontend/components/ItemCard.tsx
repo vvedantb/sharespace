@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardBody, CardFooter, Image } from "@heroui/react";
-import { IconPhoto } from "@tabler/icons-react";
+import { IconPhoto, IconStar } from "@tabler/icons-react";
 import { Item } from "@/lib/types";
 
 interface ItemCardProps {
@@ -26,6 +26,11 @@ export function ItemCard({ item }: ItemCardProps) {
             {item.status === "SOLD" && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                 <span className="text-sm font-medium text-white">Sold</span>
+              </div>
+            )}
+            {item.isMentorRecommended && (
+              <div className="absolute top-2 right-2 rounded-full bg-success-500 p-1">
+                <IconStar className="h-3 w-3 text-white" fill="currentColor" />
               </div>
             )}
           </div>

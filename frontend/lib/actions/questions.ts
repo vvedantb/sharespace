@@ -84,3 +84,26 @@ export async function createAnswer(questionId: string, content: string): Promise
     createdAt: dayjs(answer.createdAt).toISOString(),
   };
 }
+
+export async function markAnswerHelpful(answerId: string) {
+  const answer = await prisma.answer.update({
+    where: { id: answerId },
+    data: {
+      helpfulCount: { increment: 1 },
+      isEndorsed: true,
+    },
+  });
+
+  const mentorProfile = await prisma.mentorProfile.findFirst({
+    where: { userId: answer.mentorId },
+  });
+
+  if (mentorProfile) {
+    await prisma.mentorProfile.update({
+      where: { id: mentorProfile.id },
+      data: { helpfulAnswers: { increment: 1 } },
+    });
+  }
+
+  return answer.helpfulCount + 1;
+}

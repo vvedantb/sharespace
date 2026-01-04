@@ -3,21 +3,29 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@heroui/react";
-import { IconHeart, IconMessageCircle } from "@tabler/icons-react";
+import { IconHeart, IconMessageCircle, IconStar } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
-import { saveItem, unsaveItem } from "@/lib/actions/items";
+import { saveItem, unsaveItem, recommendItem } from "@/lib/actions/items";
 
 interface ItemActionsProps {
   itemId: string;
   sellerId: string;
+  isMentor?: boolean;
+  isMentorRecommended?: boolean;
 }
 
-export function ItemActions({ itemId, sellerId }: ItemActionsProps) {
+export function ItemActions({ itemId, sellerId, isMentor, isMentorRecommended }: ItemActionsProps) {
   const [isSaved, setIsSaved] = useState(false);
+  const [recommended, setRecommended] = useState(isMentorRecommended ?? false);
 
   const saveMutation = useMutation({
     mutationFn: (saved: boolean) => saved ? unsaveItem(itemId) : saveItem(itemId),
     onSuccess: () => setIsSaved(!isSaved),
+  });
+
+  const recommendMutation = useMutation({
+    mutationFn: () => recommendItem(itemId),
+    onSuccess: () => setRecommended(true),
   });
 
   const handleSave = () => saveMutation.mutate(isSaved);
@@ -43,6 +51,18 @@ export function ItemActions({ itemId, sellerId }: ItemActionsProps) {
       >
         <IconHeart className="h-5 w-5" stroke={2} fill={isSaved ? "currentColor" : "none"} />
       </Button>
+      {isMentor && !recommended && (
+        <Button
+          variant="bordered"
+          radius="lg"
+          color="success"
+          isLoading={recommendMutation.isPending}
+          onPress={() => recommendMutation.mutate()}
+          startContent={<IconStar className="h-5 w-5" stroke={2} />}
+        >
+          Recommend
+        </Button>
+      )}
     </div>
   );
 }

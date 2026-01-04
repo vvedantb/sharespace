@@ -22,7 +22,7 @@ export function MentorCard({ mentor }: MentorCardProps) {
             </p>
           </div>
           <span className="text-sm font-medium text-red-800 dark:text-red-500">
-            {mentor.rating}★
+            {mentor.rating > 0 ? `${mentor.rating.toFixed(1)}★` : "-"}
           </span>
         </div>
 

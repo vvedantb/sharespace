@@ -1,14 +1,26 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { ItemDetail } from "./ItemDetail";
 
 export default async function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const currentUser = await getCurrentUser();
 
   const item = await prisma.item.findUnique({
     where: { id },
-    include: { seller: true },
+    include: {
+      seller: {
+        include: {
+          reviewsReceived: { select: { rating: true } },
+        },
+      },
+    },
   });
+
+  const isMentor = currentUser
+    ? !!(await prisma.mentorProfile.findUnique({ where: { userId: currentUser.id } }))
+    : false;
 
   if (!item) {
     return (
@@ -20,6 +32,12 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
       </div>
     );
   }
+
+  const reviews = item.seller.reviewsReceived;
+  const sellerRating =
+    reviews.length > 0
+      ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+      : 0;
 
   return (
     <ItemDetail
@@ -33,7 +51,11 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
         images: item.images,
         sellerId: item.sellerId,
         sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
+        sellerRating,
+        isMentorRecommended: item.isMentorRecommended,
       }}
+      isMentor={isMentor}
+      currentUserId={currentUser?.id}
     />
   );
 }

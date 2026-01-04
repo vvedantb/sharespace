@@ -1,10 +1,10 @@
 "use client";
 
 import { Avatar, Button, Card, CardBody, Switch, useDisclosure } from "@heroui/react";
-import { IconEdit, IconLogout, IconMoon, IconSun } from "@tabler/icons-react";
+import { IconEdit, IconLogout, IconMoon, IconSun, IconStar } from "@tabler/icons-react";
 import { signOut } from "@/lib/cognito";
 import { useThemeContext } from "@/components/contexts/ThemeContext";
-import { User } from "@/lib/types";
+import { User, Review } from "@/lib/types";
 import { EditProfileModal } from "./EditProfileModal";
 
 interface ProfileContentProps {
@@ -12,10 +12,12 @@ interface ProfileContentProps {
   stats: {
     itemsListed: number;
     itemsSold: number;
+    rating: number;
   };
+  reviews: Review[];
 }
 
-export function ProfileContent({ user, stats }: ProfileContentProps) {
+export function ProfileContent({ user, stats, reviews }: ProfileContentProps) {
   const { theme, toggleTheme, mounted } = useThemeContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const fullName = `${user.firstName} ${user.lastName}`;
@@ -59,11 +61,37 @@ export function ProfileContent({ user, stats }: ProfileContentProps) {
         </Card>
         <Card className="bg-default-50">
           <CardBody className="p-4 text-center">
-            <p className="text-xl font-bold text-foreground">-</p>
+            <p className="text-xl font-bold text-foreground">
+              {stats.rating > 0 ? stats.rating.toFixed(1) : "-"}
+            </p>
             <p className="text-xs text-default-500">Rating</p>
           </CardBody>
         </Card>
       </div>
+
+      {reviews.length > 0 && (
+        <div className="mt-8">
+          <h2 className="text-lg font-bold text-foreground mb-4">Reviews</h2>
+          <div className="space-y-3">
+            {reviews.map((review) => (
+              <Card key={review.id} className="border border-default-200">
+                <CardBody className="p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="font-medium text-foreground">{review.reviewerName}</p>
+                    <div className="flex items-center gap-1 text-warning">
+                      <IconStar className="h-4 w-4" fill="currentColor" />
+                      <span className="text-sm font-medium">{review.rating}</span>
+                    </div>
+                  </div>
+                  {review.comment && (
+                    <p className="mt-2 text-sm text-default-500">{review.comment}</p>
+                  )}
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       <Card className="mt-8 border border-default-200">
         <CardBody className="flex-row items-center justify-between p-4">

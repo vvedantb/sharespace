@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { hasEndorsed } from "@/lib/actions/mentors";
 import { MentorDetail } from "./MentorDetail";
 
 export default async function MentorDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -21,14 +22,20 @@ export default async function MentorDetailPage({ params }: { params: Promise<{ i
     );
   }
 
+  const endorsed = await hasEndorsed(mentor.id);
+  const rating = mentor.totalAnswers > 0 ? (mentor.helpfulAnswers / mentor.totalAnswers) * 5 : 0;
+
   return (
     <MentorDetail
+      mentorId={mentor.id}
       mentor={{
         userId: mentor.userId,
         bio: mentor.bio,
         expertise: mentor.expertise,
         totalAnswers: mentor.totalAnswers,
+        helpfulAnswers: mentor.helpfulAnswers,
         endorsements: mentor.endorsements,
+        rating,
         user: {
           firstName: mentor.user.firstName,
           lastName: mentor.user.lastName,
@@ -36,6 +43,7 @@ export default async function MentorDetailPage({ params }: { params: Promise<{ i
           university: mentor.user.university,
         },
       }}
+      hasEndorsed={endorsed}
     />
   );
 }

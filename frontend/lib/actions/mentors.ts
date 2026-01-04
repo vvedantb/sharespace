@@ -51,3 +51,29 @@ export async function createMentor(data: { bio: string; expertise: string[] }) {
     },
   });
 }
+
+export async function endorseMentor(mentorId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await prisma.$transaction([
+    prisma.mentorEndorsement.create({
+      data: { mentorId, userId: user.id },
+    }),
+    prisma.mentorProfile.update({
+      where: { id: mentorId },
+      data: { endorsements: { increment: 1 } },
+    }),
+  ]);
+}
+
+export async function hasEndorsed(mentorId: string): Promise<boolean> {
+  const user = await getCurrentUser();
+  if (!user) return false;
+
+  const endorsement = await prisma.mentorEndorsement.findUnique({
+    where: { mentorId_userId: { mentorId, userId: user.id } },
+  });
+
+  return !!endorsement;
+}

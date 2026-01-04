@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { QuestionDetail } from "./QuestionDetail";
 import Link from "next/link";
 
@@ -9,6 +10,7 @@ export default async function QuestionDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const currentUser = await getCurrentUser();
 
   const question = await prisma.question.findUnique({
     where: { id },
@@ -58,5 +60,11 @@ export default async function QuestionDetailPage({
     createdAt: dayjs(a.createdAt).toISOString(),
   }));
 
-  return <QuestionDetail question={formattedQuestion} initialAnswers={formattedAnswers} />;
+  return (
+    <QuestionDetail
+      question={formattedQuestion}
+      initialAnswers={formattedAnswers}
+      currentUserId={currentUser?.id}
+    />
+  );
 }

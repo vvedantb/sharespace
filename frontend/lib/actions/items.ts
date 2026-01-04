@@ -152,3 +152,19 @@ export async function unsaveItem(id: string) {
     data: { saves: { decrement: 1 } },
   });
 }
+
+export async function recommendItem(itemId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const mentorProfile = await prisma.mentorProfile.findUnique({
+    where: { userId: user.id },
+  });
+
+  if (!mentorProfile) throw new Error("Only mentors can recommend items");
+
+  return prisma.item.update({
+    where: { id: itemId },
+    data: { isMentorRecommended: true },
+  });
+}

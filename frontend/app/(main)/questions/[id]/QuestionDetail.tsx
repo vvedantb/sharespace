@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { Avatar, Button, Card, CardBody } from "@heroui/react";
-import { IconArrowLeft } from "@tabler/icons-react";
+import { IconArrowLeft, IconThumbUp } from "@tabler/icons-react";
+import { useMutation } from "@tanstack/react-query";
 import { Question, Answer } from "@/lib/types";
+import { markAnswerHelpful } from "@/lib/actions/questions";
 import { AnswerForm } from "./AnswerForm";
 
 dayjs.extend(relativeTime);
@@ -15,11 +17,13 @@ dayjs.extend(relativeTime);
 interface QuestionDetailProps {
   question: Question;
   initialAnswers: Answer[];
+  currentUserId?: string;
 }
 
 export function QuestionDetail({
   question,
   initialAnswers,
+  currentUserId,
 }: QuestionDetailProps) {
   const router = useRouter();
   const [answers, setAnswers] = useState(initialAnswers);
@@ -27,6 +31,19 @@ export function QuestionDetail({
   const handleAnswerPosted = (answer: Answer) => {
     setAnswers([...answers, answer]);
   };
+
+  const markHelpfulMutation = useMutation({
+    mutationFn: (answerId: string) => markAnswerHelpful(answerId),
+    onSuccess: (_, answerId) => {
+      setAnswers((prev) =>
+        prev.map((a) =>
+          a.id === answerId ? { ...a, isEndorsed: true, helpfulCount: a.helpfulCount + 1 } : a
+        )
+      );
+    },
+  });
+
+  const isAsker = currentUserId === question.askerId;
 
   return (
     <div className="px-4 py-6">
@@ -84,9 +101,27 @@ export function QuestionDetail({
                     <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                       {answer.content}
                     </p>
-                    <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">
-                      {answer.helpfulCount} found helpful
-                    </p>
+                    <div className="mt-2 flex items-center justify-between">
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                        {answer.helpfulCount} found helpful
+                      </p>
+                      {isAsker && !answer.isEndorsed && (
+                        <Button
+                          size="sm"
+                          variant="light"
+                          startContent={<IconThumbUp className="h-4 w-4" />}
+                          isLoading={markHelpfulMutation.isPending}
+                          onPress={() => markHelpfulMutation.mutate(answer.id)}
+                        >
+                          Mark Helpful
+                        </Button>
+                      )}
+                      {answer.isEndorsed && (
+                        <span className="text-xs text-success-500 flex items-center gap-1">
+                          <IconThumbUp className="h-3 w-3" /> Helpful
+                        </span>
+                      )}
+                    </div>
                   </CardBody>
                 </Card>
               ))}

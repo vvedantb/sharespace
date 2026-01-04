@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Avatar, Button, Image } from "@heroui/react";
-import { IconPhoto, IconArrowLeft } from "@tabler/icons-react";
+import { IconPhoto, IconArrowLeft, IconStar } from "@tabler/icons-react";
 import { ItemActions } from "./ItemActions";
+import { ReviewModal } from "./ReviewModal";
 
 const conditionLabels: Record<string, string> = {
   NEW: "New",
@@ -24,10 +26,17 @@ interface ItemDetailProps {
     images: string[];
     sellerId: string;
     sellerName: string;
+    sellerRating?: number;
+    isMentorRecommended?: boolean;
   };
+  isMentor?: boolean;
+  currentUserId?: string;
 }
 
-export function ItemDetail({ item }: ItemDetailProps) {
+export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const canReview = currentUserId && currentUserId !== item.sellerId;
+
   return (
     <div className="px-4 py-6">
       <Button
@@ -41,11 +50,17 @@ export function ItemDetail({ item }: ItemDetailProps) {
       </Button>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <div className="aspect-square overflow-hidden rounded-2xl bg-default-100 flex items-center justify-center">
+        <div className="aspect-square overflow-hidden rounded-2xl bg-default-100 flex items-center justify-center relative">
           {item.images && item.images.length > 0 ? (
             <Image src={item.images[0]} alt={item.title} className="h-full w-full object-cover" radius="lg" />
           ) : (
             <IconPhoto className="h-20 w-20 text-default-300" stroke={1.5} />
+          )}
+          {item.isMentorRecommended && (
+            <div className="absolute top-3 right-3 flex items-center gap-1 rounded-full bg-success-500 px-2 py-1 text-xs text-white">
+              <IconStar className="h-3 w-3" />
+              Mentor Pick
+            </div>
           )}
         </div>
 
@@ -65,13 +80,29 @@ export function ItemDetail({ item }: ItemDetailProps) {
             <Avatar name={item.sellerName} size="md" color="danger" showFallback />
             <div className="flex-1">
               <p className="font-medium text-foreground">{item.sellerName}</p>
-              <p className="text-sm text-default-500">No rating yet</p>
+              <p className="text-sm text-default-500">
+                {item.sellerRating && item.sellerRating > 0
+                  ? `${item.sellerRating.toFixed(1)}★`
+                  : "No rating yet"}
+              </p>
             </div>
+            {canReview && (
+              <Button size="sm" variant="flat" onPress={() => setReviewOpen(true)}>
+                Leave Review
+              </Button>
+            )}
           </div>
 
-          <ItemActions itemId={item.id} sellerId={item.sellerId} />
+          <ItemActions itemId={item.id} sellerId={item.sellerId} isMentor={isMentor} isMentorRecommended={item.isMentorRecommended} />
         </div>
       </div>
+
+      <ReviewModal
+        isOpen={reviewOpen}
+        onClose={() => setReviewOpen(false)}
+        revieweeId={item.sellerId}
+        itemId={item.id}
+      />
     </div>
   );
 }
