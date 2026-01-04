@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Modal,
@@ -46,6 +46,21 @@ export function EditProfileModal({ user, isOpen, onOpenChange }: EditProfileModa
   const [yearOfStudy, setYearOfStudy] = useState((user.yearOfStudy ?? 1).toString());
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(user.avatarUrl ?? null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setFirstName(user.firstName);
+      setLastName(user.lastName);
+      setUsername(user.username ?? "");
+      setBio(user.bio ?? "");
+      setCourse(user.course ?? "");
+      setYearOfStudy((user.yearOfStudy ?? 1).toString());
+      setAvatarFile(null);
+      setAvatarPreview(user.avatarUrl ?? null);
+      setError("");
+    }
+  }, [isOpen, user]);
 
   const uploadAvatarMutation = useMutation({
     mutationFn: (file: File) => uploadToS3(file, "avatars"),
@@ -56,6 +71,9 @@ export function EditProfileModal({ user, isOpen, onOpenChange }: EditProfileModa
     onSuccess: () => {
       onOpenChange(false);
       router.refresh();
+    },
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Failed to update profile");
     },
   });
 
@@ -69,20 +87,25 @@ export function EditProfileModal({ user, isOpen, onOpenChange }: EditProfileModa
   };
 
   const handleSubmit = async () => {
-    let avatarUrl = user.avatarUrl;
-    if (avatarFile) {
-      avatarUrl = await uploadAvatarMutation.mutateAsync(avatarFile);
-    }
+    setError("");
+    try {
+      let avatarUrl = user.avatarUrl;
+      if (avatarFile) {
+        avatarUrl = await uploadAvatarMutation.mutateAsync(avatarFile);
+      }
 
-    updateProfileMutation.mutate({
-      firstName,
-      lastName,
-      username,
-      avatarUrl: avatarUrl ?? undefined,
-      bio,
-      course,
-      yearOfStudy: parseInt(yearOfStudy),
-    });
+      await updateProfileMutation.mutateAsync({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        username: username.trim() || undefined,
+        avatarUrl: avatarUrl ?? undefined,
+        bio: bio.trim() || undefined,
+        course: course.trim() || undefined,
+        yearOfStudy: parseInt(yearOfStudy),
+      });
+    } catch {
+      // Error is handled by mutation onError
+    }
   };
 
   return (
@@ -90,6 +113,12 @@ export function EditProfileModal({ user, isOpen, onOpenChange }: EditProfileModa
       <ModalContent>
         <ModalHeader>Edit Profile</ModalHeader>
         <ModalBody className="gap-4">
+          {error && (
+            <div className="p-3 rounded-lg bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 text-danger text-sm">
+              {error}
+            </div>
+          )}
+
           <div className="flex items-center gap-4">
             <input
               type="file"
@@ -138,17 +167,9 @@ export function EditProfileModal({ user, isOpen, onOpenChange }: EditProfileModa
             startContent={<span className="text-default-400">@</span>}
           />
 
-          <Input
-            label="Email"
-            value={user.email}
-            isDisabled
-            variant="bordered"
-            radius="lg"
-          />
-
           <div className="grid gap-4 md:grid-cols-2">
             <Input
-              label="Course / Major"
+              label="Course"
               value={course}
               onValueChange={setCourse}
               variant="bordered"
@@ -156,7 +177,7 @@ export function EditProfileModal({ user, isOpen, onOpenChange }: EditProfileModa
             />
             <Select
               label="Year of Study"
-              selectedKeys={[yearOfStudy]}
+              selectedKeys={yearOfStudy ? [yearOfStudy] : []}
               onSelectionChange={(keys) => {
                 const selected = Array.from(keys)[0];
                 if (selected) setYearOfStudy(selected.toString());

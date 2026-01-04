@@ -40,6 +40,9 @@ export async function updateUser(
     graduationYear?: number;
   }
 ) {
+  const user = await getCurrentUser();
+  if (!user || user.id !== id) throw new Error("Unauthorized");
+
   return prisma.user.update({
     where: { id },
     data,
