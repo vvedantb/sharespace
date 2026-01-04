@@ -24,7 +24,7 @@ export function MyListingsContent({ initialItems }: MyListingsContentProps) {
   const filteredItems = search
     ? items.filter((item) =>
         item.title.toLowerCase().includes(search.toLowerCase()) ||
-        item.description.toLowerCase().includes(search.toLowerCase())
+        item.description?.toLowerCase().includes(search.toLowerCase())
       )
     : items;
 
