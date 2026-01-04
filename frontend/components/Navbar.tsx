@@ -46,7 +46,7 @@ export function Navbar({ isAdmin }: NavbarProps) {
                 key={link.href}
                 href={link.href}
                 className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  pathname === link.href
+                  pathname.startsWith(link.href)
                     ? "bg-red-800 text-white dark:bg-red-700"
                     : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
                 }`}
@@ -72,7 +72,7 @@ export function Navbar({ isAdmin }: NavbarProps) {
             <Link
               href="/analytics"
               className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                pathname === "/analytics"
+                pathname.startsWith("/analytics")
                   ? "bg-red-800 text-white dark:bg-red-700"
                   : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
               }`}
@@ -139,7 +139,7 @@ export function Navbar({ isAdmin }: NavbarProps) {
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                    pathname === link.href
+                    pathname.startsWith(link.href)
                       ? "bg-red-800 text-white dark:bg-red-700"
                       : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
                   }`}
@@ -167,7 +167,7 @@ export function Navbar({ isAdmin }: NavbarProps) {
                 href="/analytics"
                 onClick={() => setMobileMenuOpen(false)}
                 className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
-                  pathname === "/analytics"
+                  pathname.startsWith("/analytics")
                     ? "bg-red-800 text-white dark:bg-red-700"
                     : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
                 }`}
