@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Avatar, Button, Chip, Image, useDisclosure } from "@heroui/react";
-import { IconPhoto, IconArrowLeft, IconStar, IconCheck } from "@tabler/icons-react";
+import { IconPhoto, IconArrowLeft, IconStar, IconCheck, IconEdit, IconRosetteDiscountCheck } from "@tabler/icons-react";
 import { ItemActions } from "./ItemActions";
 import { ReviewModal } from "./ReviewModal";
 import { MarkAsSoldModal } from "@/components/MarkAsSoldModal";
+import { EditItemModal } from "@/components/EditItemModal";
 
 const conditionLabels: Record<string, string> = {
   NEW: "New",
@@ -30,14 +31,17 @@ interface ItemDetailProps {
     sellerName: string;
     sellerRating?: number;
     isMentorRecommended?: boolean;
+    isVerifiedSeller?: boolean;
   };
   isMentor?: boolean;
   currentUserId?: string;
+  initialSaved?: boolean;
 }
 
-export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
+export function ItemDetail({ item, isMentor, currentUserId, initialSaved }: ItemDetailProps) {
   const [reviewOpen, setReviewOpen] = useState(false);
   const { isOpen: isSoldModalOpen, onOpen: onSoldModalOpen, onOpenChange: onSoldModalOpenChange } = useDisclosure();
+  const { isOpen: isEditModalOpen, onOpen: onEditModalOpen, onOpenChange: onEditModalOpenChange } = useDisclosure();
   const canReview = currentUserId && currentUserId !== item.sellerId;
   const isOwner = currentUserId === item.sellerId;
   const isSold = item.status === "SOLD";
@@ -91,7 +95,15 @@ export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
           <div className="mt-8 flex items-center gap-3 border-t border-default-200 pt-6">
             <Avatar name={item.sellerName} size="md" color="danger" showFallback />
             <div className="flex-1">
-              <p className="font-medium text-foreground">{item.sellerName}</p>
+              <div className="flex items-center gap-2">
+                <p className="font-medium text-foreground">{item.sellerName}</p>
+                {item.isVerifiedSeller && (
+                  <span className="flex items-center gap-1 text-xs text-success-600">
+                    <IconRosetteDiscountCheck className="h-4 w-4" />
+                    Verified
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-default-500">
                 {item.sellerRating && item.sellerRating > 0
                   ? `${item.sellerRating.toFixed(1)}★`
@@ -105,20 +117,31 @@ export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
             )}
           </div>
 
-          <ItemActions itemId={item.id} sellerId={item.sellerId} currentUserId={currentUserId} isMentor={isMentor} isMentorRecommended={item.isMentorRecommended} />
+          <ItemActions itemId={item.id} sellerId={item.sellerId} currentUserId={currentUserId} isMentor={isMentor} isMentorRecommended={item.isMentorRecommended} initialSaved={initialSaved} />
 
           {isOwner && !isSold && (
-            <Button
-              color="success"
-              variant="bordered"
-              radius="lg"
-              fullWidth
-              startContent={<IconCheck className="h-5 w-5" stroke={2} />}
-              onPress={onSoldModalOpen}
-              className="mt-3"
-            >
-              Mark as Sold
-            </Button>
+            <div className="mt-3 flex gap-2">
+              <Button
+                color="default"
+                variant="bordered"
+                radius="lg"
+                fullWidth
+                startContent={<IconEdit className="h-5 w-5" stroke={2} />}
+                onPress={onEditModalOpen}
+              >
+                Edit
+              </Button>
+              <Button
+                color="success"
+                variant="bordered"
+                radius="lg"
+                fullWidth
+                startContent={<IconCheck className="h-5 w-5" stroke={2} />}
+                onPress={onSoldModalOpen}
+              >
+                Mark as Sold
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -135,6 +158,18 @@ export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
         onOpenChange={onSoldModalOpenChange}
         itemId={item.id}
         itemTitle={item.title}
+      />
+
+      <EditItemModal
+        isOpen={isEditModalOpen}
+        onOpenChange={onEditModalOpenChange}
+        item={{
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          price: item.price,
+          condition: item.condition,
+        }}
       />
     </div>
   );

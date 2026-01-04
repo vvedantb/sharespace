@@ -286,3 +286,112 @@ export async function markAsSold(itemId: string, buyerId: string) {
     },
   });
 }
+
+export async function getSavedItems(): Promise<Item[]> {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  const savedItems = await prisma.savedItem.findMany({
+    where: { userId: user.id },
+    include: {
+      item: {
+        include: {
+          seller: {
+            include: { reviewsReceived: { select: { rating: true } } },
+          },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  return savedItems.map(({ item }) => {
+    const reviews = item.seller.reviewsReceived;
+    const sellerRating =
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        : 0;
+    return {
+      id: item.id,
+      sellerId: item.sellerId,
+      sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
+      sellerRating,
+      title: item.title,
+      description: item.description,
+      price: Number(item.price),
+      category: item.category,
+      condition: item.condition,
+      status: item.status,
+      images: item.images,
+      courseCode: item.courseCode,
+      university: item.university,
+      views: item.views,
+      saves: item.saves,
+      isMentorRecommended: item.isMentorRecommended,
+      createdAt: dayjs(item.createdAt).toISOString(),
+    };
+  });
+}
+
+export async function toggleSaveItem(itemId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const existing = await prisma.savedItem.findUnique({
+    where: { userId_itemId: { userId: user.id, itemId } },
+  });
+
+  if (existing) {
+    await prisma.savedItem.delete({ where: { id: existing.id } });
+    await prisma.item.update({ where: { id: itemId }, data: { saves: { decrement: 1 } } });
+    return false;
+  } else {
+    await prisma.savedItem.create({ data: { userId: user.id, itemId } });
+    await prisma.item.update({ where: { id: itemId }, data: { saves: { increment: 1 } } });
+    return true;
+  }
+}
+
+export async function isItemSaved(itemId: string): Promise<boolean> {
+  const user = await getCurrentUser();
+  if (!user) return false;
+
+  const saved = await prisma.savedItem.findUnique({
+    where: { userId_itemId: { userId: user.id, itemId } },
+  });
+
+  return !!saved;
+}
+
+export async function updateItem(
+  itemId: string,
+  data: {
+    title: string;
+    description: string;
+    price: number;
+    condition: string;
+  }
+) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const item = await prisma.item.findUnique({ where: { id: itemId } });
+  if (!item || item.sellerId !== user.id) throw new Error("Unauthorized");
+
+  return prisma.item.update({
+    where: { id: itemId },
+    data: {
+      title: data.title,
+      description: data.description,
+      price: data.price,
+      condition: data.condition as never,
+    },
+  });
+}
+
+export async function isVerifiedSeller(userId: string): Promise<boolean> {
+  const soldCount = await prisma.item.count({
+    where: { sellerId: userId, status: "SOLD" },
+  });
+  return soldCount >= 3;
+}

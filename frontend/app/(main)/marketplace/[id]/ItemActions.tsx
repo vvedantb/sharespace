@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@heroui/react";
 import { IconHeart, IconMessageCircle, IconStar } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
-import { saveItem, unsaveItem, recommendItem } from "@/lib/actions/items";
+import { toggleSaveItem, recommendItem } from "@/lib/actions/items";
 
 interface ItemActionsProps {
   itemId: string;
@@ -13,16 +13,17 @@ interface ItemActionsProps {
   currentUserId?: string;
   isMentor?: boolean;
   isMentorRecommended?: boolean;
+  initialSaved?: boolean;
 }
 
-export function ItemActions({ itemId, sellerId, currentUserId, isMentor, isMentorRecommended }: ItemActionsProps) {
+export function ItemActions({ itemId, sellerId, currentUserId, isMentor, isMentorRecommended, initialSaved = false }: ItemActionsProps) {
   const isOwnItem = currentUserId === sellerId;
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(initialSaved);
   const [recommended, setRecommended] = useState(isMentorRecommended ?? false);
 
   const saveMutation = useMutation({
-    mutationFn: (saved: boolean) => saved ? unsaveItem(itemId) : saveItem(itemId),
-    onSuccess: () => setIsSaved(!isSaved),
+    mutationFn: () => toggleSaveItem(itemId),
+    onSuccess: (saved) => setIsSaved(saved),
   });
 
   const recommendMutation = useMutation({
@@ -30,7 +31,7 @@ export function ItemActions({ itemId, sellerId, currentUserId, isMentor, isMento
     onSuccess: () => setRecommended(true),
   });
 
-  const handleSave = () => saveMutation.mutate(isSaved);
+  const handleSave = () => saveMutation.mutate();
 
   if (isOwnItem) return null;
 

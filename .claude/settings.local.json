@@ -15,7 +15,8 @@
       "Bash(wc:*)",
       "WebSearch",
       "Bash(npx prisma migrate dev:*)",
-      "Bash(npx prisma db push:*)"
+      "Bash(npx prisma db push:*)",
+      "Bash(xargs:*)"
     ]
   }
 }

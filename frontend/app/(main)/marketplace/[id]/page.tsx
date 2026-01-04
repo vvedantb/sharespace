@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { incrementItemViews } from "@/lib/actions/items";
+import { incrementItemViews, isItemSaved, isVerifiedSeller } from "@/lib/actions/items";
 import { ItemDetail } from "./ItemDetail";
 
 export default async function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -44,6 +44,11 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : 0;
 
+  const [saved, sellerVerified] = await Promise.all([
+    isItemSaved(id),
+    isVerifiedSeller(item.sellerId),
+  ]);
+
   return (
     <ItemDetail
       item={{
@@ -59,9 +64,11 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
         sellerName: `${item.seller.firstName} ${item.seller.lastName}`,
         sellerRating,
         isMentorRecommended: item.isMentorRecommended,
+        isVerifiedSeller: sellerVerified,
       }}
       isMentor={isMentor}
       currentUserId={currentUser?.id}
+      initialSaved={saved}
     />
   );
 }
