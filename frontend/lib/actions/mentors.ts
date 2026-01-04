@@ -128,6 +128,9 @@ export async function getMentorApplicationStatus() {
 }
 
 export async function approveMentor(mentorId: string) {
+  const user = await getCurrentUser();
+  if (!user?.isAdmin) throw new Error("Unauthorized: Admin access required");
+
   return prisma.mentorProfile.update({
     where: { id: mentorId },
     data: { status: "APPROVED", reviewedAt: new Date() },
@@ -135,6 +138,9 @@ export async function approveMentor(mentorId: string) {
 }
 
 export async function rejectMentor(mentorId: string) {
+  const user = await getCurrentUser();
+  if (!user?.isAdmin) throw new Error("Unauthorized: Admin access required");
+
   return prisma.mentorProfile.update({
     where: { id: mentorId },
     data: { status: "REJECTED", reviewedAt: new Date() },
@@ -142,6 +148,9 @@ export async function rejectMentor(mentorId: string) {
 }
 
 export async function getPendingMentorApplications() {
+  const user = await getCurrentUser();
+  if (!user?.isAdmin) throw new Error("Unauthorized: Admin access required");
+
   return prisma.mentorProfile.findMany({
     where: { status: "PENDING" },
     include: { user: true },

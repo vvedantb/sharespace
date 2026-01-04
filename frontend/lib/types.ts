@@ -40,6 +40,7 @@ export interface User {
   isMentor?: boolean;
   isVerified?: boolean;
   hasCompletedOnboarding?: boolean;
+  isAdmin?: boolean;
   createdAt?: string;
 }
 
