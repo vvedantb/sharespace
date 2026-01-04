@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input, Button, Card, CardBody } from "@heroui/react";
+import { Input, Button } from "@heroui/react";
 import { IconMail, IconLock, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { signIn } from "@/lib/cognito";
 
@@ -58,75 +58,81 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md">
-      <Card className="border border-default-200 shadow-lg" shadow="none">
-        <CardBody className="p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold">Welcome back</h1>
-            <p className="mt-2 text-default-500">
-              Sign in to your ShareSpace account
-            </p>
-          </div>
+    <div className="w-full max-w-sm">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-foreground">Welcome back</h1>
+        <p className="mt-2 text-default-500">
+          Sign in to continue to ShareSpace
+        </p>
+      </div>
 
-          {error && (
-            <div className="mb-4 p-3 rounded-lg bg-danger-50 text-danger text-sm">
-              {error}
-            </div>
-          )}
+      {error && (
+        <div className="mb-6 p-4 rounded-xl bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 text-danger text-sm">
+          {error}
+        </div>
+      )}
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <Input
-              {...register("email")}
-              type="email"
-              label="University Email"
-              placeholder="you@university.ac.uk"
-              startContent={<IconMail className="h-5 w-5 text-default-400" stroke={1.5} />}
-              variant="bordered"
-              radius="lg"
-              isInvalid={!!errors.email}
-              errorMessage={errors.email?.message}
-            />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <Input
+          {...register("email")}
+          type="email"
+          label="University Email"
+          placeholder="you@university.ac.uk"
+          startContent={<IconMail className="h-5 w-5 text-default-400" stroke={1.5} />}
+          variant="bordered"
+          radius="lg"
+          size="lg"
+          classNames={{
+            inputWrapper: "bg-default-50 dark:bg-neutral-800",
+          }}
+          isInvalid={!!errors.email}
+          errorMessage={errors.email?.message}
+        />
 
-            <Input
-              {...register("password")}
-              type={showPassword ? "text" : "password"}
-              label="Password"
-              placeholder="Enter your password"
-              startContent={<IconLock className="h-5 w-5 text-default-400" stroke={1.5} />}
-              endContent={
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-default-400 hover:text-default-600"
-                >
-                  {showPassword ? <IconEyeOff className="h-5 w-5" stroke={1.5} /> : <IconEye className="h-5 w-5" stroke={1.5} />}
-                </button>
-              }
-              variant="bordered"
-              radius="lg"
-              isInvalid={!!errors.password}
-              errorMessage={errors.password?.message}
-            />
-
-            <Button
-              type="submit"
-              color="danger"
-              radius="lg"
-              fullWidth
-              isLoading={isSubmitting}
+        <Input
+          {...register("password")}
+          type={showPassword ? "text" : "password"}
+          label="Password"
+          placeholder="Enter your password"
+          startContent={<IconLock className="h-5 w-5 text-default-400" stroke={1.5} />}
+          endContent={
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="text-default-400 hover:text-default-600"
             >
-              {isSubmitting ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
+              {showPassword ? <IconEyeOff className="h-5 w-5" stroke={1.5} /> : <IconEye className="h-5 w-5" stroke={1.5} />}
+            </button>
+          }
+          variant="bordered"
+          radius="lg"
+          size="lg"
+          classNames={{
+            inputWrapper: "bg-default-50 dark:bg-neutral-800",
+          }}
+          isInvalid={!!errors.password}
+          errorMessage={errors.password?.message}
+        />
 
-          <p className="mt-6 text-center text-sm text-default-500">
-            Don&apos;t have an account?{" "}
-            <Link href="/register" className="font-medium text-danger hover:text-danger-600">
-              Sign up
-            </Link>
-          </p>
-        </CardBody>
-      </Card>
+        <Button
+          type="submit"
+          color="danger"
+          radius="lg"
+          size="lg"
+          fullWidth
+          isLoading={isSubmitting}
+          className="font-semibold"
+        >
+          {isSubmitting ? "Signing in..." : "Sign In"}
+        </Button>
+      </form>
+
+      <p className="mt-8 text-center text-default-500">
+        Don&apos;t have an account?{" "}
+        <Link href="/register" className="font-semibold text-danger hover:text-danger-600">
+          Create one
+        </Link>
+      </p>
     </div>
   );
 }
