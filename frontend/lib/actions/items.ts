@@ -274,9 +274,11 @@ export async function getItemBuyers(itemId: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
+  const item = await prisma.item.findUnique({ where: { id: itemId } });
+  if (!item || item.sellerId !== user.id) throw new Error("Unauthorized");
+
   const conversations = await prisma.conversation.findMany({
     where: {
-      itemId,
       OR: [{ participant1Id: user.id }, { participant2Id: user.id }],
     },
     include: {
@@ -285,12 +287,15 @@ export async function getItemBuyers(itemId: string) {
     },
   });
 
-  const buyers = conversations.map((conv) => {
+  const buyerMap = new Map<string, { id: string; name: string }>();
+  for (const conv of conversations) {
     const buyer = conv.participant1Id === user.id ? conv.participant2 : conv.participant1;
-    return { id: buyer.id, name: `${buyer.firstName} ${buyer.lastName}` };
-  });
+    if (!buyerMap.has(buyer.id)) {
+      buyerMap.set(buyer.id, { id: buyer.id, name: `${buyer.firstName} ${buyer.lastName}` });
+    }
+  }
 
-  return buyers;
+  return Array.from(buyerMap.values());
 }
 
 export async function markAsSold(itemId: string, buyerId: string) {

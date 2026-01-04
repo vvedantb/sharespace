@@ -81,13 +81,13 @@ export function MarkAsSoldModal({ isOpen, onOpenChange, itemId, itemTitle }: Mar
             ) : buyers.length === 0 ? (
               <div className="rounded-lg border border-warning-200 bg-warning-50 p-3">
                 <p className="text-sm text-warning-700">
-                  No conversations found for this item. The buyer may have messaged you directly.
+                  No conversations found. Start a conversation with the buyer first to mark this item as sold.
                 </p>
               </div>
             ) : (
               <Select
                 label="Select Buyer"
-                placeholder="Choose who bought this item"
+                placeholder="Select from your conversations"
                 variant="bordered"
                 selectedKeys={selectedBuyer ? [selectedBuyer] : []}
                 onSelectionChange={(keys) => {
