@@ -93,7 +93,7 @@ export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
             )}
           </div>
 
-          <ItemActions itemId={item.id} sellerId={item.sellerId} isMentor={isMentor} isMentorRecommended={item.isMentorRecommended} />
+          <ItemActions itemId={item.id} sellerId={item.sellerId} currentUserId={currentUserId} isMentor={isMentor} isMentorRecommended={item.isMentorRecommended} />
         </div>
       </div>
 

@@ -10,11 +10,13 @@ import { saveItem, unsaveItem, recommendItem } from "@/lib/actions/items";
 interface ItemActionsProps {
   itemId: string;
   sellerId: string;
+  currentUserId?: string;
   isMentor?: boolean;
   isMentorRecommended?: boolean;
 }
 
-export function ItemActions({ itemId, sellerId, isMentor, isMentorRecommended }: ItemActionsProps) {
+export function ItemActions({ itemId, sellerId, currentUserId, isMentor, isMentorRecommended }: ItemActionsProps) {
+  const isOwnItem = currentUserId === sellerId;
   const [isSaved, setIsSaved] = useState(false);
   const [recommended, setRecommended] = useState(isMentorRecommended ?? false);
 
@@ -29,6 +31,8 @@ export function ItemActions({ itemId, sellerId, isMentor, isMentorRecommended }:
   });
 
   const handleSave = () => saveMutation.mutate(isSaved);
+
+  if (isOwnItem) return null;
 
   return (
     <div className="mt-6 flex gap-3">

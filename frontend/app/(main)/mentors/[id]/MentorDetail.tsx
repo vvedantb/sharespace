@@ -25,9 +25,11 @@ interface MentorDetailProps {
     };
   };
   hasEndorsed: boolean;
+  currentUserId?: string;
 }
 
-export function MentorDetail({ mentorId, mentor, hasEndorsed }: MentorDetailProps) {
+export function MentorDetail({ mentorId, mentor, hasEndorsed, currentUserId }: MentorDetailProps) {
+  const isOwnProfile = currentUserId === mentor.userId;
   const name = `${mentor.user.firstName} ${mentor.user.lastName}`;
   const [endorsed, setEndorsed] = useState(hasEndorsed);
   const [endorsements, setEndorsements] = useState(mentor.endorsements);
@@ -59,16 +61,18 @@ export function MentorDetail({ mentorId, mentor, hasEndorsed }: MentorDetailProp
           <p className="text-default-500">{mentor.user.course}</p>
           <p className="text-sm text-default-400">{mentor.user.university}</p>
         </div>
-        <Button
-          color={endorsed ? "default" : "danger"}
-          variant={endorsed ? "bordered" : "solid"}
-          isDisabled={endorsed}
-          isLoading={endorseMutation.isPending}
-          startContent={<IconThumbUp className="h-5 w-5" />}
-          onPress={() => endorseMutation.mutate()}
-        >
-          {endorsed ? "Endorsed" : "Endorse"}
-        </Button>
+        {!isOwnProfile && (
+          <Button
+            color={endorsed ? "default" : "danger"}
+            variant={endorsed ? "bordered" : "solid"}
+            isDisabled={endorsed}
+            isLoading={endorseMutation.isPending}
+            startContent={<IconThumbUp className="h-5 w-5" />}
+            onPress={() => endorseMutation.mutate()}
+          >
+            {endorsed ? "Endorsed" : "Endorse"}
+          </Button>
+        )}
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-4">
@@ -98,17 +102,19 @@ export function MentorDetail({ mentorId, mentor, hasEndorsed }: MentorDetailProp
         <p className="mt-2 text-sm text-default-500">{mentor.expertise.join(" · ")}</p>
       </div>
 
-      <Button
-        as={Link}
-        href={`/messages?user=${mentor.userId}`}
-        color="danger"
-        radius="lg"
-        fullWidth
-        startContent={<IconMessageCircle className="h-5 w-5" stroke={2} />}
-        className="mt-6"
-      >
-        Message
-      </Button>
+      {!isOwnProfile && (
+        <Button
+          as={Link}
+          href={`/messages?user=${mentor.userId}`}
+          color="danger"
+          radius="lg"
+          fullWidth
+          startContent={<IconMessageCircle className="h-5 w-5" stroke={2} />}
+          className="mt-6"
+        >
+          Message
+        </Button>
+      )}
     </div>
   );
 }

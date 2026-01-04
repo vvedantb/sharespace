@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth";
 import { hasEndorsed } from "@/lib/actions/mentors";
 import { MentorDetail } from "./MentorDetail";
 
 export default async function MentorDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const currentUser = await getCurrentUser();
 
   const mentor = await prisma.mentorProfile.findUnique({
     where: { id },
@@ -44,6 +46,7 @@ export default async function MentorDetailPage({ params }: { params: Promise<{ i
         },
       }}
       hasEndorsed={endorsed}
+      currentUserId={currentUser?.id}
     />
   );
 }
