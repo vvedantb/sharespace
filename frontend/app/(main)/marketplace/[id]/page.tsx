@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { incrementItemViews } from "@/lib/actions/items";
 import { ItemDetail } from "./ItemDetail";
 
 export default async function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -31,6 +32,10 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
         </Link>
       </div>
     );
+  }
+
+  if (!currentUser || currentUser.id !== item.sellerId) {
+    incrementItemViews(id);
   }
 
   const reviews = item.seller.reviewsReceived;

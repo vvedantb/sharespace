@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { Item } from "@/lib/types";
+import { calculateMoneySaved, calculateCO2Saved } from "@/lib/sustainability";
 
 export async function getItems(params?: {
   search?: string;
@@ -167,4 +168,75 @@ export async function recommendItem(itemId: string) {
     where: { id: itemId },
     data: { isMentorRecommended: true },
   });
+}
+
+export async function incrementItemViews(itemId: string) {
+  await prisma.item.update({
+    where: { id: itemId },
+    data: { views: { increment: 1 } },
+  });
+}
+
+export async function getSellerAnalytics() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const items = await prisma.item.findMany({
+    where: { sellerId: user.id },
+    include: {
+      _count: { select: { conversations: true } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const itemsWithStats = items.map((item) => ({
+    id: item.id,
+    title: item.title,
+    status: item.status,
+    views: item.views,
+    saves: item.saves,
+    inquiries: item._count.conversations,
+    createdAt: dayjs(item.createdAt).toISOString(),
+  }));
+
+  const totals = {
+    views: items.reduce((sum, item) => sum + item.views, 0),
+    saves: items.reduce((sum, item) => sum + item.saves, 0),
+    inquiries: items.reduce((sum, item) => sum + item._count.conversations, 0),
+    items: items.length,
+  };
+
+  const soldItems = items.filter((item) => item.status === "SOLD");
+  const sustainability = {
+    itemsReused: soldItems.length,
+    moneySaved: soldItems.reduce(
+      (sum, item) => sum + calculateMoneySaved(Number(item.price), item.condition),
+      0
+    ),
+    co2Saved: soldItems.reduce(
+      (sum, item) => sum + calculateCO2Saved(item.category),
+      0
+    ),
+  };
+
+  return { items: itemsWithStats, totals, sustainability };
+}
+
+export async function getPlatformSustainability() {
+  const soldItems = await prisma.item.findMany({
+    where: { status: "SOLD" },
+    select: { price: true, condition: true, category: true },
+  });
+
+  return {
+    itemsReused: soldItems.length,
+    moneySaved: soldItems.reduce(
+      (sum, item) => sum + calculateMoneySaved(Number(item.price), item.condition),
+      0
+    ),
+    co2Saved: soldItems.reduce(
+      (sum, item) => sum + calculateCO2Saved(item.category),
+      0
+    ),
+  };
 }

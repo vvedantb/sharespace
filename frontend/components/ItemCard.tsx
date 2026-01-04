@@ -10,7 +10,7 @@ interface ItemCardProps {
 export function ItemCard({ item }: ItemCardProps) {
   return (
     <Link href={`/marketplace/${item.id}`}>
-      <Card className="border border-default-200 hover:border-default-300 transition-all">
+      <Card className="border border-default-200 hover:border-default-300 transition-all" shadow="none">
         <CardBody className="p-0 overflow-hidden">
           <div className="relative aspect-square bg-default-100 flex items-center justify-center">
             {item.images && item.images.length > 0 ? (

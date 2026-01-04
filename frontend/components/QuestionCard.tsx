@@ -14,7 +14,7 @@ interface QuestionCardProps {
 export function QuestionCard({ question }: QuestionCardProps) {
   return (
     <Link href={`/questions/${question.id}`}>
-      <Card className="border border-default-200 hover:border-default-300 transition-all group">
+      <Card className="border border-default-200 hover:border-default-300 transition-all group" shadow="none">
         <CardBody className="p-5">
           <h3 className="font-medium text-black dark:text-white group-hover:text-danger transition-colors">
             {question.title}

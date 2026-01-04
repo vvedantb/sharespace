@@ -126,6 +126,7 @@ export function AskQuestionModal({ isOpen, onOpenChange }: AskQuestionModalProps
                             ? "border-danger bg-danger-50"
                             : "border-default-200 hover:border-default-300"
                         }`}
+                        shadow="none"
                       >
                         <CardBody className="p-3">
                           <p className={`font-medium ${field.value === cat.value ? "text-danger" : ""}`}>

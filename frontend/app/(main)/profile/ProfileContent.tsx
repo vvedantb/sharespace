@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Avatar, Button, Card, CardBody, Switch, useDisclosure } from "@heroui/react";
-import { IconEdit, IconLogout, IconMoon, IconSun, IconStar, IconSparkles, IconShoppingBag } from "@tabler/icons-react";
+import { IconEdit, IconLogout, IconMoon, IconSun, IconStar, IconSparkles, IconShoppingBag, IconChartBar } from "@tabler/icons-react";
 import { signOut } from "@/lib/cognito";
 import { useThemeContext } from "@/components/contexts/ThemeContext";
 import { User, Review } from "@/lib/types";
@@ -56,19 +56,19 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-4">
-        <Card className="bg-default-50">
+        <Card className="bg-default-50" shadow="none">
           <CardBody className="p-4 text-center">
             <p className="text-xl font-bold text-foreground">{stats.itemsListed}</p>
             <p className="text-xs text-default-500">Listed</p>
           </CardBody>
         </Card>
-        <Card className="bg-default-50">
+        <Card className="bg-default-50" shadow="none">
           <CardBody className="p-4 text-center">
             <p className="text-xl font-bold text-foreground">{stats.itemsSold}</p>
             <p className="text-xs text-default-500">Sold</p>
           </CardBody>
         </Card>
-        <Card className="bg-default-50">
+        <Card className="bg-default-50" shadow="none">
           <CardBody className="p-4 text-center">
             <p className="text-xl font-bold text-foreground">
               {stats.rating > 0 ? stats.rating.toFixed(1) : "-"}
@@ -80,7 +80,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
 
       <div className="mt-6 grid grid-cols-2 gap-4">
         {isMentor ? (
-          <Card className="border border-success-200 bg-success-50">
+          <Card className="border border-success-200 bg-success-50" shadow="none">
             <CardBody className="p-4 flex flex-row items-center gap-3">
               <IconSparkles className="h-6 w-6 text-success-600" />
               <div className="flex-1">
@@ -92,7 +92,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
             </CardBody>
           </Card>
         ) : mentorStatus === "PENDING" ? (
-          <Card className="border border-warning-200 bg-warning-50">
+          <Card className="border border-warning-200 bg-warning-50" shadow="none">
             <CardBody className="p-4 flex flex-row items-center gap-3">
               <IconSparkles className="h-6 w-6 text-warning-600" />
               <div className="flex-1">
@@ -102,7 +102,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
             </CardBody>
           </Card>
         ) : mentorStatus === "REJECTED" ? (
-          <Card className="border border-danger-200 bg-danger-50">
+          <Card className="border border-danger-200 bg-danger-50" shadow="none">
             <CardBody className="p-4 flex flex-row items-center gap-3">
               <IconSparkles className="h-6 w-6 text-danger-600" />
               <div className="flex-1">
@@ -115,7 +115,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
             </CardBody>
           </Card>
         ) : (
-          <Card className="border border-default-200">
+          <Card className="border border-default-200" shadow="none">
             <CardBody className="p-4 flex flex-row items-center gap-3">
               <IconSparkles className="h-6 w-6 text-default-400" />
               <div className="flex-1">
@@ -129,19 +129,26 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
           </Card>
         )}
         {isSeller ? (
-          <Card className="border border-success-200 bg-success-50">
+          <Card className="border border-success-200 bg-success-50" shadow="none">
             <CardBody className="p-4 flex flex-row items-center gap-3">
               <IconShoppingBag className="h-6 w-6 text-success-600" />
               <div className="flex-1">
                 <p className="font-medium text-success-700">Seller</p>
-                <Link href="/marketplace" className="text-xs text-success-600 hover:underline">
-                  My Listings
-                </Link>
+                <div className="flex gap-2">
+                  <Link href="/marketplace" className="text-xs text-success-600 hover:underline">
+                    Listings
+                  </Link>
+                  <span className="text-xs text-success-400">·</span>
+                  <Link href="/profile/analytics" className="text-xs text-success-600 hover:underline flex items-center gap-1">
+                    <IconChartBar className="h-3 w-3" />
+                    Analytics
+                  </Link>
+                </div>
               </div>
             </CardBody>
           </Card>
         ) : (
-          <Card className="border border-default-200">
+          <Card className="border border-default-200" shadow="none">
             <CardBody className="p-4 flex flex-row items-center gap-3">
               <IconShoppingBag className="h-6 w-6 text-default-400" />
               <div className="flex-1">
@@ -161,7 +168,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
           <h2 className="text-lg font-bold text-foreground mb-4">Reviews</h2>
           <div className="space-y-3">
             {reviews.map((review) => (
-              <Card key={review.id} className="border border-default-200">
+              <Card key={review.id} className="border border-default-200" shadow="none">
                 <CardBody className="p-4">
                   <div className="flex items-center justify-between">
                     <p className="font-medium text-foreground">{review.reviewerName}</p>
@@ -180,7 +187,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
         </div>
       )}
 
-      <Card className="mt-8 border border-default-200">
+      <Card className="mt-8 border border-default-200" shadow="none">
         <CardBody className="flex-row items-center justify-between p-4">
           <div className="flex items-center gap-3">
             {theme === "dark" ? (

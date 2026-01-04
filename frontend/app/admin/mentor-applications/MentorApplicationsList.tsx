@@ -53,21 +53,21 @@ export function MentorApplicationsList({ initialApplications }: MentorApplicatio
 
   if (applications.length === 0) {
     return (
-      <div className="mt-8 rounded-lg border border-default-200 bg-default-50 p-8 text-center">
+      <div className="mt-6 rounded-lg border border-default-200 bg-default-50 p-6 text-center">
         <p className="text-default-500">No pending applications</p>
       </div>
     );
   }
 
   return (
-    <div className="mt-6 space-y-4">
+    <div className="mt-4 space-y-4">
       {applications.map((app) => (
-        <Card key={app.id} className="border border-default-200">
-          <CardBody className="p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-lg font-semibold text-foreground">{app.userName}</h3>
+        <Card key={app.id} className="border border-default-200" shadow="none">
+          <CardBody className="p-4 md:p-6">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-4">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-base md:text-lg font-semibold text-foreground">{app.userName}</h3>
                   <Chip
                     size="sm"
                     variant="flat"
@@ -76,8 +76,8 @@ export function MentorApplicationsList({ initialApplications }: MentorApplicatio
                     {app.mentorType === "ALUMNI" ? "Alumni" : "Student"}
                   </Chip>
                 </div>
-                <p className="mt-1 text-sm text-default-500">{app.userEmail}</p>
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-default-600">
+                <p className="mt-1 text-sm text-default-500 truncate">{app.userEmail}</p>
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-sm text-default-600">
                   {app.university && <span>{app.university}</span>}
                   {app.course && <span>{app.course}</span>}
                   {app.mentorType === "STUDENT" && app.yearOfStudy && (
@@ -88,15 +88,15 @@ export function MentorApplicationsList({ initialApplications }: MentorApplicatio
                   )}
                 </div>
               </div>
-              <div className="text-right text-sm text-default-400">
-                Applied {dayjs(app.appliedAt).fromNow()}
+              <div className="text-xs md:text-sm text-default-400 md:text-right shrink-0">
+                {dayjs(app.appliedAt).fromNow()}
               </div>
             </div>
 
             {app.bio && (
               <div className="mt-4">
                 <p className="text-sm font-medium text-default-700">Bio</p>
-                <p className="mt-1 text-sm text-default-600">{app.bio}</p>
+                <p className="mt-1 text-sm text-default-600 break-words">{app.bio}</p>
               </div>
             )}
 
@@ -113,21 +113,25 @@ export function MentorApplicationsList({ initialApplications }: MentorApplicatio
               </div>
             )}
 
-            <div className="mt-6 flex justify-end gap-3">
+            <div className="mt-5 flex flex-col-reverse gap-2 md:flex-row md:justify-end md:gap-3">
               <Button
                 color="danger"
                 variant="flat"
+                radius="lg"
                 startContent={<IconX className="h-4 w-4" stroke={2} />}
                 isLoading={rejectMutation.isPending}
                 onPress={() => rejectMutation.mutate(app.id)}
+                className="w-full md:w-auto"
               >
                 Reject
               </Button>
               <Button
                 color="success"
+                radius="lg"
                 startContent={<IconCheck className="h-4 w-4" stroke={2} />}
                 isLoading={approveMutation.isPending}
                 onPress={() => approveMutation.mutate(app.id)}
+                className="w-full md:w-auto"
               >
                 Approve
               </Button>

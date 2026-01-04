@@ -2,12 +2,14 @@ import { Suspense } from "react";
 import dayjs from "dayjs";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
+import { getPlatformSustainability } from "@/lib/actions/items";
+import { SustainabilityBanner } from "@/components/SustainabilityBanner";
 import { MarketplaceBrowser } from "./MarketplaceBrowser";
 
 export default async function MarketplacePage() {
   const currentUser = await getCurrentUser();
 
-  const [items, isSeller] = await Promise.all([
+  const [items, isSeller, sustainability] = await Promise.all([
     prisma.item.findMany({
       where: { status: "ACTIVE" },
       include: { seller: true },
@@ -16,6 +18,7 @@ export default async function MarketplacePage() {
     currentUser
       ? prisma.user.findUnique({ where: { id: currentUser.id }, select: { isSeller: true } }).then((u) => u?.isSeller ?? false)
       : false,
+    getPlatformSustainability(),
   ]);
 
   const formattedItems = items.map((item) => ({
@@ -43,6 +46,7 @@ export default async function MarketplacePage() {
       <h1 className="text-2xl font-bold text-black dark:text-white">
         Marketplace
       </h1>
+      <SustainabilityBanner stats={sustainability} />
       <Suspense
         fallback={
           <div className="py-16 text-center text-gray-500">Loading...</div>

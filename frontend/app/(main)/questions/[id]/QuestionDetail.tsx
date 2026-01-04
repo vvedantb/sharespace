@@ -87,7 +87,7 @@ export function QuestionDetail({
           ) : (
             <div className="mt-4 space-y-4">
               {answers.map((answer) => (
-                <Card key={answer.id} className="border border-default-200">
+                <Card key={answer.id} className="border border-default-200" shadow="none">
                   <CardBody className="p-4">
                     <div className="flex items-center gap-2">
                       <Avatar
@@ -144,14 +144,14 @@ export function QuestionDetail({
               onAnswerPosted={handleAnswerPosted}
             />
           ) : mentorStatus === "PENDING" ? (
-            <Card className="border border-warning-200 bg-warning-50">
+            <Card className="border border-warning-200 bg-warning-50" shadow="none">
               <CardBody className="p-4 text-center">
                 <p className="text-warning-700">Your mentor application is pending review.</p>
                 <p className="text-sm text-warning-600 mt-1">You&apos;ll be able to answer questions once approved.</p>
               </CardBody>
             </Card>
           ) : (
-            <Card className="border border-default-200">
+            <Card className="border border-default-200" shadow="none">
               <CardBody className="p-4 text-center">
                 <p className="text-default-600">Only mentors can answer questions.</p>
                 <Button color="danger" variant="flat" size="sm" className="mt-3" onPress={onOpen}>

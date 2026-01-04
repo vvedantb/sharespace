@@ -157,7 +157,7 @@ export function CreateItemModal({ isOpen, onOpenChange }: CreateItemModalProps) 
               />
               <div className="grid grid-cols-3 gap-3 md:grid-cols-5">
                 {imagePreviews.map((preview, index) => (
-                  <Card key={index} className="aspect-square overflow-hidden border border-default-200">
+                  <Card key={index} className="aspect-square overflow-hidden border border-default-200" shadow="none">
                     <CardBody className="p-0 relative">
                       <img src={preview} alt="" className="h-full w-full object-cover" />
                       <Button

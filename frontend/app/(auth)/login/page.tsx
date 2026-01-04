@@ -59,7 +59,7 @@ export default function LoginPage() {
 
   return (
     <div className="w-full max-w-md">
-      <Card className="border border-default-200 shadow-lg">
+      <Card className="border border-default-200 shadow-lg" shadow="none">
         <CardBody className="p-8">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold">Welcome back</h1>

@@ -9,7 +9,7 @@ interface MentorCardProps {
 export function MentorCard({ mentor }: MentorCardProps) {
   return (
     <Link href={`/mentors/${mentor.id}`}>
-      <Card className="border border-default-200 hover:border-default-300 transition-all">
+      <Card className="border border-default-200 hover:border-default-300 transition-all" shadow="none">
         <CardBody className="p-5">
         <div className="flex items-center gap-3">
           <Avatar name={mentor.name} size="lg" color="danger" showFallback />
