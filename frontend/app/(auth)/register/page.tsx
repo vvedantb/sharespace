@@ -58,7 +58,7 @@ export default function RegisterPage() {
         lastName: data.lastName,
       });
 
-      router.push("/marketplace");
+      router.push("/onboarding");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     }

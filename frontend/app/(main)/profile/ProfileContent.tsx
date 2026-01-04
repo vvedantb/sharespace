@@ -19,10 +19,11 @@ interface ProfileContentProps {
   reviews: Review[];
   isMentor?: boolean;
   mentorProfileId?: string;
+  mentorStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
   isSeller?: boolean;
 }
 
-export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId, isSeller }: ProfileContentProps) {
+export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId, mentorStatus, isSeller }: ProfileContentProps) {
   const { theme, toggleTheme, mounted } = useThemeContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { isOpen: isMentorModalOpen, onOpen: onMentorModalOpen, onOpenChange: onMentorModalOpenChange } = useDisclosure();
@@ -86,6 +87,29 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
                   View Profile
                 </Link>
               </div>
+            </CardBody>
+          </Card>
+        ) : mentorStatus === "PENDING" ? (
+          <Card className="border border-warning-200 bg-warning-50">
+            <CardBody className="p-4 flex flex-row items-center gap-3">
+              <IconSparkles className="h-6 w-6 text-warning-600" />
+              <div className="flex-1">
+                <p className="font-medium text-warning-700">Mentor Application</p>
+                <p className="text-xs text-warning-600">Pending Review</p>
+              </div>
+            </CardBody>
+          </Card>
+        ) : mentorStatus === "REJECTED" ? (
+          <Card className="border border-danger-200 bg-danger-50">
+            <CardBody className="p-4 flex flex-row items-center gap-3">
+              <IconSparkles className="h-6 w-6 text-danger-600" />
+              <div className="flex-1">
+                <p className="font-medium text-danger-700">Application Rejected</p>
+                <p className="text-xs text-danger-600">You can reapply</p>
+              </div>
+              <Button size="sm" color="danger" variant="flat" onPress={onMentorModalOpen}>
+                Reapply
+              </Button>
             </CardBody>
           </Card>
         ) : (
@@ -183,7 +207,13 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
       </Button>
 
       <EditProfileModal user={user} isOpen={isOpen} onOpenChange={onOpenChange} />
-      {!isMentor && <BecomeMentorModal isOpen={isMentorModalOpen} onOpenChange={onMentorModalOpenChange} />}
+      {!isMentor && mentorStatus !== "PENDING" && (
+        <BecomeMentorModal
+          isOpen={isMentorModalOpen}
+          onOpenChange={onMentorModalOpenChange}
+          userYearOfStudy={user.yearOfStudy}
+        />
+      )}
     </div>
   );
 }

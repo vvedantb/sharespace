@@ -60,16 +60,18 @@ export default async function QuestionDetailPage({
     createdAt: dayjs(a.createdAt).toISOString(),
   }));
 
-  const isMentor = currentUser
-    ? !!(await prisma.mentorProfile.findUnique({ where: { userId: currentUser.id } }))
-    : false;
+  const mentorProfile = currentUser
+    ? await prisma.mentorProfile.findUnique({ where: { userId: currentUser.id } })
+    : null;
 
   return (
     <QuestionDetail
       question={formattedQuestion}
       initialAnswers={formattedAnswers}
       currentUserId={currentUser?.id}
-      isMentor={isMentor}
+      isMentor={mentorProfile?.status === "APPROVED"}
+      mentorStatus={mentorProfile?.status}
+      userYearOfStudy={currentUser?.yearOfStudy}
     />
   );
 }

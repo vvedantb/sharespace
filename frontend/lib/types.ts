@@ -32,12 +32,14 @@ export interface User {
   university: string | null;
   course: string | null;
   yearOfStudy: number | null;
+  graduationYear: number | null;
   bio: string | null;
   rating?: number;
   itemsListed?: number;
   itemsSold?: number;
   isMentor?: boolean;
   isVerified?: boolean;
+  hasCompletedOnboarding?: boolean;
   createdAt?: string;
 }
 
@@ -61,6 +63,9 @@ export interface Message {
   isRead: boolean;
 }
 
+export type MentorStatus = "PENDING" | "APPROVED" | "REJECTED";
+export type MentorType = "STUDENT" | "ALUMNI";
+
 export interface Mentor {
   id: string;
   userId: string;
@@ -74,6 +79,8 @@ export interface Mentor {
   totalAnswers: number;
   helpfulAnswers: number;
   isVerified: boolean;
+  status: MentorStatus;
+  mentorType: MentorType;
 }
 
 export type QuestionCategory = "ACADEMIC" | "STUDENT_LIFE" | "COURSE_ADVICE" | "TEXTBOOK_RECOMMENDATION";

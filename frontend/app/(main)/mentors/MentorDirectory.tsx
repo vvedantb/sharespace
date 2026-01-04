@@ -13,9 +13,11 @@ import { getMentors } from "@/lib/actions/mentors";
 interface MentorDirectoryProps {
   initialMentors: Mentor[];
   isMentor?: boolean;
+  mentorStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
+  userYearOfStudy?: number | null;
 }
 
-export function MentorDirectory({ initialMentors, isMentor }: MentorDirectoryProps) {
+export function MentorDirectory({ initialMentors, isMentor, mentorStatus, userYearOfStudy }: MentorDirectoryProps) {
   const [{ q }, setParams] = useQueryStates(mentorsSearchParams);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
@@ -45,7 +47,7 @@ export function MentorDirectory({ initialMentors, isMentor }: MentorDirectoryPro
           radius="lg"
           classNames={{ inputWrapper: "bg-default-50" }}
         />
-        {!isMentor && (
+        {!isMentor && mentorStatus !== "PENDING" && (
           <Button
             color="secondary"
             radius="lg"
@@ -53,11 +55,18 @@ export function MentorDirectory({ initialMentors, isMentor }: MentorDirectoryPro
             onPress={onOpen}
             className="shrink-0"
           >
-            Become a Mentor
+            {mentorStatus === "REJECTED" ? "Reapply as Mentor" : "Become a Mentor"}
           </Button>
         )}
+        {mentorStatus === "PENDING" && (
+          <div className="shrink-0 rounded-lg bg-warning-50 px-4 py-2 text-sm text-warning-700">
+            Application Pending
+          </div>
+        )}
       </div>
-      {!isMentor && <BecomeMentorModal isOpen={isOpen} onOpenChange={onOpenChange} />}
+      {!isMentor && mentorStatus !== "PENDING" && (
+        <BecomeMentorModal isOpen={isOpen} onOpenChange={onOpenChange} userYearOfStudy={userYearOfStudy} />
+      )}
 
       {loading ? (
         <div className="py-16 flex justify-center">

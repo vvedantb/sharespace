@@ -12,27 +12,48 @@ import {
   Input,
   Textarea,
   Chip,
+  RadioGroup,
+  Radio,
+  Select,
+  SelectItem,
 } from "@heroui/react";
 import { IconPlus } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { createMentor } from "@/lib/actions/mentors";
+import { MentorType } from "@/lib/types";
+
+const yearOptions = [
+  { value: "3", label: "Year 3" },
+  { value: "4", label: "Year 4" },
+  { value: "5", label: "Postgraduate" },
+];
 
 interface BecomeMentorModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  userYearOfStudy?: number | null;
 }
 
-export function BecomeMentorModal({ isOpen, onOpenChange }: BecomeMentorModalProps) {
+export function BecomeMentorModal({ isOpen, onOpenChange, userYearOfStudy }: BecomeMentorModalProps) {
   const router = useRouter();
   const [bio, setBio] = useState("");
   const [expertise, setExpertise] = useState<string[]>([]);
   const [newExpertise, setNewExpertise] = useState("");
+  const [mentorType, setMentorType] = useState<MentorType>("STUDENT");
+  const [yearOfStudy, setYearOfStudy] = useState(
+    userYearOfStudy && userYearOfStudy >= 3 ? userYearOfStudy.toString() : "3"
+  );
+  const [graduationYear, setGraduationYear] = useState("");
+  const [error, setError] = useState("");
 
   const createMentorMutation = useMutation({
     mutationFn: createMentor,
     onSuccess: () => {
       onOpenChange(false);
       router.refresh();
+    },
+    onError: (err) => {
+      setError(err instanceof Error ? err.message : "Failed to submit application");
     },
   });
 
@@ -51,7 +72,14 @@ export function BecomeMentorModal({ isOpen, onOpenChange }: BecomeMentorModalPro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMentorMutation.mutate({ bio, expertise });
+    setError("");
+    createMentorMutation.mutate({
+      bio,
+      expertise,
+      mentorType,
+      yearOfStudy: mentorType === "STUDENT" ? parseInt(yearOfStudy) : undefined,
+      graduationYear: mentorType === "ALUMNI" ? parseInt(graduationYear) : undefined,
+    });
   };
 
   const handleClose = (open: boolean) => {
@@ -59,11 +87,24 @@ export function BecomeMentorModal({ isOpen, onOpenChange }: BecomeMentorModalPro
       setBio("");
       setExpertise([]);
       setNewExpertise("");
+      setMentorType("STUDENT");
+      setYearOfStudy("3");
+      setGraduationYear("");
+      setError("");
     }
     onOpenChange(open);
   };
 
-  const isFormValid = bio.length >= 50 && expertise.length >= 2;
+  const currentYear = new Date().getFullYear();
+  const isGraduationYearValid =
+    mentorType === "ALUMNI"
+      ? graduationYear && parseInt(graduationYear) <= currentYear && parseInt(graduationYear) >= currentYear - 20
+      : true;
+
+  const isFormValid =
+    bio.length >= 50 &&
+    expertise.length >= 2 &&
+    (mentorType === "STUDENT" ? parseInt(yearOfStudy) >= 3 : isGraduationYearValid);
 
   return (
     <Modal isOpen={isOpen} onOpenChange={handleClose} size="2xl" scrollBehavior="inside">
@@ -74,6 +115,54 @@ export function BecomeMentorModal({ isOpen, onOpenChange }: BecomeMentorModalPro
             <p className="text-sm text-default-500">
               Help fellow students by answering questions, endorsing quality items, and recommending resources.
             </p>
+
+            {error && (
+              <div className="rounded-lg bg-danger-50 p-3 text-sm text-danger">{error}</div>
+            )}
+
+            <RadioGroup
+              label="I am a..."
+              value={mentorType}
+              onValueChange={(value) => setMentorType(value as MentorType)}
+              orientation="horizontal"
+            >
+              <Radio value="STUDENT">Current Student (Year 3+)</Radio>
+              <Radio value="ALUMNI">Alumni (Graduated)</Radio>
+            </RadioGroup>
+
+            {mentorType === "STUDENT" && (
+              <Select
+                label="Year of Study"
+                selectedKeys={[yearOfStudy]}
+                onSelectionChange={(keys) => {
+                  const selected = Array.from(keys)[0];
+                  if (selected) setYearOfStudy(selected.toString());
+                }}
+                variant="bordered"
+                radius="lg"
+                description="Mentors must be in year 3 or above"
+              >
+                {yearOptions.map((option) => (
+                  <SelectItem key={option.value}>{option.label}</SelectItem>
+                ))}
+              </Select>
+            )}
+
+            {mentorType === "ALUMNI" && (
+              <Input
+                type="number"
+                label="Graduation Year"
+                value={graduationYear}
+                onValueChange={setGraduationYear}
+                placeholder={`e.g. ${currentYear - 1}`}
+                variant="bordered"
+                radius="lg"
+                min={currentYear - 20}
+                max={currentYear}
+                isInvalid={graduationYear !== "" && !isGraduationYearValid}
+                errorMessage="Please enter a valid graduation year"
+              />
+            )}
 
             <Textarea
               label="Mentor Bio"
@@ -130,7 +219,16 @@ export function BecomeMentorModal({ isOpen, onOpenChange }: BecomeMentorModalPro
                 <li className={expertise.length >= 2 ? "text-success" : ""}>
                   ✓ At least 2 areas of expertise
                 </li>
+                <li className={mentorType === "STUDENT" ? (parseInt(yearOfStudy) >= 3 ? "text-success" : "") : (isGraduationYearValid ? "text-success" : "")}>
+                  ✓ {mentorType === "STUDENT" ? "Year 3 or above" : "Valid graduation year"}
+                </li>
               </ul>
+            </div>
+
+            <div className="rounded-lg border border-warning-200 bg-warning-50 p-3">
+              <p className="text-sm text-warning-700">
+                Your application will be reviewed by an admin before you can start mentoring.
+              </p>
             </div>
           </ModalBody>
           <ModalFooter>
@@ -138,7 +236,7 @@ export function BecomeMentorModal({ isOpen, onOpenChange }: BecomeMentorModalPro
               Cancel
             </Button>
             <Button type="submit" color="secondary" radius="lg" isDisabled={!isFormValid} isLoading={isSubmitting}>
-              {isSubmitting ? "Submitting..." : "Apply"}
+              {isSubmitting ? "Submitting..." : "Submit Application"}
             </Button>
           </ModalFooter>
         </form>

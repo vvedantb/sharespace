@@ -34,12 +34,45 @@ export async function updateUser(
     username?: string;
     avatarUrl?: string;
     bio?: string;
+    university?: string;
     course?: string;
     yearOfStudy?: number;
+    graduationYear?: number;
   }
 ) {
   return prisma.user.update({
     where: { id },
     data,
+  });
+}
+
+export async function completeProfileOnboarding(data: {
+  username?: string;
+  avatarUrl?: string;
+  university?: string;
+  course?: string;
+  yearOfStudy?: number;
+  graduationYear?: number;
+  bio?: string;
+}) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  return prisma.user.update({
+    where: { id: user.id },
+    data: {
+      ...data,
+      hasCompletedOnboarding: true,
+    },
+  });
+}
+
+export async function skipProfileOnboarding() {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  return prisma.user.update({
+    where: { id: user.id },
+    data: { hasCompletedOnboarding: true },
   });
 }

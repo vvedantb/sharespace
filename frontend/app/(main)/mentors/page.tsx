@@ -6,14 +6,15 @@ import { MentorDirectory } from "./MentorDirectory";
 export default async function MentorsPage() {
   const currentUser = await getCurrentUser();
 
-  const [mentors, isMentor] = await Promise.all([
+  const [mentors, mentorProfile] = await Promise.all([
     prisma.mentorProfile.findMany({
+      where: { status: "APPROVED" },
       include: { user: true },
       orderBy: { endorsements: "desc" },
     }),
     currentUser
-      ? prisma.mentorProfile.findUnique({ where: { userId: currentUser.id } }).then(Boolean)
-      : false,
+      ? prisma.mentorProfile.findUnique({ where: { userId: currentUser.id } })
+      : null,
   ]);
 
   const formattedMentors = mentors.map((m) => ({
@@ -29,6 +30,8 @@ export default async function MentorsPage() {
     totalAnswers: m.totalAnswers,
     helpfulAnswers: m.helpfulAnswers,
     isVerified: m.isVerified,
+    status: m.status,
+    mentorType: m.mentorType,
   }));
 
   return (
@@ -42,7 +45,12 @@ export default async function MentorsPage() {
           <div className="py-16 text-center text-gray-500">Loading...</div>
         }
       >
-        <MentorDirectory initialMentors={formattedMentors} isMentor={isMentor} />
+        <MentorDirectory
+          initialMentors={formattedMentors}
+          isMentor={mentorProfile?.status === "APPROVED"}
+          mentorStatus={mentorProfile?.status}
+          userYearOfStudy={currentUser?.yearOfStudy}
+        />
       </Suspense>
     </div>
   );

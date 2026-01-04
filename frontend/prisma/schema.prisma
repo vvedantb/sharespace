@@ -8,21 +8,23 @@ datasource db {
 }
 
 model User {
-  id              String         @id @default(uuid())
-  cognitoId       String?        @unique @map("cognito_id")
-  email           String         @unique
-  firstName       String         @map("first_name")
-  lastName        String         @map("last_name")
-  username        String?        @unique
-  avatarUrl       String?        @map("avatar_url")
-  university      String?
-  course          String?
-  yearOfStudy     Int?           @map("year_of_study")
-  bio             String?
-  isVerified      Boolean        @default(false) @map("is_verified")
-  isSeller        Boolean        @default(false) @map("is_seller")
-  sellerBio       String?        @map("seller_bio")
-  createdAt       DateTime       @default(now()) @map("created_at")
+  id                    String         @id @default(uuid())
+  cognitoId             String?        @unique @map("cognito_id")
+  email                 String         @unique
+  firstName             String         @map("first_name")
+  lastName              String         @map("last_name")
+  username              String?        @unique
+  avatarUrl             String?        @map("avatar_url")
+  university            String?
+  course                String?
+  yearOfStudy           Int?           @map("year_of_study")
+  graduationYear        Int?           @map("graduation_year")
+  bio                   String?
+  isVerified            Boolean        @default(false) @map("is_verified")
+  isSeller              Boolean        @default(false) @map("is_seller")
+  sellerBio             String?        @map("seller_bio")
+  hasCompletedOnboarding Boolean       @default(false) @map("has_completed_onboarding")
+  createdAt             DateTime       @default(now()) @map("created_at")
   answers         Answer[]
   conversations1  Conversation[] @relation("Participant1")
   conversations2  Conversation[] @relation("Participant2")
@@ -63,15 +65,19 @@ model Item {
 }
 
 model MentorProfile {
-  id             String   @id @default(uuid())
-  userId         String   @unique @map("user_id")
+  id             String       @id @default(uuid())
+  userId         String       @unique @map("user_id")
   bio            String?
   expertise      String[]
-  endorsements   Int      @default(0)
-  totalAnswers   Int      @default(0) @map("total_answers")
-  helpfulAnswers Int      @default(0) @map("helpful_answers")
-  isVerified     Boolean  @default(false) @map("is_verified")
-  user           User     @relation(fields: [userId], references: [id])
+  endorsements   Int          @default(0)
+  totalAnswers   Int          @default(0) @map("total_answers")
+  helpfulAnswers Int          @default(0) @map("helpful_answers")
+  isVerified     Boolean      @default(false) @map("is_verified")
+  status         MentorStatus @default(PENDING)
+  mentorType     MentorType   @default(STUDENT)
+  appliedAt      DateTime     @default(now()) @map("applied_at")
+  reviewedAt     DateTime?    @map("reviewed_at")
+  user           User         @relation(fields: [userId], references: [id])
 
   @@map("mentor_profiles")
 }
@@ -226,4 +232,15 @@ enum NotificationType {
   ANSWER
   ENDORSEMENT
   REVIEW
+}
+
+enum MentorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum MentorType {
+  STUDENT
+  ALUMNI
 }

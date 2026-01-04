@@ -58,12 +58,14 @@ export default async function ProfilePage() {
         university: user.university,
         course: user.course,
         yearOfStudy: user.yearOfStudy,
+        graduationYear: user.graduationYear,
         bio: user.bio,
       }}
       stats={stats}
       reviews={reviews}
-      isMentor={!!mentorProfile}
+      isMentor={mentorProfile?.status === "APPROVED"}
       mentorProfileId={mentorProfile?.id}
+      mentorStatus={mentorProfile?.status}
       isSeller={dbUser?.isSeller ?? false}
     />
   );

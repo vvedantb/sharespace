@@ -13,7 +13,9 @@
       "Bash(dir:*)",
       "Bash(cat:*)",
       "Bash(wc:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma db push:*)"
     ]
   }
 }

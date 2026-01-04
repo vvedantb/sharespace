@@ -20,6 +20,8 @@ interface QuestionDetailProps {
   initialAnswers: Answer[];
   currentUserId?: string;
   isMentor?: boolean;
+  mentorStatus?: "PENDING" | "APPROVED" | "REJECTED" | null;
+  userYearOfStudy?: number | null;
 }
 
 export function QuestionDetail({
@@ -27,6 +29,8 @@ export function QuestionDetail({
   initialAnswers,
   currentUserId,
   isMentor,
+  mentorStatus,
+  userYearOfStudy,
 }: QuestionDetailProps) {
   const router = useRouter();
   const [answers, setAnswers] = useState(initialAnswers);
@@ -139,17 +143,26 @@ export function QuestionDetail({
               questionId={question.id}
               onAnswerPosted={handleAnswerPosted}
             />
+          ) : mentorStatus === "PENDING" ? (
+            <Card className="border border-warning-200 bg-warning-50">
+              <CardBody className="p-4 text-center">
+                <p className="text-warning-700">Your mentor application is pending review.</p>
+                <p className="text-sm text-warning-600 mt-1">You&apos;ll be able to answer questions once approved.</p>
+              </CardBody>
+            </Card>
           ) : (
             <Card className="border border-default-200">
               <CardBody className="p-4 text-center">
                 <p className="text-default-600">Only mentors can answer questions.</p>
                 <Button color="danger" variant="flat" size="sm" className="mt-3" onPress={onOpen}>
-                  Become a Mentor
+                  {mentorStatus === "REJECTED" ? "Reapply as Mentor" : "Become a Mentor"}
                 </Button>
               </CardBody>
             </Card>
           )}
-          {!isMentor && <BecomeMentorModal isOpen={isOpen} onOpenChange={onOpenChange} />}
+          {!isMentor && mentorStatus !== "PENDING" && (
+            <BecomeMentorModal isOpen={isOpen} onOpenChange={onOpenChange} userYearOfStudy={userYearOfStudy} />
+          )}
         </div>
       </div>
     </div>
