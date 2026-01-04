@@ -255,3 +255,13 @@ pnpm studio    # Open Prisma Studio
 ## License
 
 This project is private and proprietary.
+
+---
+
+## AI-Generated Content
+
+This README was generated with the assistance of AI. The documentation was created using the following prompt:
+
+> "Generate a comprehensive README.md for ShareSpace, a student marketplace and mentorship platform built with Next.js, React, TypeScript, Prisma, and AWS services. Include sections for features, tech stack, database schema, project structure, getting started instructions, and design system. Ensure the documentation is clear, well-organized, and follows best practices for open-source project documentation."
+
+**Reference**: Generated using AI-assisted documentation tools for improved clarity and completeness.
