@@ -59,20 +59,20 @@ export function NotificationBell({ notifications, unreadCount: initialUnreadCoun
       >
         <IconBell className="h-6 w-6" stroke={2} />
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-xs font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-danger text-xs font-bold text-white">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-lg z-50">
-          <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 px-4 py-3">
-            <h3 className="font-semibold text-black dark:text-white">Notifications</h3>
+        <div className="absolute right-0 top-full mt-2 w-80 rounded-2xl bg-white dark:bg-neutral-900 shadow-xl z-50 overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 bg-default-50">
+            <h3 className="font-semibold text-foreground">Notifications</h3>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                className="text-sm text-red-600 hover:text-red-700"
+                className="text-sm text-danger hover:text-danger-600"
               >
                 Mark all read
               </button>
@@ -81,40 +81,52 @@ export function NotificationBell({ notifications, unreadCount: initialUnreadCoun
 
           <div className="max-h-80 overflow-y-auto">
             {recentNotifications.length === 0 ? (
-              <p className="px-4 py-6 text-center text-neutral-500">No notifications</p>
+              <p className="px-4 py-8 text-center text-default-500">No notifications</p>
             ) : (
               recentNotifications.map((notification) => (
                 <div
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`cursor-pointer border-b border-neutral-100 dark:border-neutral-800 px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800 ${
-                    !notification.isRead ? "bg-red-50 dark:bg-red-900/20" : ""
+                  className={`cursor-pointer px-4 py-3 transition-colors hover:bg-default-100 ${
+                    !notification.isRead ? "bg-danger-50 dark:bg-danger-900/20" : ""
                   }`}
                 >
                   {notification.link ? (
                     <Link href={notification.link} className="block">
-                      <p className="font-medium text-black dark:text-white">{notification.title}</p>
-                      {notification.description && (
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
-                          {notification.description}
-                        </p>
-                      )}
-                      <p className="mt-1 text-xs text-neutral-500">
-                        {dayjs(notification.createdAt).fromNow()}
-                      </p>
+                      <div className="flex items-start gap-3">
+                        {!notification.isRead && (
+                          <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-danger" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-foreground">{notification.title}</p>
+                          {notification.description && (
+                            <p className="text-sm text-default-500 line-clamp-2">
+                              {notification.description}
+                            </p>
+                          )}
+                          <p className="mt-1 text-xs text-default-400">
+                            {dayjs(notification.createdAt).fromNow()}
+                          </p>
+                        </div>
+                      </div>
                     </Link>
                   ) : (
-                    <>
-                      <p className="font-medium text-black dark:text-white">{notification.title}</p>
-                      {notification.description && (
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2">
-                          {notification.description}
-                        </p>
+                    <div className="flex items-start gap-3">
+                      {!notification.isRead && (
+                        <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-danger" />
                       )}
-                      <p className="mt-1 text-xs text-neutral-500">
-                        {dayjs(notification.createdAt).fromNow()}
-                      </p>
-                    </>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-foreground">{notification.title}</p>
+                        {notification.description && (
+                          <p className="text-sm text-default-500 line-clamp-2">
+                            {notification.description}
+                          </p>
+                        )}
+                        <p className="mt-1 text-xs text-default-400">
+                          {dayjs(notification.createdAt).fromNow()}
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
               ))
@@ -124,7 +136,7 @@ export function NotificationBell({ notifications, unreadCount: initialUnreadCoun
           <Link
             href="/notifications"
             onClick={() => setIsOpen(false)}
-            className="block border-t border-neutral-200 dark:border-neutral-700 px-4 py-3 text-center text-sm font-medium text-red-600 hover:text-red-700"
+            className="block bg-default-50 px-4 py-3 text-center text-sm font-medium text-danger hover:text-danger-600"
           >
             View all notifications
           </Link>
