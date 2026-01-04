@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button, Card, CardBody } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { IconBell, IconCheck } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -33,12 +33,10 @@ export function NotificationsContent({ notifications: initialNotifications }: No
 
   if (notifications.length === 0) {
     return (
-      <Card>
-        <CardBody className="flex flex-col items-center justify-center py-16">
-          <IconBell className="h-12 w-12 text-neutral-400 mb-4" stroke={1.5} />
-          <p className="text-neutral-500">No notifications yet</p>
-        </CardBody>
-      </Card>
+      <div className="rounded-2xl bg-white dark:bg-neutral-900 p-16 flex flex-col items-center justify-center">
+        <IconBell className="h-12 w-12 text-default-400 mb-4" stroke={1.5} />
+        <p className="text-default-500">No notifications yet</p>
+      </div>
     );
   }
 
@@ -49,7 +47,7 @@ export function NotificationsContent({ notifications: initialNotifications }: No
           <Button
             size="sm"
             variant="flat"
-            color="primary"
+            color="danger"
             startContent={<IconCheck className="h-4 w-4" />}
             onPress={handleMarkAllRead}
           >
@@ -58,31 +56,36 @@ export function NotificationsContent({ notifications: initialNotifications }: No
         </div>
       )}
 
-      <div className="space-y-2">
-        {notifications.map((notification) => (
-          <Card
+      <div className="rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden">
+        {notifications.map((notification, index) => (
+          <div
             key={notification.id}
-            className={notification.isRead ? "" : "border-l-4 border-l-red-600"}
+            className={`px-4 py-4 transition-colors hover:bg-default-100 ${
+              !notification.isRead ? "bg-danger-50 dark:bg-danger-900/20" : ""
+            } ${index !== notifications.length - 1 ? "border-b border-default-100" : ""}`}
           >
-            <CardBody className="flex flex-row items-start gap-4">
-              <div className="flex-1">
+            <div className="flex items-start gap-3">
+              {!notification.isRead && (
+                <div className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-danger" />
+              )}
+              <div className="flex-1 min-w-0">
                 {notification.link ? (
                   <Link href={notification.link} onClick={() => handleMarkRead(notification.id)}>
-                    <h3 className="font-semibold text-black dark:text-white hover:text-red-600">
+                    <h3 className="font-medium text-foreground hover:text-danger">
                       {notification.title}
                     </h3>
                   </Link>
                 ) : (
-                  <h3 className="font-semibold text-black dark:text-white">
+                  <h3 className="font-medium text-foreground">
                     {notification.title}
                   </h3>
                 )}
                 {notification.description && (
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                  <p className="text-sm text-default-500 mt-1">
                     {notification.description}
                   </p>
                 )}
-                <p className="text-xs text-neutral-500 mt-2">
+                <p className="text-xs text-default-400 mt-2">
                   {dayjs(notification.createdAt).fromNow()}
                 </p>
               </div>
@@ -97,8 +100,8 @@ export function NotificationsContent({ notifications: initialNotifications }: No
                   <IconCheck className="h-4 w-4" />
                 </Button>
               )}
-            </CardBody>
-          </Card>
+            </div>
+          </div>
         ))}
       </div>
     </div>
