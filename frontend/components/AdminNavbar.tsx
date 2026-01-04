@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconUsers, IconHome, IconMenu2, IconX } from "@tabler/icons-react";
+import { IconUsers, IconHome, IconMenu2, IconX, IconFlag } from "@tabler/icons-react";
 
 const adminLinks = [
   { href: "/admin/mentor-applications", label: "Mentor Applications", icon: IconUsers },
+  { href: "/admin/reports", label: "Reports", icon: IconFlag },
 ];
 
 export function AdminNavbar() {

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Avatar, Button } from "@heroui/react";
-import { IconMessageCircle, IconArrowLeft, IconThumbUp } from "@tabler/icons-react";
+import { Avatar, Button, useDisclosure } from "@heroui/react";
+import { IconMessageCircle, IconArrowLeft, IconThumbUp, IconFlag } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { endorseMentor } from "@/lib/actions/mentors";
+import { ReportModal } from "@/components/ReportModal";
 
 interface MentorDetailProps {
   mentorId: string;
@@ -33,6 +34,7 @@ export function MentorDetail({ mentorId, mentor, hasEndorsed, currentUserId }: M
   const name = `${mentor.user.firstName} ${mentor.user.lastName}`;
   const [endorsed, setEndorsed] = useState(hasEndorsed);
   const [endorsements, setEndorsements] = useState(mentor.endorsements);
+  const { isOpen: isReportOpen, onOpen: onReportOpen, onOpenChange: onReportOpenChange } = useDisclosure();
 
   const endorseMutation = useMutation({
     mutationFn: () => endorseMentor(mentorId),
@@ -103,18 +105,34 @@ export function MentorDetail({ mentorId, mentor, hasEndorsed, currentUserId }: M
       </div>
 
       {!isOwnProfile && (
-        <Button
-          as={Link}
-          href={`/messages?user=${mentor.userId}`}
-          color="danger"
-          radius="lg"
-          fullWidth
-          startContent={<IconMessageCircle className="h-5 w-5" stroke={2} />}
-          className="mt-6"
-        >
-          Message
-        </Button>
+        <div className="mt-6 flex gap-2">
+          <Button
+            as={Link}
+            href={`/messages?user=${mentor.userId}`}
+            color="danger"
+            radius="lg"
+            fullWidth
+            startContent={<IconMessageCircle className="h-5 w-5" stroke={2} />}
+          >
+            Message
+          </Button>
+          <Button
+            variant="bordered"
+            radius="lg"
+            isIconOnly
+            onPress={onReportOpen}
+          >
+            <IconFlag className="h-5 w-5" stroke={2} />
+          </Button>
+        </div>
       )}
+
+      <ReportModal
+        isOpen={isReportOpen}
+        onOpenChange={onReportOpenChange}
+        userId={mentor.userId}
+        targetName={name}
+      />
     </div>
   );
 }

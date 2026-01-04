@@ -40,6 +40,8 @@ model User {
   savedItems      SavedItem[]
   badges          UserBadge[]
   points          UserPoints?
+  reportsMade     Report[]       @relation("Reporter")
+  reportsReceived Report[]       @relation("ReportedUser")
 
   @@map("users")
 }
@@ -67,6 +69,7 @@ model Item {
   buyer               User?          @relation("Buyer", fields: [buyerId], references: [id])
   reviews             Review[]
   savedBy             SavedItem[]
+  reports             Report[]
 
   @@map("items")
 }
@@ -292,4 +295,27 @@ enum BadgeCategory {
   BUYER
   MENTOR
   COMMUNITY
+}
+
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  DISMISSED
+}
+
+model Report {
+  id             String       @id @default(uuid())
+  reporterId     String       @map("reporter_id")
+  itemId         String?      @map("item_id")
+  reportedUserId String?      @map("reported_user_id")
+  reason         String
+  description    String?
+  status         ReportStatus @default(PENDING)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  reviewedAt     DateTime?    @map("reviewed_at")
+  reporter       User         @relation("Reporter", fields: [reporterId], references: [id])
+  item           Item?        @relation(fields: [itemId], references: [id])
+  reportedUser   User?        @relation("ReportedUser", fields: [reportedUserId], references: [id])
+
+  @@map("reports")
 }

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
-import { incrementItemViews, isItemSaved, isVerifiedSeller } from "@/lib/actions/items";
+import { incrementItemViews, isItemSaved, isVerifiedSeller, getSimilarItems } from "@/lib/actions/items";
 import { ItemDetail } from "./ItemDetail";
+import { SimilarItems } from "./SimilarItems";
 
 export default async function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -44,13 +45,15 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : 0;
 
-  const [saved, sellerVerified] = await Promise.all([
+  const [saved, sellerVerified, similarItems] = await Promise.all([
     isItemSaved(id),
     isVerifiedSeller(item.sellerId),
+    getSimilarItems(id),
   ]);
 
   return (
-    <ItemDetail
+    <div className="px-4 py-6">
+      <ItemDetail
       item={{
         id: item.id,
         title: item.title,
@@ -70,5 +73,7 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
       currentUserId={currentUser?.id}
       initialSaved={saved}
     />
+      <SimilarItems items={similarItems} />
+    </div>
   );
 }

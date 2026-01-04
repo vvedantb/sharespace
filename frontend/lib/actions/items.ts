@@ -426,3 +426,51 @@ export async function isVerifiedSeller(userId: string): Promise<boolean> {
   });
   return soldCount >= 3;
 }
+
+export async function getSimilarItems(itemId: string, limit = 4): Promise<Item[]> {
+  const item = await prisma.item.findUnique({ where: { id: itemId } });
+  if (!item) return [];
+
+  const items = await prisma.item.findMany({
+    where: {
+      id: { not: itemId },
+      sellerId: { not: item.sellerId },
+      status: "ACTIVE",
+      category: item.category,
+    },
+    include: {
+      seller: {
+        include: { reviewsReceived: { select: { rating: true } } },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  return items.map((i) => {
+    const reviews = i.seller.reviewsReceived;
+    const sellerRating =
+      reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        : 0;
+    return {
+      id: i.id,
+      sellerId: i.sellerId,
+      sellerName: `${i.seller.firstName} ${i.seller.lastName}`,
+      sellerRating,
+      title: i.title,
+      description: i.description,
+      price: Number(i.price),
+      category: i.category,
+      condition: i.condition,
+      status: i.status,
+      images: i.images,
+      courseCode: i.courseCode,
+      university: i.university,
+      views: i.views,
+      saves: i.saves,
+      isMentorRecommended: i.isMentorRecommended,
+      createdAt: dayjs(i.createdAt).toISOString(),
+    };
+  });
+}
