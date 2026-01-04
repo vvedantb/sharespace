@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import dayjs from "dayjs";
-import { Spinner } from "@heroui/react";
+import { Spinner } from "@heroui/spinner";
 import { prisma } from "@/lib/prisma";
 import { BrowseContent } from "./BrowseContent";
 
@@ -32,7 +32,13 @@ export default async function BrowsePage() {
   }));
 
   return (
-    <Suspense fallback={<div className="py-16 flex justify-center"><Spinner color="danger" /></div>}>
+    <Suspense
+      fallback={
+        <div className="py-16 flex justify-center">
+          <Spinner color="danger" />
+        </div>
+      }
+    >
       <BrowseContent initialItems={formattedItems} />
     </Suspense>
   );
