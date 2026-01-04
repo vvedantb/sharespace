@@ -32,7 +32,7 @@ export default async function QuestionDetailPage({
 
   const answers = await prisma.answer.findMany({
     where: { questionId: id },
-    include: { mentor: true },
+    include: { mentor: { include: { mentorProfile: true } } },
     orderBy: { createdAt: "desc" },
   });
 
@@ -52,7 +52,7 @@ export default async function QuestionDetailPage({
   const formattedAnswers = answers.map((a) => ({
     id: a.id,
     questionId: a.questionId,
-    mentorId: a.mentorId,
+    mentorId: a.mentor.mentorProfile?.id ?? a.mentorId,
     mentorName: `${a.mentor.firstName} ${a.mentor.lastName}`,
     content: a.content,
     helpfulCount: a.helpfulCount,

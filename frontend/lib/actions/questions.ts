@@ -58,7 +58,7 @@ export async function createAnswer(questionId: string, content: string): Promise
   if (!user) throw new Error("Unauthorized");
 
   const mentorProfile = await prisma.mentorProfile.findFirst({
-    where: { userId: user.id },
+    where: { userId: user.id, status: "APPROVED" },
   });
 
   if (!mentorProfile) {
@@ -68,7 +68,7 @@ export async function createAnswer(questionId: string, content: string): Promise
   const answer = await prisma.answer.create({
     data: {
       questionId,
-      mentorId: mentorProfile.id,
+      mentorId: user.id,
       content,
     },
   });
@@ -76,7 +76,7 @@ export async function createAnswer(questionId: string, content: string): Promise
   return {
     id: answer.id,
     questionId: answer.questionId,
-    mentorId: answer.mentorId,
+    mentorId: mentorProfile.id,
     mentorName: `${user.firstName} ${user.lastName}`,
     content: answer.content,
     helpfulCount: answer.helpfulCount,

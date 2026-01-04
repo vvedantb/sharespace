@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Avatar, Button, Card, CardBody, Switch, useDisclosure } from "@heroui/react";
+import { Avatar, Button, Card, CardBody, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Tooltip, useDisclosure } from "@heroui/react";
 import { IconEdit, IconLogout, IconMoon, IconSun, IconStar, IconSparkles, IconShoppingBag } from "@tabler/icons-react";
 import { signOut } from "@/lib/cognito";
 import { useThemeContext } from "@/components/contexts/ThemeContext";
@@ -25,6 +25,7 @@ export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileI
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { isOpen: isMentorModalOpen, onOpen: onMentorModalOpen, onOpenChange: onMentorModalOpenChange } = useDisclosure();
   const { isOpen: isSellerModalOpen, onOpen: onSellerModalOpen, onOpenChange: onSellerModalOpenChange } = useDisclosure();
+  const { isOpen: isLogoutModalOpen, onOpen: onLogoutModalOpen, onOpenChange: onLogoutModalOpenChange } = useDisclosure();
   const fullName = `${user.firstName} ${user.lastName}`;
 
   return (
@@ -54,9 +55,16 @@ export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileI
             {user.course || "No course"} · Year {user.yearOfStudy || "-"}
           </p>
         </div>
-        <Button isIconOnly variant="light" radius="lg" onPress={onOpen}>
-          <IconEdit className="h-5 w-5" stroke={1.5} />
-        </Button>
+        <Tooltip content="Edit Profile">
+          <Button isIconOnly variant="light" radius="lg" onPress={onOpen}>
+            <IconEdit className="h-5 w-5" stroke={1.5} />
+          </Button>
+        </Tooltip>
+        <Tooltip content="Log Out">
+          <Button isIconOnly variant="light" radius="lg" color="danger" onPress={onLogoutModalOpen}>
+            <IconLogout className="h-5 w-5" stroke={1.5} />
+          </Button>
+        </Tooltip>
       </div>
 
 
@@ -178,18 +186,6 @@ export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileI
         </CardBody>
       </Card>
 
-      <Button
-        variant="bordered"
-        color="danger"
-        radius="lg"
-        fullWidth
-        startContent={<IconLogout className="h-5 w-5" stroke={1.5} />}
-        onPress={signOut}
-        className="mt-4"
-      >
-        Log Out
-      </Button>
-
       <EditProfileModal user={user} isOpen={isOpen} onOpenChange={onOpenChange} />
       {!isMentor && mentorStatus !== "PENDING" && (
         <BecomeMentorModal
@@ -199,6 +195,22 @@ export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileI
         />
       )}
       {!isSeller && <BecomeSellerModal isOpen={isSellerModalOpen} onOpenChange={onSellerModalOpenChange} />}
+      <Modal isOpen={isLogoutModalOpen} onOpenChange={onLogoutModalOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader>Log Out</ModalHeader>
+              <ModalBody>
+                <p>Are you sure you want to log out?</p>
+              </ModalBody>
+              <ModalFooter>
+                <Button variant="light" onPress={onClose}>Cancel</Button>
+                <Button color="danger" onPress={signOut}>Log Out</Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
