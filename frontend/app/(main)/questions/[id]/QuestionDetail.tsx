@@ -54,115 +54,127 @@ export function QuestionDetail({
   const isAsker = currentUserId === question.askerId;
 
   return (
-    <div className="px-4 py-6">
-      <Button
-        variant="light"
-        startContent={<IconArrowLeft className="h-4 w-4" stroke={2} />}
-        onPress={() => router.back()}
-        className="mb-4 text-default-500"
-      >
-        Back
-      </Button>
+    <div className="px-4 py-6 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-4xl">
+        <Button
+          variant="light"
+          startContent={<IconArrowLeft className="h-4 w-4" stroke={2} />}
+          onPress={() => router.back()}
+          className="mb-6 text-default-500"
+        >
+          Back
+        </Button>
 
-      <div className="max-w-2xl">
-        <h1 className="text-xl font-bold text-black dark:text-white">
-          {question.title}
-        </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {question.askerName} · {dayjs(question.createdAt).fromNow()}
-        </p>
-        <p className="mt-4 text-gray-600 dark:text-gray-300">
-          {question.content}
-        </p>
-
-        <div className="mt-8 border-t border-gray-100 dark:border-neutral-800 pt-6">
-          <h2 className="font-medium text-black dark:text-white">
-            {answers.length} {answers.length === 1 ? "Answer" : "Answers"}
-          </h2>
-
-          {answers.length === 0 ? (
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              No answers yet. Be the first to help!
-            </p>
-          ) : (
-            <div className="mt-4 space-y-4">
-              {answers.map((answer) => (
-                <Card key={answer.id} className="border border-default-200" shadow="none">
-                  <CardBody className="p-4">
-                    <div className="flex items-center gap-2">
-                      <Avatar
-                        name={answer.mentorName}
-                        size="sm"
-                        color="danger"
-                        showFallback
-                      />
-                      <Link
-                        href={`/mentors/${answer.mentorId}`}
-                        className="text-sm font-medium text-black dark:text-white hover:text-danger"
-                      >
-                        {answer.mentorName}
-                      </Link>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">
-                        · {dayjs(answer.createdAt).fromNow()}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                      {answer.content}
-                    </p>
-                    <div className="mt-2 flex items-center justify-between">
-                      <p className="text-xs text-gray-400 dark:text-gray-500">
-                        {answer.helpfulCount} found helpful
-                      </p>
-                      {isAsker && !answer.isEndorsed && (
-                        <Button
-                          size="sm"
-                          variant="light"
-                          startContent={<IconThumbUp className="h-4 w-4" />}
-                          isLoading={markHelpfulMutation.isPending}
-                          onPress={() => markHelpfulMutation.mutate(answer.id)}
-                        >
-                          Mark Helpful
-                        </Button>
-                      )}
-                      {answer.isEndorsed && (
-                        <span className="text-xs text-success-500 flex items-center gap-1">
-                          <IconThumbUp className="h-3 w-3" /> Helpful
-                        </span>
-                      )}
-                    </div>
-                  </CardBody>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="mt-6 border-t border-gray-100 dark:border-neutral-800 pt-6">
-          {isMentor ? (
-            <AnswerForm
-              questionId={question.id}
-              onAnswerPosted={handleAnswerPosted}
-            />
-          ) : mentorStatus === "PENDING" ? (
-            <Card className="border border-warning-200 bg-warning-50" shadow="none">
-              <CardBody className="p-4 text-center">
-                <p className="text-warning-700">Your mentor application is pending review.</p>
-                <p className="text-sm text-warning-600 mt-1">You&apos;ll be able to answer questions once approved.</p>
-              </CardBody>
-            </Card>
-          ) : (
+        <div className="grid gap-8 lg:grid-cols-[1fr,320px]">
+          <div>
             <Card className="border border-default-200" shadow="none">
-              <CardBody className="p-4 text-center">
-                <p className="text-default-600">Only mentors can answer questions.</p>
-                <Button color="danger" variant="flat" size="sm" className="mt-3" onPress={onOpen}>
-                  {mentorStatus === "REJECTED" ? "Reapply as Mentor" : "Become a Mentor"}
-                </Button>
+              <CardBody className="p-6">
+                <h1 className="text-xl font-bold text-foreground md:text-2xl">
+                  {question.title}
+                </h1>
+                <p className="mt-2 text-sm text-default-500">
+                  Asked by {question.askerName} · {dayjs(question.createdAt).fromNow()}
+                </p>
+                <p className="mt-4 text-default-600 leading-relaxed">
+                  {question.content}
+                </p>
               </CardBody>
             </Card>
-          )}
-          {!isMentor && mentorStatus !== "PENDING" && (
-            <BecomeMentorModal isOpen={isOpen} onOpenChange={onOpenChange} userYearOfStudy={userYearOfStudy} />
-          )}
+
+            <div className="mt-8">
+              <h2 className="text-lg font-semibold text-foreground">
+                {answers.length} {answers.length === 1 ? "Answer" : "Answers"}
+              </h2>
+
+              {answers.length === 0 ? (
+                <p className="mt-4 text-sm text-default-500">
+                  No answers yet. Be the first to help!
+                </p>
+              ) : (
+                <div className="mt-4 space-y-4">
+                  {answers.map((answer) => (
+                    <Card key={answer.id} className="border border-default-200" shadow="none">
+                      <CardBody className="p-5">
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            name={answer.mentorName}
+                            size="sm"
+                            color="danger"
+                            showFallback
+                          />
+                          <div>
+                            <Link
+                              href={`/mentors/${answer.mentorId}`}
+                              className="font-medium text-foreground hover:text-danger"
+                            >
+                              {answer.mentorName}
+                            </Link>
+                            <p className="text-xs text-default-400">
+                              {dayjs(answer.createdAt).fromNow()}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="mt-3 text-default-600 leading-relaxed">
+                          {answer.content}
+                        </p>
+                        <div className="mt-4 flex items-center justify-between border-t border-default-100 pt-3">
+                          <p className="text-xs text-default-400">
+                            {answer.helpfulCount} found helpful
+                          </p>
+                          {isAsker && !answer.isEndorsed && (
+                            <Button
+                              size="sm"
+                              variant="flat"
+                              color="success"
+                              startContent={<IconThumbUp className="h-4 w-4" />}
+                              isLoading={markHelpfulMutation.isPending}
+                              onPress={() => markHelpfulMutation.mutate(answer.id)}
+                            >
+                              Mark Helpful
+                            </Button>
+                          )}
+                          {answer.isEndorsed && (
+                            <span className="text-xs text-success-500 flex items-center gap-1">
+                              <IconThumbUp className="h-3 w-3" /> Helpful
+                            </span>
+                          )}
+                        </div>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="lg:sticky lg:top-6 lg:self-start">
+            <Card className="border border-default-200" shadow="none">
+              <CardBody className="p-5">
+                <h3 className="font-semibold text-foreground mb-4">Your Answer</h3>
+                {isMentor ? (
+                  <AnswerForm
+                    questionId={question.id}
+                    onAnswerPosted={handleAnswerPosted}
+                  />
+                ) : mentorStatus === "PENDING" ? (
+                  <div className="text-center py-4">
+                    <p className="text-warning-600 font-medium">Application Pending</p>
+                    <p className="text-sm text-default-500 mt-1">You&apos;ll be able to answer once approved.</p>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-default-500">Only mentors can answer questions.</p>
+                    <Button color="danger" variant="flat" size="sm" className="mt-3" onPress={onOpen}>
+                      {mentorStatus === "REJECTED" ? "Reapply as Mentor" : "Become a Mentor"}
+                    </Button>
+                  </div>
+                )}
+              </CardBody>
+            </Card>
+            {!isMentor && mentorStatus !== "PENDING" && (
+              <BecomeMentorModal isOpen={isOpen} onOpenChange={onOpenChange} userYearOfStudy={userYearOfStudy} />
+            )}
+          </div>
         </div>
       </div>
     </div>
