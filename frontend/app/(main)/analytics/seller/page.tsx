@@ -112,59 +112,41 @@ export default async function SellerAnalyticsPage() {
           <h2 className="text-lg font-bold text-foreground mb-4">
             Your Sustainability Impact
           </h2>
-          <Card
-            className="bg-gradient-to-r from-success-50 to-success-100 dark:from-success-950 dark:to-success-900"
-            shadow="none"
-          >
+          <Card className="bg-success/10" shadow="none">
             <CardBody className="p-6">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
                   <div className="flex justify-center mb-2">
-                    <div className="rounded-full bg-success-200 dark:bg-success-800 p-3">
-                      <IconRecycle
-                        className="h-6 w-6 text-success-700 dark:text-success-300"
-                        stroke={1.5}
-                      />
+                    <div className="rounded-full bg-success/20 p-3">
+                      <IconRecycle className="h-6 w-6 text-success" stroke={1.5} />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-success-700 dark:text-success-300">
+                  <p className="text-2xl font-bold text-success">
                     {sustainability.itemsReused}
                   </p>
-                  <p className="text-xs text-success-600 dark:text-success-400">
-                    Items Reused
-                  </p>
+                  <p className="text-xs text-success/80">Items Reused</p>
                 </div>
                 <div>
                   <div className="flex justify-center mb-2">
-                    <div className="rounded-full bg-success-200 dark:bg-success-800 p-3">
-                      <IconCoin
-                        className="h-6 w-6 text-success-700 dark:text-success-300"
-                        stroke={1.5}
-                      />
+                    <div className="rounded-full bg-success/20 p-3">
+                      <IconCoin className="h-6 w-6 text-success" stroke={1.5} />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-success-700 dark:text-success-300">
+                  <p className="text-2xl font-bold text-success">
                     {formatMoney(sustainability.moneySaved)}
                   </p>
-                  <p className="text-xs text-success-600 dark:text-success-400">
-                    Saved for Buyers
-                  </p>
+                  <p className="text-xs text-success/80">Saved for Buyers</p>
                 </div>
                 <div>
                   <div className="flex justify-center mb-2">
-                    <div className="rounded-full bg-success-200 dark:bg-success-800 p-3">
-                      <IconLeaf
-                        className="h-6 w-6 text-success-700 dark:text-success-300"
-                        stroke={1.5}
-                      />
+                    <div className="rounded-full bg-success/20 p-3">
+                      <IconLeaf className="h-6 w-6 text-success" stroke={1.5} />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold text-success-700 dark:text-success-300">
+                  <p className="text-2xl font-bold text-success">
                     {formatCO2(sustainability.co2Saved)}
                   </p>
-                  <p className="text-xs text-success-600 dark:text-success-400">
-                    CO₂ Prevented
-                  </p>
+                  <p className="text-xs text-success/80">CO₂ Prevented</p>
                 </div>
               </div>
             </CardBody>
