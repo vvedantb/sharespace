@@ -24,6 +24,7 @@ model User {
   isSeller              Boolean        @default(false) @map("is_seller")
   sellerBio             String?        @map("seller_bio")
   hasCompletedOnboarding Boolean       @default(false) @map("has_completed_onboarding")
+  isAdmin               Boolean        @default(false) @map("is_admin")
   createdAt             DateTime       @default(now()) @map("created_at")
   answers         Answer[]
   conversations1  Conversation[] @relation("Participant1")
