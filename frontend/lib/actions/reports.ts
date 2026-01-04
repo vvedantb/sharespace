@@ -28,9 +28,6 @@ export async function createReport(data: {
 }
 
 export async function getPendingReports() {
-  const user = await getCurrentUser();
-  if (!user?.isAdmin) throw new Error("Unauthorized: Admin access required");
-
   return prisma.report.findMany({
     where: { status: "PENDING" },
     include: {
