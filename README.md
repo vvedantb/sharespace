@@ -72,8 +72,6 @@ A cloud-native student marketplace and mentorship platform for campus communitie
 
 ## Tech Stack
 
-### Frontend
-
 | Technology      | Version | Purpose                         |
 | --------------- | ------- | ------------------------------- |
 | Next.js         | 16.0.7  | React framework with App Router |
@@ -88,18 +86,7 @@ A cloud-native student marketplace and mentorship platform for campus communitie
 | Tabler Icons    | -       | Icon library                    |
 | next-themes     | -       | Theme management                |
 | Turbopack       | -       | Dev server and bundler          |
-
-### Backend
-
-| Technology        | Version | Purpose              |
-| ----------------- | ------- | -------------------- |
-| Spring Boot       | 3.4.0   | Java framework       |
-| Java              | 21      | Language             |
-| PostgreSQL        | 12+     | Production database  |
-| H2                | -       | Development database |
-| Spring Data JPA   | -       | Database abstraction |
-| SpringDoc OpenAPI | -       | API documentation    |
-| Maven             | 3.6+    | Build tool           |
+| PostgreSQL      | 12+     | Production database             |
 
 ### Cloud Services (AWS)
 
@@ -179,15 +166,6 @@ sharespace/
 │   │   └── schema.prisma       # Database schema
 │   └── middleware.ts           # Auth middleware
 │
-├── backend/
-│   └── sharespace-api/         # Spring Boot API
-│       └── src/main/java/com/sharespace/
-│           ├── controller/     # REST endpoints
-│           ├── service/        # Business logic
-│           ├── repository/     # Data access
-│           ├── model/          # JPA entities
-│           └── dto/            # Data transfer objects
-│
 └── ai-guidance/                # Documentation
 ```
 
@@ -197,8 +175,6 @@ sharespace/
 
 - Node.js 20+
 - pnpm
-- Java 21+
-- Maven 3.6+
 - PostgreSQL 12+
 
 ### Environment Variables
@@ -225,15 +201,6 @@ pnpm migrate         # Run database migrations
 pnpm dev             # Start dev server on :3000
 ```
 
-### Backend Setup
-
-```bash
-cd backend/sharespace-api
-./mvnw clean install
-./mvnw spring-boot:run                              # Production mode
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev  # Dev mode (H2)
-```
-
 ### Available Scripts
 
 **Frontend:**
@@ -247,31 +214,6 @@ pnpm generate  # Generate Prisma client
 pnpm migrate   # Run Prisma migrations
 pnpm studio    # Open Prisma Studio
 ```
-
-**Backend:**
-
-```bash
-./mvnw spring-boot:run  # Run application
-./mvnw test             # Run tests
-./mvnw clean install    # Build project
-```
-
-## API Documentation
-
-Backend API documentation is available at `http://localhost:4000/swagger-ui.html` when running the Spring Boot server.
-
-### Key Endpoints
-
-| Endpoint             | Method | Description             |
-| -------------------- | ------ | ----------------------- |
-| `/api/items`         | GET    | List items with filters |
-| `/api/items`         | POST   | Create item             |
-| `/api/items/{id}`    | GET    | Get item details        |
-| `/api/mentors`       | GET    | List mentors            |
-| `/api/questions`     | GET    | List questions          |
-| `/api/conversations` | GET    | List conversations      |
-| `/api/notifications` | GET    | List notifications      |
-| `/api/users/me`      | GET    | Current user profile    |
 
 ## Design System
 

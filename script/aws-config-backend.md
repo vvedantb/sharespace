@@ -74,7 +74,7 @@
 >
 > **AWS Cognito** - Managed auth handles password security, token rotation, and scales automatically - we didn't want to build auth from scratch.
 >
-> **TanStack Query** - Declarative data fetching with caching, background refetching, and optimistic updates out of the box.
+> **TanStack Query** - data fetching with caching, background refetching, and optimistic updates out of the box.
 >
 > **React Hook Form with Zod** - Performant forms with minimal re-renders, and Zod provides runtime validation matching our TypeScript types.
 >
