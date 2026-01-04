@@ -25,6 +25,16 @@ export async function createReview(data: {
     include: { reviewer: true },
   });
 
+  await prisma.notification.create({
+    data: {
+      userId: data.revieweeId,
+      type: "REVIEW",
+      title: "New Review",
+      description: `${user.firstName} ${user.lastName} left you a ${data.rating}-star review`,
+      link: "/profile",
+    },
+  });
+
   return {
     id: review.id,
     reviewerId: review.reviewerId,

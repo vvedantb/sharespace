@@ -28,11 +28,32 @@ export async function sendMessage(
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
+  const conversation = await prisma.conversation.findUnique({
+    where: { id: conversationId },
+    select: { participant1Id: true, participant2Id: true },
+  });
+
+  if (!conversation) throw new Error("Conversation not found");
+
+  const recipientId = conversation.participant1Id === user.id
+    ? conversation.participant2Id
+    : conversation.participant1Id;
+
   const message = await prisma.message.create({
     data: {
       conversationId,
       senderId: user.id,
       content,
+    },
+  });
+
+  await prisma.notification.create({
+    data: {
+      userId: recipientId,
+      type: "MESSAGE",
+      title: "New Message",
+      description: `${user.firstName} ${user.lastName}: ${content.slice(0, 50)}${content.length > 50 ? "..." : ""}`,
+      link: `/messages?user=${user.id}`,
     },
   });
 

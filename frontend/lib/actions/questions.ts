@@ -105,6 +105,13 @@ export async function createAnswer(questionId: string, content: string): Promise
     throw new Error("Only mentors can answer questions");
   }
 
+  const question = await prisma.question.findUnique({
+    where: { id: questionId },
+    select: { askerId: true, title: true },
+  });
+
+  if (!question) throw new Error("Question not found");
+
   const answer = await prisma.answer.create({
     data: {
       questionId,
@@ -116,6 +123,16 @@ export async function createAnswer(questionId: string, content: string): Promise
   await prisma.mentorProfile.update({
     where: { id: mentorProfile.id },
     data: { totalAnswers: { increment: 1 } },
+  });
+
+  await prisma.notification.create({
+    data: {
+      userId: question.askerId,
+      type: "ANSWER",
+      title: "New Answer",
+      description: `${user.firstName} ${user.lastName} answered your question: "${question.title.slice(0, 40)}${question.title.length > 40 ? "..." : ""}"`,
+      link: `/questions/${questionId}`,
+    },
   });
 
   await onAnswerGiven(user.id);
@@ -134,12 +151,15 @@ export async function createAnswer(questionId: string, content: string): Promise
 }
 
 export async function markAnswerHelpful(answerId: string) {
+  const user = await getCurrentUser();
+
   const answer = await prisma.answer.update({
     where: { id: answerId },
     data: {
       helpfulCount: { increment: 1 },
       isEndorsed: true,
     },
+    include: { question: { select: { title: true } } },
   });
 
   const mentorProfile = await prisma.mentorProfile.findFirst({
@@ -152,6 +172,16 @@ export async function markAnswerHelpful(answerId: string) {
       data: { helpfulAnswers: { increment: 1 } },
     });
   }
+
+  await prisma.notification.create({
+    data: {
+      userId: answer.mentorId,
+      type: "ENDORSEMENT",
+      title: "Answer Marked Helpful",
+      description: `${user?.firstName ?? "Someone"} found your answer helpful on "${answer.question.title.slice(0, 30)}..."`,
+      link: `/questions/${answer.questionId}`,
+    },
+  });
 
   await onAnswerMarkedHelpful(answer.mentorId);
 

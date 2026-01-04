@@ -93,6 +93,13 @@ export async function endorseMentor(mentorId: string) {
   const user = await getCurrentUser();
   if (!user) throw new Error("Unauthorized");
 
+  const mentorProfile = await prisma.mentorProfile.findUnique({
+    where: { id: mentorId },
+    select: { userId: true },
+  });
+
+  if (!mentorProfile) throw new Error("Mentor not found");
+
   await prisma.$transaction([
     prisma.mentorEndorsement.create({
       data: { mentorId, userId: user.id },
@@ -102,6 +109,16 @@ export async function endorseMentor(mentorId: string) {
       data: { endorsements: { increment: 1 } },
     }),
   ]);
+
+  await prisma.notification.create({
+    data: {
+      userId: mentorProfile.userId,
+      type: "ENDORSEMENT",
+      title: "New Endorsement",
+      description: `${user.firstName} ${user.lastName} endorsed you as a mentor`,
+      link: `/mentors/${mentorId}`,
+    },
+  });
 }
 
 export async function hasEndorsed(mentorId: string): Promise<boolean> {
