@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Card, CardBody, Button } from "@heroui/react";
+import { Card, CardBody } from "@heroui/card";
 import { IconPackage, IconCheck } from "@tabler/icons-react";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -26,10 +26,15 @@ export default async function ProfileAnalyticsPage() {
           <CardBody className="p-4">
             <div className="flex items-center gap-3">
               <div className="rounded-lg bg-primary-100 p-2">
-                <IconPackage className="h-5 w-5 text-primary-600" stroke={1.5} />
+                <IconPackage
+                  className="h-5 w-5 text-primary-600"
+                  stroke={1.5}
+                />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">{stats.itemsListed}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {stats.itemsListed}
+                </p>
                 <p className="text-xs text-default-500">Items Listed</p>
               </div>
             </div>
@@ -43,7 +48,9 @@ export default async function ProfileAnalyticsPage() {
                 <IconCheck className="h-5 w-5 text-success-600" stroke={1.5} />
               </div>
               <div>
-                <p className="text-2xl font-bold text-foreground">{stats.itemsSold}</p>
+                <p className="text-2xl font-bold text-foreground">
+                  {stats.itemsSold}
+                </p>
                 <p className="text-xs text-default-500">Items Sold</p>
               </div>
             </div>
@@ -55,9 +62,12 @@ export default async function ProfileAnalyticsPage() {
         <Card className="mt-6 border border-default-200" shadow="none">
           <CardBody className="p-8 text-center">
             <p className="text-default-500">No items listed yet</p>
-            <Button as={Link} href="/marketplace/browse" color="danger" className="mt-4">
+            <Link
+              href="/marketplace/browse"
+              className="mt-4 inline-block rounded-xl bg-danger px-4 py-2 text-sm font-medium text-white hover:bg-danger-600"
+            >
               List Your First Item
-            </Button>
+            </Link>
           </CardBody>
         </Card>
       )}
