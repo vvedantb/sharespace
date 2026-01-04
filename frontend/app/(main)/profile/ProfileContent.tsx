@@ -8,6 +8,7 @@ import { useThemeContext } from "@/components/contexts/ThemeContext";
 import { User, Review } from "@/lib/types";
 import { EditProfileModal } from "./EditProfileModal";
 import { BecomeMentorModal } from "@/components/BecomeMentorModal";
+import { BecomeSellerModal } from "@/components/BecomeSellerModal";
 
 interface ProfileContentProps {
   user: User;
@@ -27,6 +28,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
   const { theme, toggleTheme, mounted } = useThemeContext();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { isOpen: isMentorModalOpen, onOpen: onMentorModalOpen, onOpenChange: onMentorModalOpenChange } = useDisclosure();
+  const { isOpen: isSellerModalOpen, onOpen: onSellerModalOpen, onOpenChange: onSellerModalOpenChange } = useDisclosure();
   const fullName = `${user.firstName} ${user.lastName}`;
 
   return (
@@ -146,7 +148,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
                 <p className="font-medium text-foreground">Become a Seller</p>
                 <p className="text-xs text-default-500">List your items</p>
               </div>
-              <Button as={Link} href="/profile/seller" size="sm" color="danger" variant="flat">
+              <Button size="sm" color="danger" variant="flat" onPress={onSellerModalOpen}>
                 Apply
               </Button>
             </CardBody>
@@ -214,6 +216,7 @@ export function ProfileContent({ user, stats, reviews, isMentor, mentorProfileId
           userYearOfStudy={user.yearOfStudy}
         />
       )}
+      {!isSeller && <BecomeSellerModal isOpen={isSellerModalOpen} onOpenChange={onSellerModalOpenChange} />}
     </div>
   );
 }

@@ -107,7 +107,13 @@ export function BecomeMentorModal({ isOpen, onOpenChange, userYearOfStudy }: Bec
     (mentorType === "STUDENT" ? parseInt(yearOfStudy) >= 3 : isGraduationYearValid);
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={handleClose} size="2xl" scrollBehavior="inside">
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={handleClose}
+      size="2xl"
+      scrollBehavior="inside"
+      classNames={{ body: "max-h-[60vh] overflow-y-auto" }}
+    >
       <ModalContent>
         <form onSubmit={handleSubmit}>
           <ModalHeader>Become a Mentor</ModalHeader>

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useQueryStates } from "nuqs";
 import { useQuery } from "@tanstack/react-query";
 import { Input, Chip, Spinner, Button, useDisclosure, Tabs, Tab } from "@heroui/react";
 import { IconSearch, IconX, IconPlus, IconShoppingBag } from "@tabler/icons-react";
 import { ItemCard } from "@/components/ItemCard";
+import { BecomeSellerModal } from "@/components/BecomeSellerModal";
 import { categories } from "@/lib/constants";
 import { Item } from "@/lib/types";
 import { marketplaceSearchParams } from "./searchParams";
@@ -24,6 +24,7 @@ export function MarketplaceBrowser({ initialItems, isSeller }: MarketplaceBrowse
   const [tab, setTab] = useState("browse");
   const [{ q, category }, setParams] = useQueryStates(marketplaceSearchParams);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen: isSellerModalOpen, onOpen: onSellerModalOpen, onOpenChange: onSellerModalOpenChange } = useDisclosure();
 
   const { data: browseItems = initialItems, isLoading: browseLoading } = useQuery({
     queryKey: ["items", { q, category }],
@@ -86,18 +87,18 @@ export function MarketplaceBrowser({ initialItems, isSeller }: MarketplaceBrowse
           </Button>
         ) : (
           <Button
-            as={Link}
-            href="/profile/seller"
             color="danger"
             radius="lg"
             startContent={<IconShoppingBag className="h-5 w-5" stroke={2} />}
             className="shrink-0"
+            onPress={onSellerModalOpen}
           >
             Become a Seller
           </Button>
         )}
       </div>
       {isSeller && <CreateItemModal isOpen={isOpen} onOpenChange={onOpenChange} />}
+      {!isSeller && <BecomeSellerModal isOpen={isSellerModalOpen} onOpenChange={onSellerModalOpenChange} />}
 
       {tab === "browse" && (
         <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
