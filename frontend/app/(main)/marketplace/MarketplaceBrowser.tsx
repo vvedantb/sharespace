@@ -109,7 +109,7 @@ export function MarketplaceBrowser({ initialItems }: MarketplaceBrowserProps) {
           {tab === "browse" ? "No items found" : "You haven't listed any items yet"}
         </div>
       ) : (
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+        <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
           {items.map((item) => (
             <ItemCard key={item.id} item={item} />
           ))}

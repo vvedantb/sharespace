@@ -8,8 +8,8 @@ export default function MainLayout({
   return (
     <div className="h-screen bg-neutral-200 dark:bg-black flex flex-col">
       <Navbar />
-      <main className="flex-1 mx-auto py-2 w-full overflow-hidden">
-        <div className="md:px-4 mx-3 md:mx-10 bg-white dark:bg-neutral-900 rounded-2xl h-full overflow-y-auto">
+      <main className="flex-1 mx-auto w-full overflow-hidden">
+        <div className="mx-3 bg-white dark:bg-neutral-900 rounded-t-2xl h-full overflow-y-auto">
           {children}
         </div>
       </main>

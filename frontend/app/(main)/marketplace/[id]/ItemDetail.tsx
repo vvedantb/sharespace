@@ -40,7 +40,7 @@ export function ItemDetail({ item }: ItemDetailProps) {
         Back
       </Button>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         <div className="aspect-square overflow-hidden rounded-2xl bg-default-100 flex items-center justify-center">
           {item.images && item.images.length > 0 ? (
             <Image src={item.images[0]} alt={item.title} className="h-full w-full object-cover" radius="lg" />

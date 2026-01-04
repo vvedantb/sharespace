@@ -115,7 +115,7 @@ export function AskQuestionModal({ isOpen, onOpenChange }: AskQuestionModalProps
               render={({ field }) => (
                 <div>
                   <label className="mb-2 block text-sm font-medium">Category</label>
-                  <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-2">
                     {categories.map((cat) => (
                       <Card
                         key={cat.value}

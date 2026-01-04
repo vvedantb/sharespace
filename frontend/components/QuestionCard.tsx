@@ -22,7 +22,7 @@ export function QuestionCard({ question }: QuestionCardProps) {
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
             {question.content}
           </p>
-          <div className="mt-3 flex items-center justify-between text-sm text-gray-500 dark:text-gray-500">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-sm text-gray-500 dark:text-gray-500">
             <span>{question.askerName} · {dayjs(question.createdAt).fromNow()}</span>
             <span className="flex items-center gap-1">
               <IconMessageCircle className="h-4 w-4" stroke={1.5} />

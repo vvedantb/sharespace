@@ -19,6 +19,7 @@ import {
   IconSearch,
   IconX,
   IconUserPlus,
+  IconArrowLeft,
 } from "@tabler/icons-react";
 import { Conversation, Message } from "@/lib/types";
 import { messagesSearchParams } from "./searchParams";
@@ -50,6 +51,7 @@ export function MessagesInbox({
   const [newMessage, setNewMessage] = useState("");
   const [showUserSearch, setShowUserSearch] = useState(false);
   const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [mobileShowChat, setMobileShowChat] = useState(false);
 
   const selectedConversation = conversation || conversations[0]?.id || "";
   const selectedConv = conversations.find((c) => c.id === selectedConversation);
@@ -118,6 +120,12 @@ export function MessagesInbox({
     setParams({ conversation: conv.id, user: null });
     setShowUserSearch(false);
     setUserSearchQuery("");
+    setMobileShowChat(true);
+  };
+
+  const handleSelectConversation = (convId: string) => {
+    setParams({ conversation: convId });
+    setMobileShowChat(true);
   };
 
   useEffect(() => {
@@ -145,7 +153,7 @@ export function MessagesInbox({
 
   return (
     <div className="flex-1 overflow-hidden flex">
-      <div className="w-80 shrink-0 flex flex-col bg-default-50">
+      <div className={`w-full md:w-80 shrink-0 flex flex-col bg-default-50 ${mobileShowChat ? "hidden md:flex" : "flex"}`}>
         <div className="p-3 space-y-2">
           <div className="flex gap-2">
             <Input
@@ -228,7 +236,7 @@ export function MessagesInbox({
             filteredConversations.map((conv) => (
               <button
                 key={conv.id}
-                onClick={() => setParams({ conversation: conv.id })}
+                onClick={() => handleSelectConversation(conv.id)}
                 className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-default-200 ${
                   selectedConversation === conv.id ? "bg-default-200" : ""
                 }`}
@@ -270,10 +278,16 @@ export function MessagesInbox({
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col">
+      <div className={`flex flex-1 flex-col ${mobileShowChat ? "flex" : "hidden md:flex"}`}>
         {selectedConv ? (
           <>
             <div className="flex items-center gap-3 px-4 py-3 bg-default-50">
+              <button
+                onClick={() => setMobileShowChat(false)}
+                className="md:hidden p-1 -ml-1 text-default-500 hover:text-foreground"
+              >
+                <IconArrowLeft className="h-5 w-5" stroke={2} />
+              </button>
               <Avatar
                 name={selectedConv.participantName}
                 size="md"
