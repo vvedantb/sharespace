@@ -52,6 +52,7 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
         description: item.description,
         price: Number(item.price),
         condition: item.condition,
+        status: item.status,
         university: item.university,
         images: item.images,
         sellerId: item.sellerId,

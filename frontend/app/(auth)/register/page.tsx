@@ -10,6 +10,7 @@ import { Input, Button, Card, CardBody } from "@heroui/react";
 import { IconMail, IconLock, IconUser, IconEye, IconEyeOff } from "@tabler/icons-react";
 import { signUp, signIn } from "@/lib/cognito";
 import { createUser } from "@/lib/actions";
+import { isUniversityEmail } from "@/lib/email";
 
 const schema = z
   .object({
@@ -19,10 +20,7 @@ const schema = z
       .string()
       .min(1, "Email is required")
       .email("Invalid email")
-      .refine(
-        (email) => email.endsWith(".ac.uk") || email.endsWith(".edu"),
-        "Must be a university email (.ac.uk or .edu)"
-      ),
+      .refine(isUniversityEmail, "Please use your university email address"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
   })

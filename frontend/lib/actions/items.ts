@@ -240,3 +240,49 @@ export async function getPlatformSustainability() {
     ),
   };
 }
+
+export async function getItemBuyers(itemId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const conversations = await prisma.conversation.findMany({
+    where: {
+      itemId,
+      OR: [{ participant1Id: user.id }, { participant2Id: user.id }],
+    },
+    include: {
+      participant1: { select: { id: true, firstName: true, lastName: true } },
+      participant2: { select: { id: true, firstName: true, lastName: true } },
+    },
+  });
+
+  const buyers = conversations.map((conv) => {
+    const buyer = conv.participant1Id === user.id ? conv.participant2 : conv.participant1;
+    return { id: buyer.id, name: `${buyer.firstName} ${buyer.lastName}` };
+  });
+
+  return buyers;
+}
+
+export async function markAsSold(itemId: string, buyerId: string) {
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const item = await prisma.item.findUnique({ where: { id: itemId } });
+  if (!item || item.sellerId !== user.id) throw new Error("Unauthorized");
+
+  await prisma.item.update({
+    where: { id: itemId },
+    data: { status: "SOLD", buyerId, soldAt: new Date() },
+  });
+
+  await prisma.notification.create({
+    data: {
+      userId: buyerId,
+      type: "SALE",
+      title: "Purchase Complete",
+      description: `Your purchase of "${item.title}" has been confirmed.`,
+      link: `/marketplace/${itemId}`,
+    },
+  });
+}

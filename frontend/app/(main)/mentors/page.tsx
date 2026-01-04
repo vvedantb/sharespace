@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import { MentorDirectory } from "./MentorDirectory";
@@ -36,10 +37,17 @@ export default async function MentorsPage() {
 
   return (
     <div className="px-4 py-6">
-      <h1 className="text-2xl font-bold text-black dark:text-white">Mentors</h1>
-      <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-        Get help from experienced students
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-foreground">Mentors</h1>
+          <p className="mt-1 text-sm text-default-500">
+            Get help from experienced students
+          </p>
+        </div>
+        <Link href="/mentors/leaderboard" className="text-sm text-danger hover:underline">
+          View Leaderboard
+        </Link>
+      </div>
       <Suspense
         fallback={
           <div className="py-16 text-center text-gray-500">Loading...</div>

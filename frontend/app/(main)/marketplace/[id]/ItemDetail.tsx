@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Avatar, Button, Image } from "@heroui/react";
-import { IconPhoto, IconArrowLeft, IconStar } from "@tabler/icons-react";
+import { Avatar, Button, Chip, Image, useDisclosure } from "@heroui/react";
+import { IconPhoto, IconArrowLeft, IconStar, IconCheck } from "@tabler/icons-react";
 import { ItemActions } from "./ItemActions";
 import { ReviewModal } from "./ReviewModal";
+import { MarkAsSoldModal } from "@/components/MarkAsSoldModal";
 
 const conditionLabels: Record<string, string> = {
   NEW: "New",
@@ -22,6 +23,7 @@ interface ItemDetailProps {
     description: string | null;
     price: number;
     condition: string;
+    status: string;
     university: string | null;
     images: string[];
     sellerId: string;
@@ -35,7 +37,10 @@ interface ItemDetailProps {
 
 export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
   const [reviewOpen, setReviewOpen] = useState(false);
+  const { isOpen: isSoldModalOpen, onOpen: onSoldModalOpen, onOpenChange: onSoldModalOpenChange } = useDisclosure();
   const canReview = currentUserId && currentUserId !== item.sellerId;
+  const isOwner = currentUserId === item.sellerId;
+  const isSold = item.status === "SOLD";
 
   return (
     <div className="px-4 py-6">
@@ -65,7 +70,14 @@ export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
         </div>
 
         <div>
-          <h1 className="text-2xl font-bold text-foreground">{item.title}</h1>
+          <div className="flex items-start justify-between gap-2">
+            <h1 className="text-2xl font-bold text-foreground">{item.title}</h1>
+            {isSold && (
+              <Chip color="success" variant="flat" startContent={<IconCheck className="h-3 w-3" />}>
+                Sold
+              </Chip>
+            )}
+          </div>
           <p className="mt-2 text-3xl font-bold text-danger">£{item.price.toFixed(2)}</p>
 
           <div className="mt-4 flex gap-2 text-sm text-default-500">
@@ -94,6 +106,20 @@ export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
           </div>
 
           <ItemActions itemId={item.id} sellerId={item.sellerId} currentUserId={currentUserId} isMentor={isMentor} isMentorRecommended={item.isMentorRecommended} />
+
+          {isOwner && !isSold && (
+            <Button
+              color="success"
+              variant="bordered"
+              radius="lg"
+              fullWidth
+              startContent={<IconCheck className="h-5 w-5" stroke={2} />}
+              onPress={onSoldModalOpen}
+              className="mt-3"
+            >
+              Mark as Sold
+            </Button>
+          )}
         </div>
       </div>
 
@@ -102,6 +128,13 @@ export function ItemDetail({ item, isMentor, currentUserId }: ItemDetailProps) {
         onClose={() => setReviewOpen(false)}
         revieweeId={item.sellerId}
         itemId={item.id}
+      />
+
+      <MarkAsSoldModal
+        isOpen={isSoldModalOpen}
+        onOpenChange={onSoldModalOpenChange}
+        itemId={item.id}
+        itemTitle={item.title}
       />
     </div>
   );

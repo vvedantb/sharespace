@@ -30,6 +30,7 @@ model User {
   conversations1  Conversation[] @relation("Participant1")
   conversations2  Conversation[] @relation("Participant2")
   items           Item[]         @relation("Seller")
+  purchases       Item[]         @relation("Buyer")
   mentorProfile   MentorProfile?
   messages        Message[]
   notifications   Notification[]
@@ -44,6 +45,7 @@ model User {
 model Item {
   id                  String         @id @default(uuid())
   sellerId            String         @map("seller_id")
+  buyerId             String?        @map("buyer_id")
   title               String
   description         String?
   price               Decimal        @db.Decimal(10, 2)
@@ -56,9 +58,11 @@ model Item {
   views               Int            @default(0)
   saves               Int            @default(0)
   isMentorRecommended Boolean        @default(false) @map("is_mentor_recommended")
+  soldAt              DateTime?      @map("sold_at")
   createdAt           DateTime       @default(now()) @map("created_at")
   conversations       Conversation[]
   seller              User           @relation("Seller", fields: [sellerId], references: [id])
+  buyer               User?          @relation("Buyer", fields: [buyerId], references: [id])
   reviews             Review[]
   savedBy             SavedItem[]
 
