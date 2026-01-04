@@ -11,6 +11,7 @@ import {
   IconUsers,
   IconMessage,
   IconUser,
+  IconShield,
 } from "@tabler/icons-react";
 
 const navLinks = [
@@ -20,7 +21,11 @@ const navLinks = [
   { href: "/messages", label: "Messages", icon: IconMessage },
 ];
 
-export function Navbar() {
+interface NavbarProps {
+  isAdmin?: boolean;
+}
+
+export function Navbar({ isAdmin }: NavbarProps) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -53,6 +58,19 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className={`hidden md:flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  pathname.startsWith("/admin")
+                    ? "bg-red-800 text-white dark:bg-red-700"
+                    : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
+                }`}
+              >
+                <IconShield className="h-5 w-5" stroke={2} />
+                Admin
+              </Link>
+            )}
             <Link
               href="/profile"
               className={`hidden md:flex rounded-lg p-2 transition-colors ${
@@ -115,6 +133,20 @@ export function Navbar() {
                 <IconUser className="h-5 w-5" stroke={2} />
                 Profile
               </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                    pathname.startsWith("/admin")
+                      ? "bg-red-800 text-white dark:bg-red-700"
+                      : "text-black dark:text-white hover:bg-neutral-300 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  <IconShield className="h-5 w-5" stroke={2} />
+                  Admin
+                </Link>
+              )}
             </div>
           </div>
         </>
