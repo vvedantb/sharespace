@@ -1,4 +1,5 @@
 ai-guidance/
+sharespace/
 
 # Environment files (contain secrets)
 .env
