@@ -25,6 +25,9 @@ export const metadata: Metadata = {
   title: "ShareSpace - Student Exchange & Networking",
   description:
     "A student-only platform for exchanging items and connecting with peers",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
