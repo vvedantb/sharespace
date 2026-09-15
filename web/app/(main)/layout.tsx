@@ -2,6 +2,8 @@ import { Navbar } from "@/components/Navbar";
 import { getCurrentUser } from "@/lib/auth";
 import { getNotifications, getUnreadCount } from "@/lib/actions/notifications";
 
+export const dynamic = "force-dynamic";
+
 export default async function MainLayout({
   children,
 }: {
