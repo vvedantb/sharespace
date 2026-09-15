@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html:has(.landing-root) {
+  scroll-behavior: smooth;
+}
+
 @layer utilities {
   @keyframes pulse-slow {
     0%,
