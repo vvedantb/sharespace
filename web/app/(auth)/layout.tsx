@@ -15,7 +15,10 @@ export default function AuthLayout({
   return (
     <div className="min-h-screen flex">
       <div className="hidden md:flex md:w-1/2 bg-gradient-to-br from-red-900 via-red-900/40 to-red-950 p-12 flex-col justify-between">
-        <Link href="/" className="text-3xl font-bold text-white">
+        <Link
+          href="/"
+          className="font-instrumentSerif text-3xl italic tracking-tight text-white"
+        >
           ShareSpace
         </Link>
 
@@ -51,7 +54,7 @@ export default function AuthLayout({
         <div className="md:hidden p-6 border-b border-neutral-200 dark:border-neutral-800">
           <Link
             href="/"
-            className="text-2xl font-bold text-red-800 dark:text-red-500"
+            className="font-instrumentSerif text-2xl italic tracking-tight text-red-800 dark:text-red-500"
           >
             ShareSpace
           </Link>
