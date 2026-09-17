@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea } from "@heroui/react";
+import { overlayModalClassNames } from "@/lib/ui-surfaces";
 import { IconStar } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { createReview } from "@/lib/actions/reviews";
@@ -28,7 +29,7 @@ export function ReviewModal({ isOpen, onClose, revieweeId, itemId }: ReviewModal
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} shadow="none" classNames={overlayModalClassNames}>
       <ModalContent>
         <ModalHeader>Leave a Review</ModalHeader>
         <ModalBody>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Avatar, Button, Card, CardBody, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Switch, Tooltip, useDisclosure } from "@heroui/react";
+import { overlayModalClassNames, overlayTooltipClass } from "@/lib/ui-surfaces";
 import { IconEdit, IconLogout, IconMoon, IconSun, IconStar, IconSparkles, IconShoppingBag } from "@tabler/icons-react";
 import { signOut } from "@/lib/cognito";
 import { useThemeContext } from "@/components/contexts/ThemeContext";
@@ -58,12 +59,12 @@ export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileI
             {user.course || "No course"} · Year {user.yearOfStudy || "-"}
           </p>
         </div>
-        <Tooltip content="Edit Profile">
+        <Tooltip content="Edit Profile" classNames={{ content: overlayTooltipClass }}>
           <Button isIconOnly variant="light" radius="lg" onPress={onOpen}>
             <IconEdit className="h-5 w-5" stroke={1.5} />
           </Button>
         </Tooltip>
-        <Tooltip content="Log Out">
+        <Tooltip content="Log Out" classNames={{ content: overlayTooltipClass }}>
           <Button isIconOnly variant="light" radius="lg" color="danger" onPress={onLogoutModalOpen}>
             <IconLogout className="h-5 w-5" stroke={1.5} />
           </Button>
@@ -202,7 +203,7 @@ export function ProfileContent({ user, rating, reviews, isMentor, mentorProfileI
         />
       )}
       {!isSeller && <BecomeSellerModal isOpen={isSellerModalOpen} onOpenChange={onSellerModalOpenChange} />}
-      <Modal isOpen={isLogoutModalOpen} onOpenChange={onLogoutModalOpenChange}>
+      <Modal isOpen={isLogoutModalOpen} onOpenChange={onLogoutModalOpenChange} shadow="none" classNames={overlayModalClassNames}>
         <ModalContent>
           {(onClose) => (
             <>

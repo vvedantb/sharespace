@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, CardBody, Tooltip } from "@heroui/react";
+import { overlayTooltipClass } from "@/lib/ui-surfaces";
 import {
   IconTrophy,
   IconStar,
@@ -60,6 +61,7 @@ export function BadgeDisplay({ badges, points }: BadgeDisplayProps) {
               return (
                 <Tooltip
                   key={userBadge.id}
+                  classNames={{ content: overlayTooltipClass }}
                   content={
                     <div className="p-2">
                       <p className="font-semibold">{userBadge.badge.name}</p>

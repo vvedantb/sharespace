@@ -72,7 +72,7 @@ export function AdminNavbar() {
             className="fixed inset-0 top-16 bg-black/20 backdrop-blur-sm md:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="absolute left-0 right-0 top-16 border-t border-neutral-300 dark:border-neutral-800 bg-neutral-200 dark:bg-black md:hidden shadow-lg">
+          <div className="absolute left-0 right-0 top-16 bg-neutral-200 dark:bg-black md:hidden smooth-shadow-ring-lg">
             <div className="px-4 py-3">
               <p className="px-4 py-1 text-xs font-medium text-neutral-500 uppercase">Admin</p>
               {adminLinks.map((link) => (

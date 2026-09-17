@@ -14,6 +14,7 @@ import {
   Select,
   SelectItem,
 } from "@heroui/react";
+import { overlayModalClassNames, overlayPopoverProps } from "@/lib/ui-surfaces";
 import { useMutation } from "@tanstack/react-query";
 import { updateItem } from "@/lib/actions/items";
 
@@ -83,7 +84,7 @@ export function EditItemModal({ isOpen, onOpenChange, item }: EditItemModalProps
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg" shadow="none" classNames={overlayModalClassNames}>
       <ModalContent>
         <form onSubmit={handleSubmit}>
           <ModalHeader>Edit Listing</ModalHeader>
@@ -127,6 +128,7 @@ export function EditItemModal({ isOpen, onOpenChange, item }: EditItemModalProps
                 if (typeof selected === "string") setCondition(selected);
               }}
               variant="bordered"
+              popoverProps={overlayPopoverProps}
             >
               {CONDITIONS.map((c) => (
                 <SelectItem key={c.value}>{c.label}</SelectItem>

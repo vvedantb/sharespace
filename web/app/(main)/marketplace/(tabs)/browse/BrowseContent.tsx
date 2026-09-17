@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQueryStates } from "nuqs";
 import { useQuery } from "@tanstack/react-query";
 import { Input, Chip, Spinner, Select, SelectItem, Button } from "@heroui/react";
+import { overlayPopoverProps } from "@/lib/ui-surfaces";
 import { IconSearch, IconX, IconFilter, IconChevronDown, IconChevronUp } from "@tabler/icons-react";
 import { ItemCard } from "@/components/ItemCard";
 import { categories } from "@/lib/constants";
@@ -140,6 +141,7 @@ export function BrowseContent({ initialItems }: BrowseContentProps) {
                 }}
                 variant="bordered"
                 size="sm"
+                popoverProps={overlayPopoverProps}
               >
                 {sortOptions.map((opt) => (
                   <SelectItem key={opt.value}>{opt.label}</SelectItem>

@@ -18,6 +18,7 @@ import { z } from "zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { questionCategories } from "@/lib/constants";
 import { createQuestion } from "@/lib/actions/questions";
+import { overlayModalClassNames } from "@/lib/ui-surfaces";
 
 const questionSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -94,6 +95,8 @@ export function AskQuestionModal({ isOpen, onOpenChange }: AskQuestionModalProps
       }}
       size="2xl"
       scrollBehavior="inside"
+      shadow="none"
+      classNames={overlayModalClassNames}
     >
       <ModalContent>
         <form onSubmit={handleSubmit(onSubmit)}>

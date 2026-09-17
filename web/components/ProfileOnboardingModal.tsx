@@ -20,6 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import { User } from "@/lib/types";
 import { completeProfileOnboarding, skipProfileOnboarding } from "@/lib/actions/users";
 import { uploadToS3 } from "@/lib/upload";
+import { overlayModalClassNames, overlayPopoverProps } from "@/lib/ui-surfaces";
 
 const yearOptions = [
   { value: "1", label: "Year 1" },
@@ -96,7 +97,7 @@ export function ProfileOnboardingModal({ user, isOpen, onComplete }: ProfileOnbo
   };
 
   return (
-    <Modal isOpen={isOpen} size="2xl" scrollBehavior="inside" hideCloseButton isDismissable={false}>
+    <Modal isOpen={isOpen} size="2xl" scrollBehavior="inside" hideCloseButton isDismissable={false} shadow="none" classNames={overlayModalClassNames}>
       <ModalContent>
         <ModalHeader className="flex-col gap-1">
           <h2 className="text-xl">Welcome to ShareSpace!</h2>
@@ -162,6 +163,7 @@ export function ProfileOnboardingModal({ user, isOpen, onComplete }: ProfileOnbo
               }}
               variant="bordered"
               radius="lg"
+              popoverProps={overlayPopoverProps}
             >
               {yearOptions.map((option) => (
                 <SelectItem key={option.value}>{option.label}</SelectItem>

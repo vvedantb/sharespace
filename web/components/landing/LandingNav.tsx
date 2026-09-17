@@ -79,7 +79,7 @@ export function LandingNav() {
       </div>
 
       {open && (
-        <div className="mx-5 mt-2 rounded-2xl border border-white/10 bg-neutral-950/95 p-4 backdrop-blur-xl md:hidden">
+        <div className="mx-5 mt-2 rounded-2xl bg-neutral-950/95 p-4 backdrop-blur-xl md:hidden smooth-shadow-ring-lg">
           <div className="flex flex-col gap-1">
             {navLinks.map((link) => (
               <a

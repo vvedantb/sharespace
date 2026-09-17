@@ -14,6 +14,7 @@ import {
   DropdownItem,
   addToast,
 } from "@heroui/react";
+import { overlayPopoverProps } from "@/lib/ui-surfaces";
 import {
   IconPhoto,
   IconArrowLeft,
@@ -134,7 +135,7 @@ export function ItemDetail({
                   Sold
                 </Chip>
               )}
-              <Dropdown>
+              <Dropdown {...overlayPopoverProps}>
                 <DropdownTrigger>
                   <Button isIconOnly variant="light" radius="full" size="sm">
                     <IconShare className="h-5 w-5" stroke={1.5} />

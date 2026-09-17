@@ -13,6 +13,7 @@ import {
 } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { becomeSeller } from "@/lib/actions/sellers";
+import { overlayModalClassNames } from "@/lib/ui-surfaces";
 
 interface BecomeSellerModalProps {
   isOpen: boolean;
@@ -59,7 +60,8 @@ export function BecomeSellerModal({ isOpen, onOpenChange }: BecomeSellerModalPro
       onOpenChange={handleClose}
       size="lg"
       scrollBehavior="inside"
-      classNames={{ body: "max-h-[60vh] overflow-y-auto" }}
+      shadow="none"
+      classNames={{ ...overlayModalClassNames, body: "max-h-[60vh] overflow-y-auto" }}
     >
       <ModalContent>
         <form onSubmit={handleSubmit}>

@@ -23,6 +23,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { categories, conditions } from "@/lib/constants";
 import { createItem } from "@/lib/actions/items";
 import { uploadMultipleToS3 } from "@/lib/upload";
+import { overlayModalClassNames, overlayPopoverProps } from "@/lib/ui-surfaces";
 
 const itemSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -138,6 +139,8 @@ export function CreateItemModal({ isOpen, onOpenChange }: CreateItemModalProps) 
       }}
       size="2xl"
       scrollBehavior="inside"
+      shadow="none"
+      classNames={overlayModalClassNames}
     >
       <ModalContent>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -212,6 +215,7 @@ export function CreateItemModal({ isOpen, onOpenChange }: CreateItemModalProps) 
                     }}
                     variant="bordered"
                     radius="lg"
+                    popoverProps={overlayPopoverProps}
                     isInvalid={!!errors.category}
                     errorMessage={errors.category?.message}
                   >
@@ -235,6 +239,7 @@ export function CreateItemModal({ isOpen, onOpenChange }: CreateItemModalProps) 
                     }}
                     variant="bordered"
                     radius="lg"
+                    popoverProps={overlayPopoverProps}
                     isInvalid={!!errors.condition}
                     errorMessage={errors.condition?.message}
                   >
