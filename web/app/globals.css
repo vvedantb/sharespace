@@ -1,6 +1,30 @@
+@import "shadow-plugin";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Eva overlay policy: floating surfaces use smooth-shadow-ring-* from
+ * shadow-plugin — one continuous edge, never border + shadow together.
+ * Form inputs keep their borders. Cards stay tone-only (no extra elevation).
+ */
+@layer components {
+  [data-slot="base"][role="dialog"],
+  [data-slot="base"][aria-modal="true"] {
+    @apply border-0 shadow-none smooth-shadow-ring-xl;
+  }
+
+  [data-slot="content"].shadow-small,
+  [data-slot="content"].shadow-medium,
+  [data-slot="content"].shadow-large {
+    @apply border-0 bg-content1/95 backdrop-blur-md smooth-shadow-ring-lg;
+  }
+
+  [role="tooltip"] {
+    @apply border-0 shadow-none bg-content1/95 backdrop-blur-md smooth-shadow-ring-md;
+  }
+}
 
 html:has(.landing-root) {
   scroll-behavior: smooth;

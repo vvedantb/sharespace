@@ -15,6 +15,7 @@ import {
 } from "@heroui/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getItemBuyers, markAsSold } from "@/lib/actions/items";
+import { overlayModalClassNames, overlayPopoverProps } from "@/lib/ui-surfaces";
 
 interface MarkAsSoldModalProps {
   isOpen: boolean;
@@ -63,7 +64,7 @@ export function MarkAsSoldModal({ isOpen, onOpenChange, itemId, itemTitle }: Mar
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} shadow="none" classNames={overlayModalClassNames}>
       <ModalContent>
         <form onSubmit={handleSubmit}>
           <ModalHeader>Mark as Sold</ModalHeader>
@@ -89,6 +90,7 @@ export function MarkAsSoldModal({ isOpen, onOpenChange, itemId, itemTitle }: Mar
                 label="Select Buyer"
                 placeholder="Select from your conversations"
                 variant="bordered"
+                popoverProps={overlayPopoverProps}
                 selectedKeys={selectedBuyer ? [selectedBuyer] : []}
                 onSelectionChange={(keys) => {
                   const selected = Array.from(keys)[0];

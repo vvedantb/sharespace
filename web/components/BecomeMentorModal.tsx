@@ -21,6 +21,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { createMentor } from "@/lib/actions/mentors";
 import { MentorType } from "@/lib/types";
+import { overlayModalClassNames, overlayPopoverProps } from "@/lib/ui-surfaces";
 
 const yearOptions = [
   { value: "3", label: "Year 3" },
@@ -112,7 +113,8 @@ export function BecomeMentorModal({ isOpen, onOpenChange, userYearOfStudy }: Bec
       onOpenChange={handleClose}
       size="2xl"
       scrollBehavior="inside"
-      classNames={{ body: "max-h-[60vh] overflow-y-auto" }}
+      shadow="none"
+      classNames={{ ...overlayModalClassNames, body: "max-h-[60vh] overflow-y-auto" }}
     >
       <ModalContent>
         <form onSubmit={handleSubmit}>
@@ -146,6 +148,7 @@ export function BecomeMentorModal({ isOpen, onOpenChange, userYearOfStudy }: Bec
                 }}
                 variant="bordered"
                 radius="lg"
+                popoverProps={overlayPopoverProps}
                 description="Mentors must be in year 3 or above"
               >
                 {yearOptions.map((option) => (

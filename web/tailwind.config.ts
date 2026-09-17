@@ -1,6 +1,92 @@
 import { heroui } from "@heroui/react";
 import tailwindcssAnimate from "tailwindcss-animate";
+import plugin from "tailwindcss/plugin";
 import type { Config } from "tailwindcss";
+
+/** Tailwind v3 adapter for shadow-plugin's `smooth-shadow-ring-*` utilities. */
+const smoothShadow = plugin(({ addBase, addUtilities }) => {
+  addBase({
+    ":root": {
+      "--smooth-ring-color": "rgba(0, 0, 0, 0.05)",
+    },
+    ".dark, [data-theme='dark']": {
+      "--smooth-ring-color": "rgba(255, 255, 255, 0.18)",
+    },
+  });
+
+  const mix = (offset: string, alpha: number) =>
+    `${offset} color-mix(in srgb, var(--smooth-shadow-color) ${alpha}%, transparent)`;
+
+  const shadows: Record<string, string> = {
+    xs: mix("0 0 4px 0", 4),
+    sm: [
+      mix("0 18px 47px 0", 3),
+      mix("0 7.5px 19px 0", 2),
+      mix("0 4px 10.5px 0", 2),
+      mix("0 2.3px 5.8px 0", 1),
+      mix("0 1.2px 3.1px 0", 1),
+      mix("0 0.5px 1.3px 0", 1),
+    ].join(", "),
+    md: [
+      mix("0 17.54px 23.39px 0", 4),
+      mix("0 9.4px 12.5px 0", 3),
+      mix("0 5.25px 7px 0", 2),
+      mix("0 2.79px 3.72px -2px", 1),
+      mix("0 1.16px 1.5px 0", 1),
+    ].join(", "),
+    lg: [
+      mix("0 25px 50px 0", 5),
+      mix("0 12px 24px 0", 4),
+      mix("0 6px 12px 0", 3),
+      mix("0 3px 6px 0", 2),
+      mix("0 1.5px 3px 0", 2),
+    ].join(", "),
+    xl: [
+      mix("0 40px 80px 0", 6),
+      mix("0 20px 40px 0", 5),
+      mix("0 10px 20px 0", 4),
+      mix("0 5px 10px 0", 3),
+      mix("0 2px 4px 0", 2),
+    ].join(", "),
+    "2xl": [
+      mix("0 60px 120px 0", 7),
+      mix("0 30px 60px 0", 6),
+      mix("0 15px 30px 0", 5),
+      mix("0 7.5px 15px 0", 4),
+      mix("0 3px 6px 0", 3),
+    ].join(", "),
+  };
+
+  const ring = "0 0 0 1px var(--smooth-ring-color)";
+  const colorVar = {
+    "--smooth-shadow-color": "var(--tw-shadow-color, black)",
+  };
+
+  const utilities: Record<string, Record<string, string>> = {
+    ".smooth-shadow": {
+      ...colorVar,
+      boxShadow: `${shadows.md} !important`,
+    },
+    ".smooth-shadow-none": { boxShadow: "none !important" },
+    ".smooth-shadow-ring": {
+      ...colorVar,
+      boxShadow: `${shadows.md}, ${ring} !important`,
+    },
+  };
+
+  for (const [size, value] of Object.entries(shadows)) {
+    utilities[`.smooth-shadow-${size}`] = {
+      ...colorVar,
+      boxShadow: `${value} !important`,
+    };
+    utilities[`.smooth-shadow-ring-${size}`] = {
+      ...colorVar,
+      boxShadow: `${value}, ${ring} !important`,
+    };
+  }
+
+  addUtilities(utilities);
+});
 
 /** @type {import('tailwindcss').Config} */
 
@@ -9,6 +95,7 @@ const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
     "./archived/**/*.{js,ts,jsx,tsx,mdx}",
     "*.{js,ts,jsx,tsx,mdx}",
     "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
@@ -69,6 +156,7 @@ const config: Config = {
     },
   },
   plugins: [
+    smoothShadow,
     tailwindcssAnimate,
     heroui({
       defaultTheme: "light",

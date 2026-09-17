@@ -15,6 +15,7 @@ import {
 } from "@heroui/react";
 import { useMutation } from "@tanstack/react-query";
 import { createReport } from "@/lib/actions/reports";
+import { overlayModalClassNames } from "@/lib/ui-surfaces";
 
 const REPORT_REASONS = [
   { value: "inappropriate", label: "Inappropriate content" },
@@ -61,7 +62,7 @@ export function ReportModal({ isOpen, onOpenChange, itemId, userId, targetName }
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} shadow="none" classNames={overlayModalClassNames}>
       <ModalContent>
         <ModalHeader>Report {itemId ? "Item" : "User"}</ModalHeader>
         <ModalBody>

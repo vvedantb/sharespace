@@ -20,6 +20,7 @@ import { useMutation } from "@tanstack/react-query";
 import { User } from "@/lib/types";
 import { updateUser } from "@/lib/actions/users";
 import { uploadToS3 } from "@/lib/upload";
+import { overlayModalClassNames, overlayPopoverProps } from "@/lib/ui-surfaces";
 
 const yearOptions = [
   { value: "1", label: "Year 1" },
@@ -109,7 +110,7 @@ export function EditProfileModal({ user, isOpen, onOpenChange }: EditProfileModa
   };
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" scrollBehavior="inside">
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="2xl" scrollBehavior="inside" shadow="none" classNames={overlayModalClassNames}>
       <ModalContent>
         <ModalHeader>Edit Profile</ModalHeader>
         <ModalBody className="gap-4">
@@ -184,6 +185,7 @@ export function EditProfileModal({ user, isOpen, onOpenChange }: EditProfileModa
               }}
               variant="bordered"
               radius="lg"
+              popoverProps={overlayPopoverProps}
             >
               {yearOptions.map((option) => (
                 <SelectItem key={option.value}>{option.label}</SelectItem>

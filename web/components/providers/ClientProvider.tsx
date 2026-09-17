@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
+import { overlayToastClass } from "@/lib/ui-surfaces";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { useRouter } from "next/navigation";
@@ -42,7 +43,13 @@ export function ClientProvider({ children }: { children: React.ReactNode }) {
             // skipFramerMotionAnimations={false}
             navigate={router.push}
           >
-            <ToastProvider placement="top-center" />
+            <ToastProvider
+              placement="top-center"
+              toastProps={{
+                shadow: "none",
+                classNames: { base: overlayToastClass },
+              }}
+            />
             {children}
           </HeroUIProvider>
         </ThemeProvider>
